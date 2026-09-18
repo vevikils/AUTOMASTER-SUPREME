@@ -109,11 +109,11 @@ private:
     void configureBypassButton(juce::ToggleButton& btn);
 
     void drawSpectrumScreen(juce::Graphics& g, juce::Rectangle<int> bounds);
+    void drawEQNode(juce::Graphics& g, float x, float y, int bandNum, float gainDb, juce::Colour col);
     void drawGoniometerScreen(juce::Graphics& g, juce::Rectangle<int> bounds);
     void drawMetersScreen(juce::Graphics& g, juce::Rectangle<int> bounds);
-    void drawModuleCard(juce::Graphics& g, juce::Rectangle<int> bounds, const juce::String& title);
+    void drawModuleCard(juce::Graphics& g, juce::Rectangle<int> bounds, const juce::String& title, juce::Colour accentCol = juce::Colour(0xff00f0ff));
     void drawAgentDeck(juce::Graphics& g, juce::Rectangle<int> bounds);
-    void drawRackScrew(juce::Graphics& g, int x, int y);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AutomasterSupremeAudioProcessorEditor)
 };

@@ -1,6 +1,6 @@
-# Guía de Instalación y Uso en FL Studio: AUTOMASTER SUPREME VST3
+# Guía de Instalación y Uso en FL Studio: AUTOMASTER SUPREME 2 VST3 (v2.0)
 
-Esta guía detalla cómo utilizar **AUTOMASTER SUPREME** como plugin VST3 nativo en **FL Studio** y cómo aprovechar la calibración para los estándares oficiales de **Spotify (-14 LUFS / -1.0 dBTP)**.
+Esta guía detalla cómo utilizar **AUTOMASTER SUPREME 2** como plugin VST3 nativo en **FL Studio** y cómo aprovechar la calibración para los estándares oficiales de **Spotify (-14 LUFS / -1.0 dBTP)**.
 
 ---
 
@@ -14,8 +14,9 @@ Las plataformas de streaming modernas (Spotify, Apple Music, YouTube Music, Tida
 2. **El Problema del "Volumen Muy Muy Alto" (Loudness War)**:
    - Si masterizas una canción a -8 o -7 LUFS (volumen aplastado de club antiguo), Spotify aplicará una **atenuación automática de -6 a -7 dB**.
    - El resultado es devastador: Tu canción no sonará más fuerte que las demás, pero **habrá perdido todos sus transientes, la pegada del bombo, la dinámica de la voz y conservará la distorsión del limitador**.
-3. **La Solución de AUTOMASTER SUPREME**:
+3. **La Solución de AUTOMASTER SUPREME 2**:
    - Diseñado específicamente con la curva de referencia de Spotify (-14.0 LUFS y -1.0 dBTP Ceiling).
+   - Nueva interfaz visual inspirada en **FabFilter Pro-Q** y **Waves**, con vúmetros de precisión estabilizados a **0.5 segundos** y analizador de espectro reactivo.
    - Deja respirar la mezcla, preserva la pegada del bombo y la caja (*punch*), ensancha los laterales en medios/agudos y garantiza que en Spotify suene **grande, nítida, contundente y sin penalización**.
 
 ---
@@ -25,19 +26,20 @@ Las plataformas de streaming modernas (Spotify, Apple Music, YouTube Music, Tida
 1. **Ubicación Estándar de VST3 en Windows**:
    FL Studio escanea de forma nativa la carpeta:
    `C:\Program Files\Common Files\VST3\`
+   (El plugin `AUTOMASTER SUPREME 2.vst3` ya ha sido instalado en esa ubicación).
 
 2. **Escanear el Plugin en FL Studio**:
    - Abre **FL Studio**.
    - En la barra superior, haz clic en **Options > Manage plugins** (Opciones > Administrar plugins).
    - Asegúrate de que `C:\Program Files\Common Files\VST3` esté en la lista de rutas de búsqueda (*Plugin search paths*).
    - Haz clic en el botón amarillo **Find installed plugins** (Buscar plugins instalados).
-   - Cuando termine el escaneo, busca **AUTOMASTER SUPREME** en la lista de efectos (*Effects*).
+   - Cuando termine el escaneo, busca **AUTOMASTER SUPREME 2** en la lista de efectos (*Effects*).
    - Marca la **estrella ⭐** a su izquierda para añadirlo a tus plugins favoritos.
 
 3. **Insertar en el Canal Master**:
    - Abre la mesa de mezclas de FL Studio (**F9** o View > Mixer).
    - Selecciona el canal **Master** (el primer canal a la izquierda).
-   - En cualquiera de los 10 slots de inserción (Slot 1 a 10), haz clic y selecciona **AUTOMASTER SUPREME**.
+   - En cualquiera de los 10 slots de inserción (Slot 1 a 10), haz clic y selecciona **AUTOMASTER SUPREME 2**.
 
 ---
 

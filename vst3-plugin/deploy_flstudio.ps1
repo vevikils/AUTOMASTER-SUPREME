@@ -1,9 +1,9 @@
-# Deployment script for AUTOMASTER SUPREME VST3
+# Deployment script for AUTOMASTER SUPREME 2 VST3
 $ErrorActionPreference = "Stop"
 
-$source = "c:\Users\alfaswz\.gemini\antigravity-ide\scratch\agentes-personalizados\vst3-plugin\build\AutomasterSupreme_artefacts\Release\VST3\AUTOMASTER SUPREME.vst3"
+$source = "c:\Users\alfaswz\.gemini\antigravity-ide\scratch\agentes-personalizados\vst3-plugin\build\AutomasterSupreme_artefacts\Release\VST3\AUTOMASTER SUPREME 2.vst3"
 $targetDir = "C:\Program Files\Common Files\VST3"
-$target = Join-Path $targetDir "AUTOMASTER SUPREME.vst3"
+$target = Join-Path $targetDir "AUTOMASTER SUPREME 2.vst3"
 
 Write-Host "Source: $source"
 Write-Host "Target: $target"

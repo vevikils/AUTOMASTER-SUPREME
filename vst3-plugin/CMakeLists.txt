@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AutomasterSupreme VERSION 1.0.0 LANGUAGES CXX)
+project(AutomasterSupreme VERSION 2.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,17 +9,17 @@ add_subdirectory("C:/Users/alfaswz/VeviDynamicEQ1/Build/_deps/juce-src" juce EXC
 
 juce_add_plugin(AutomasterSupreme
     COMPANY_NAME "AntigravityAudio"
-    BUNDLE_ID "com.antigravity.automastersupreme"
+    BUNDLE_ID "com.antigravity.automastersupreme2"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Anti
-    PLUGIN_CODE AuSu
+    PLUGIN_CODE AuS2
     FORMATS VST3 Standalone
-    PRODUCT_NAME "AUTOMASTER SUPREME"
-    DESCRIPTION "AI VST Mastering Suite calibrated for Spotify (-14 LUFS / -1.0 dBTP)"
+    PRODUCT_NAME "AUTOMASTER SUPREME 2"
+    DESCRIPTION "AI VST Mastering Suite v2 calibrated for Spotify (-14 LUFS / -1.0 dBTP)"
 )
 
 target_sources(AutomasterSupreme PRIVATE

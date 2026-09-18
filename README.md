@@ -1,17 +1,19 @@
-# 🎛️ AUTOMASTER SUPREME: AI Mastering Suite & VST3 Plugin
+# 🎛️ AUTOMASTER SUPREME 2: AI Mastering Suite & VST3 Plugin (v2.0)
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-blue.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
+[![Release](https://img.shields.io/badge/Release-v2.0.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
 [![Format](https://img.shields.io/badge/Format-VST3%20%7C%20Standalone%20%7C%20WebAudio-orange.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
+[![UI](https://img.shields.io/badge/Design-FabFilter%20%26%20Waves%20Style-magenta.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![DSP](https://img.shields.io/badge/DSP-JUCE%208%20%7C%20C%2B%2B17%20%7C%2064--bit-purple.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![Target](https://img.shields.io/badge/Spotify-14%20LUFS%20%7C%20--1.0%20dBTP-green.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 
-**AUTOMASTER SUPREME** es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
+**AUTOMASTER SUPREME 2** es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
 
-El proyecto ofrece una experiencia dual completa:
-1. 🔌 **Plugin Nativo de Alto Rendimiento (VST3 & Standalone)**: Desarrollado en C++17 con el framework **JUCE 8**, compatible con **FL Studio**, Ableton Live, Cubase, Studio One, Reaper y como aplicación de escritorio independiente.
-2. 🌐 **Estación Web Audio DSP**: Procesador interactivo en tiempo real con Web Audio API a 64-bit float, analizador FFT dual a 60 FPS, goniometro vectorial Lissajous y exportador WAV RIFF de 24 bits con dither TPDF.
-3. 🤖 **Arquitectura Multi-Agente Antigravity**: Desarrollado y supervisado por una suite de 4 Agentes Personalizados (`.agents/agents/`) que garantizan calidad DSP, ausencia de distorsión y validación continua.
+### 🎨 Novedades de la Versión 2.0 (Rediseño Estilo FabFilter / Waves):
+- **Estética Grado Estudio FabFilter**: Perillas minimalistas con halos de arco neón reactivo, fondo grafito satinado y chasis de cristal oscuro (*dark frosted glass*).
+- **Curva EQ FabFilter Pro-Q**: Nodos visuales interactivos (1 al 5) posicionados directamente sobre la curva de compensación espectral con lectura de ganancia en pastillas flotantes.
+- **Puente de Medición Waves**: Vúmetros verticales con escala de precisión dBTP, indicadores *Peak Hold* de alta visibilidad y lecturas digitales de LUFS y Crest Factor estabilizadas a **0.5 segundos**.
+- **Identidad Oficial**: Binarios nativos renombrados a `AUTOMASTER SUPREME 2.vst3` y `AUTOMASTER SUPREME 2.exe`.
 
 ---
 
@@ -20,11 +22,11 @@ El proyecto ofrece una experiencia dual completa:
 ¿Quieres usarlo de inmediato en tu DAW o en tu escritorio?
 Descarga el paquete oficial listo para usar en un clic:
 
-👉 **[Descargar AUTOMASTER_SUPREME_v1.0.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
+👉 **[Descargar AUTOMASTER_SUPREME_v2.0.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
 
 El paquete incluye:
-- `AUTOMASTER SUPREME.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
-- `AUTOMASTER SUPREME.exe` (Ejecutable de escritorio Standalone).
+- `AUTOMASTER SUPREME 2.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
+- `AUTOMASTER SUPREME 2.exe` (Ejecutable de escritorio Standalone).
 - Guías paso a paso de instalación y configuración.
 
 ---
