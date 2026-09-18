@@ -93,7 +93,7 @@ void SupremeKnobLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, i
 AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(AutomasterSupremeAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
 {
-    setSize(1080, 740);
+    setSize(1296, 888);
     setLookAndFeel(&customKnobLAF);
 
     // Preset Selector (Spotify Centric)
@@ -131,13 +131,6 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     satModeBox.setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff2a3648));
     satModeBox.setColour(juce::ComboBox::textColourId, juce::Colour(0xffffb92d));
     addAndMakeVisible(satModeBox);
-
-    // Module Bypass Buttons
-    configureBypassButton(bypassLowCut);
-    configureBypassButton(bypassEQ);
-    configureBypassButton(bypassSat);
-    configureBypassButton(bypassMB);
-    configureBypassButton(bypassLimiter);
 
     // Knobs Configuration with Spotify & Cyber-analog Accents
     const juce::Colour cyan(0xff00f0ff);
@@ -321,82 +314,91 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     // 1. Sleek Studio Dark Graphite Chassis (FabFilter / Waves Aesthetic)
     g.fillAll(juce::Colour(0xff0a0d14));
 
-    // 2. Header Top Bar
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff141a24), 0, 0, juce::Colour(0xff0c1017), 0, 60, false));
-    g.fillRect(0, 0, getWidth(), 60);
+    // 2. Header Top Bar (Height 68px)
+    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff141a24), 0, 0, juce::Colour(0xff0c1017), 0, 68, false));
+    g.fillRect(0, 0, getWidth(), 68);
     g.setColour(juce::Colour(0xff222e40));
-    g.drawLine(0.0f, 60.0f, float(getWidth()), 60.0f, 1.5f);
+    g.drawLine(0.0f, 68.0f, float(getWidth()), 68.0f, 1.5f);
 
-    // Brand Logo Icon (Rounded jewel badge with "A2")
-    auto logoRect = juce::Rectangle<float>(20, 12, 36, 36);
+    // Brand Logo Icon (Rounded jewel badge with "A3")
+    auto logoRect = juce::Rectangle<float>(20, 14, 40, 40);
     g.setGradientFill(juce::ColourGradient(juce::Colour(0xff00f0ff), logoRect.getX(), logoRect.getY(),
                                            juce::Colour(0xffb34bfb), logoRect.getRight(), logoRect.getBottom(), false));
     g.fillRoundedRectangle(logoRect, 8.0f);
     g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(20.0f, juce::Font::bold));
-    g.drawText("A2", logoRect, juce::Justification::centred);
+    g.setFont(juce::Font(22.0f, juce::Font::bold));
+    g.drawText("A3", logoRect, juce::Justification::centred);
 
-    // Title & Version 2 Pill Badge
+    // Title & Version 3 Pill Badge
     g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(20.0f, juce::Font::bold));
-    g.drawText("AUTOMASTER SUPREME 2", 66, 10, 275, 24, juce::Justification::centredLeft);
+    g.setFont(juce::Font(22.0f, juce::Font::bold));
+    g.drawText("AUTOMASTER SUPREME 3", 72, 11, 315, 26, juce::Justification::centredLeft);
 
-    // Version 2.0 Pill Badge
-    auto verBadge = juce::Rectangle<float>(345, 13, 46, 18);
+    // Version 3.0 Pill Badge
+    auto verBadge = juce::Rectangle<float>(392, 15, 48, 20);
     g.setColour(juce::Colour(0x3000f0ff));
     g.fillRoundedRectangle(verBadge, 4.0f);
     g.setColour(juce::Colour(0xff00f0ff));
     g.drawRoundedRectangle(verBadge, 4.0f, 1.0f);
-    g.setFont(juce::Font(9.5f, juce::Font::bold));
-    g.drawText("v2.0", verBadge, juce::Justification::centred);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("v3.0", verBadge, juce::Justification::centred);
+
+    // Author Badge "BY VEVI"
+    auto authorBadge = juce::Rectangle<float>(448, 15, 82, 20);
+    g.setColour(juce::Colour(0x25ffb92d));
+    g.fillRoundedRectangle(authorBadge, 4.0f);
+    g.setColour(juce::Colour(0xffffb92d));
+    g.drawRoundedRectangle(authorBadge, 4.0f, 1.0f);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("BY VEVI", authorBadge, juce::Justification::centred);
 
     // Subtitle
     g.setColour(juce::Colour(0xff7e91ad));
-    g.setFont(juce::Font(9.5f, juce::Font::bold));
-    g.drawText("PRECISION AI MASTERING SUITE", 66, 34, 180, 16, juce::Justification::centredLeft);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("AI MASTERING SUITE · BY VEVI", 72, 40, 185, 16, juce::Justification::centredLeft);
 
     // Spotify Reference Tag Pill
-    auto spotifyTag = juce::Rectangle<float>(255, 34, 255, 18);
+    auto spotifyTag = juce::Rectangle<float>(265, 39, 265, 19);
     g.setColour(juce::Colour(0x2000ffaa));
     g.fillRoundedRectangle(spotifyTag, 4.0f);
     g.setColour(juce::Colour(0xff00ffaa));
     g.drawRoundedRectangle(spotifyTag, 4.0f, 1.0f);
-    g.setFont(juce::Font(9.0f, juce::Font::bold));
+    g.setFont(juce::Font(9.5f, juce::Font::bold));
     g.drawText("SPOTIFY TARGET (-14.0 LUFS / -1.0 dBTP)", spotifyTag, juce::Justification::centred);
 
-    // 3. Upper Deck: 3 OLED Screen Frames (FabFilter & Waves Style)
-    drawSpectrumScreen(g, juce::Rectangle<int>(20, 72, 540, 250));
-    drawGoniometerScreen(g, juce::Rectangle<int>(572, 72, 260, 250));
-    drawMetersScreen(g, juce::Rectangle<int>(844, 72, 216, 250));
+    // 3. Upper Deck: 3 OLED Screen Frames (FabFilter & Waves Style, Scaled +20%)
+    drawSpectrumScreen(g, juce::Rectangle<int>(20, 82, 640, 300));
+    drawGoniometerScreen(g, juce::Rectangle<int>(672, 82, 310, 300));
+    drawMetersScreen(g, juce::Rectangle<int>(994, 82, 282, 300));
 
-    // 4. Lower Deck: 5 Hardware Rack Modules (Frosted dark glass with color accents)
-    drawModuleCard(g, juce::Rectangle<int>(20, 334, 135, 275), "1. INPUT & SUB", juce::Colour(0xff00f0ff));
-    drawModuleCard(g, juce::Rectangle<int>(165, 334, 355, 275), "2. 5-BAND EQUALIZER", juce::Colour(0xff00f0ff));
-    drawModuleCard(g, juce::Rectangle<int>(530, 334, 140, 275), "3. TAPE WARMTH", juce::Colour(0xffffb92d));
-    drawModuleCard(g, juce::Rectangle<int>(680, 334, 150, 275), "4. MULTIBAND", juce::Colour(0xff00ffaa));
-    drawModuleCard(g, juce::Rectangle<int>(840, 334, 220, 275), "5. STEREO & LIMITER", juce::Colour(0xffff3366));
+    // 4. Lower Deck: 5 Hardware Rack Modules (Frosted dark glass with color accents, Scaled +20%)
+    drawModuleCard(g, juce::Rectangle<int>(20, 396, 160, 330), "1. INPUT & SUB", juce::Colour(0xff00f0ff));
+    drawModuleCard(g, juce::Rectangle<int>(194, 396, 420, 330), "2. 5-BAND EQUALIZER", juce::Colour(0xff00f0ff));
+    drawModuleCard(g, juce::Rectangle<int>(628, 396, 166, 330), "3. TAPE WARMTH", juce::Colour(0xffffb92d));
+    drawModuleCard(g, juce::Rectangle<int>(808, 396, 176, 330), "4. MULTIBAND", juce::Colour(0xff00ffaa));
+    drawModuleCard(g, juce::Rectangle<int>(998, 396, 278, 330), "5. STEREO & LIMITER", juce::Colour(0xffff3366));
 
-    // Frequency badges for 5-Band EQ (FabFilter style pills)
+    // Frequency badges for 5-Band EQ (FabFilter style pills, Scaled)
     const char* eqFreqLabels[] = { "35 Hz", "300 Hz", "1.5 kHz", "4.5 kHz", "12 kHz" };
     const char* eqTypeLabels[] = { "LOW SHELF", "BELL (Q 1.0)", "BELL (Q 1.2)", "BELL (Q 1.1)", "HIGH SHELF" };
     for (int i = 0; i < 5; ++i)
     {
-        int bandX = 172 + i * 68;
-        auto badgeRect = juce::Rectangle<float>(float(bandX + 2), 460.0f, 52.0f, 26.0f);
+        int bandX = 204 + i * 80;
+        auto badgeRect = juce::Rectangle<float>(float(bandX + 2), 548.0f, 64.0f, 28.0f);
         g.setColour(juce::Colour(0xff0a0e16));
         g.fillRoundedRectangle(badgeRect, 4.0f);
         g.setColour(juce::Colour(0xff1e2a3c));
         g.drawRoundedRectangle(badgeRect, 4.0f, 1.0f);
-        g.setFont(juce::Font(8.0f, juce::Font::bold));
+        g.setFont(juce::Font(8.5f, juce::Font::bold));
         g.setColour(i == 4 ? juce::Colour(0xffffb92d) : juce::Colour(0xff00f0ff));
-        g.drawText(eqFreqLabels[i], badgeRect.removeFromTop(13.0f), juce::Justification::centred);
-        g.setFont(juce::Font(7.0f, juce::Font::plain));
+        g.drawText(eqFreqLabels[i], badgeRect.removeFromTop(14.0f), juce::Justification::centred);
+        g.setFont(juce::Font(7.5f, juce::Font::plain));
         g.setColour(juce::Colour(0xff8b9bb4));
         g.drawText(eqTypeLabels[i], badgeRect, juce::Justification::centred);
     }
 
-    // 5. Bottom Multi-Agent Telemetry Bar
-    drawAgentDeck(g, juce::Rectangle<int>(20, 620, getWidth() - 40, 105));
+    // 5. Bottom Multi-Agent Telemetry Bar (Scaled +20%)
+    drawAgentDeck(g, juce::Rectangle<int>(20, 740, getWidth() - 40, 126));
 }
 
 // ------------------------------------------------------------------------------
@@ -907,85 +909,78 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
     g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
     // Header with Agent Chips
-    auto chipArea = bounds.removeFromTop(28).reduced(8, 4);
+    auto chipArea = bounds.removeFromTop(32).reduced(10, 4);
 
-    const char* agentNames[] = { "Orchestrator v2", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
+    const char* agentNames[] = { "Orchestrator v3", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
     const juce::Colour agentColors[] = { juce::Colour(0xff00f0ff), juce::Colour(0xff5bc0de), juce::Colour(0xffffb92d), juce::Colour(0xff00ffaa) };
 
     int chipX = chipArea.getX();
     for (int i = 0; i < 4; ++i)
     {
-        auto chipRect = juce::Rectangle<int>(chipX, chipArea.getY(), 160, 20);
+        auto chipRect = juce::Rectangle<int>(chipX, chipArea.getY(), 190, 24);
         g.setColour(juce::Colour(0xff111722));
-        g.fillRoundedRectangle(chipRect.toFloat(), 10.0f);
+        g.fillRoundedRectangle(chipRect.toFloat(), 12.0f);
         g.setColour(juce::Colour(0xff222e40));
-        g.drawRoundedRectangle(chipRect.toFloat(), 10.0f, 1.0f);
+        g.drawRoundedRectangle(chipRect.toFloat(), 12.0f, 1.0f);
 
         // Glowing dot
         g.setColour(agentColors[i]);
-        g.fillEllipse(float(chipRect.getX() + 8), float(chipRect.getY() + 7), 6.0f, 6.0f);
+        g.fillEllipse(float(chipRect.getX() + 10), float(chipRect.getY() + 8), 8.0f, 8.0f);
 
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(9.5f, juce::Font::bold));
-        g.drawText(agentNames[i], chipRect.getX() + 18, chipRect.getY(), 138, 20, juce::Justification::centredLeft);
+        g.setFont(juce::Font(10.0f, juce::Font::bold));
+        g.drawText(agentNames[i], chipRect.getX() + 24, chipRect.getY(), 160, 24, juce::Justification::centredLeft);
 
-        chipX += 170;
+        chipX += 205;
     }
 
     g.setColour(juce::Colour(0xff00ffaa));
-    g.setFont(juce::Font(9.0f, juce::Font::bold));
-    g.drawText("AI COOPERATIVE CORE v2.0", chipArea.getRight() - 200, chipArea.getY(), 190, 20, juce::Justification::right);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("AI COOPERATIVE CORE v3.0 · BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
 
     // Terminal Window with Live Telemetry
-    auto termArea = bounds.reduced(8, 6);
+    auto termArea = bounds.reduced(10, 8);
     g.setColour(juce::Colour(0xff040609));
-    g.fillRoundedRectangle(termArea.toFloat(), 4.0f);
+    g.fillRoundedRectangle(termArea.toFloat(), 5.0f);
 
-    g.setFont(juce::Font("monospace", 10.0f, juce::Font::plain));
+    g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
     g.setColour(juce::Colour(0xff00f0ff));
-    g.drawText("[Orchestrator v2] Real-time FL Studio audio pipe | 64-bit IEEE float processing | Latency: 0 samples", termArea.getX() + 8, termArea.getY() + 4, termArea.getWidth() - 16, 14, juce::Justification::left);
+    g.drawText("[Orchestrator v3] Real-time FL Studio audio pipe | 64-bit IEEE float processing | Latency: 0 samples", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
 
     g.setColour(juce::Colour(0xff5bc0de));
-    g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify acoustic reference (-14.0 LUFS Target)", termArea.getX() + 8, termArea.getY() + 20, termArea.getWidth() - 16, 14, juce::Justification::left);
+    g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify acoustic reference (-14.0 LUFS Target)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
 
     g.setColour(juce::Colour(0xffffb92d));
-    g.drawText("[True-Peak Guard] Inter-sample peak limiter clamped at -1.0 dBTP | Elliptic mono-sub (<110Hz) locked", termArea.getX() + 8, termArea.getY() + 36, termArea.getWidth() - 16, 14, juce::Justification::left);
+    g.drawText("[True-Peak Guard] Inter-sample peak limiter clamped at -1.0 dBTP | Elliptic mono-sub (<110Hz) locked", termArea.getX() + 10, termArea.getY() + 42, termArea.getWidth() - 20, 16, juce::Justification::left);
 
     g.setColour(juce::Colour(0xff00ffaa));
-    g.drawText("[Spotify QA Engine] Status: CERTIFIED FOR SPOTIFY MASTERING | Dynamic Range intact without inter-sample clip", termArea.getX() + 8, termArea.getY() + 52, termArea.getWidth() - 16, 14, juce::Justification::left);
+    g.drawText("[Spotify QA Engine] Status: CERTIFIED FOR SPOTIFY MASTERING | Dynamic Range intact without inter-sample clip", termArea.getX() + 10, termArea.getY() + 60, termArea.getWidth() - 20, 16, juce::Justification::left);
 }
 
 // ------------------------------------------------------------------------------
-// Layout Coordinates for Knobs and Sliders
+// Layout Coordinates for Knobs and Sliders (Window 1296 x 888)
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::resized()
 {
-    // Top Bar controls
-    presetBox.setBounds(getWidth() - 480, 14, 280, 30);
-    autoMasterButton.setBounds(getWidth() - 190, 14, 160, 30);
+    // Top Bar controls (Width: 1296)
+    presetBox.setBounds(getWidth() - 540, 17, 310, 34);
+    autoMasterButton.setBounds(getWidth() - 210, 17, 186, 34);
 
-    // Bypass buttons on module cards
-    bypassLowCut.setBounds(115, 336, 36, 20);
-    bypassEQ.setBounds(480, 336, 36, 20);
-    bypassSat.setBounds(630, 336, 36, 20);
-    bypassMB.setBounds(790, 336, 36, 20);
-    bypassLimiter.setBounds(1020, 336, 36, 20);
+    const int knobW = 68;
+    const int knobH = 82;
+    const int row1Y = 432;
+    const int row2Y = 584;
 
-    const int knobW = 56;
-    const int knobH = 68;
-    const int row1Y = 368;
-    const int row2Y = 496;
+    // Module 1: Input & Sub (Card 1, X: 20 to 180, Width: 160)
+    inGainLabel.setBounds(28, row1Y, knobW, 14);
+    inGainSlider.setBounds(28, row1Y + 14, knobW, knobH);
 
-    // Module 1: Input & Sub (Card 1, X: 20 to 155, Width: 135)
-    inGainLabel.setBounds(26, row1Y, knobW, 14);
-    inGainSlider.setBounds(26, row1Y + 14, knobW, knobH);
+    lowCutLabel.setBounds(104, row1Y, knobW, 14);
+    lowCutSlider.setBounds(104, row1Y + 14, knobW, knobH);
 
-    lowCutLabel.setBounds(92, row1Y, knobW, 14);
-    lowCutSlider.setBounds(92, row1Y + 14, knobW, knobH);
-
-    // Module 2: 5-Band Parametric EQ (Card 2, X: 165 to 520, Width: 355)
-    int eqStartX = 172;
-    int eqSpacing = 68;
+    // Module 2: 5-Band Parametric EQ (Card 2, X: 194 to 614, Width: 420)
+    int eqStartX = 204;
+    int eqSpacing = 80;
 
     eqSubLabel.setBounds(eqStartX, row1Y, knobW, 14);
     eqSubSlider.setBounds(eqStartX, row1Y + 14, knobW, knobH);
@@ -1002,40 +997,40 @@ void AutomasterSupremeAudioProcessorEditor::resized()
     eqAirLabel.setBounds(eqStartX + eqSpacing * 4, row1Y, knobW, 14);
     eqAirSlider.setBounds(eqStartX + eqSpacing * 4, row1Y + 14, knobW, knobH);
 
-    // Module 3: Tape Warmth (Card 3, X: 530 to 670, Width: 140)
-    satModeBox.setBounds(538, row1Y - 2, 124, 24);
+    // Module 3: Tape Warmth (Card 3, X: 628 to 794, Width: 166)
+    satModeBox.setBounds(638, row1Y, 146, 28);
 
-    satDriveLabel.setBounds(538, row2Y, knobW, 14);
-    satDriveSlider.setBounds(538, row2Y + 14, knobW, knobH);
+    satDriveLabel.setBounds(636, row2Y, knobW, 14);
+    satDriveSlider.setBounds(636, row2Y + 14, knobW, knobH);
 
-    satWarmthLabel.setBounds(604, row2Y, knobW, 14);
-    satWarmthSlider.setBounds(604, row2Y + 14, knobW, knobH);
+    satWarmthLabel.setBounds(716, row2Y, knobW, 14);
+    satWarmthSlider.setBounds(716, row2Y + 14, knobW, knobH);
 
-    // Module 4: Multiband (Card 4, X: 680 to 830, Width: 150)
-    mbLowLabel.setBounds(690, row1Y, knobW, 14);
-    mbLowSlider.setBounds(690, row1Y + 14, knobW, knobH);
+    // Module 4: Multiband (Card 4, X: 808 to 984, Width: 176)
+    mbLowLabel.setBounds(818, row1Y, knobW, 14);
+    mbLowSlider.setBounds(818, row1Y + 14, knobW, knobH);
 
-    mbMidLabel.setBounds(764, row1Y, knobW, 14);
-    mbMidSlider.setBounds(764, row1Y + 14, knobW, knobH);
+    mbMidLabel.setBounds(906, row1Y, knobW, 14);
+    mbMidSlider.setBounds(906, row1Y + 14, knobW, knobH);
 
-    mbHighLabel.setBounds(727, row2Y, knobW, 14);
-    mbHighSlider.setBounds(727, row2Y + 14, knobW, knobH);
+    mbHighLabel.setBounds(862, row2Y, knobW, 14);
+    mbHighSlider.setBounds(862, row2Y + 14, knobW, knobH);
 
-    // Module 5: Stereo & Limiter (Spotify) (Card 5, X: 840 to 1060, Width: 220)
+    // Module 5: Stereo & Limiter (Card 5, X: 998 to 1276, Width: 278)
     // Row 1: Width & Mono Sub
-    stereoWidthLabel.setBounds(860, row1Y, knobW, 14);
-    stereoWidthSlider.setBounds(860, row1Y + 14, knobW, knobH);
+    stereoWidthLabel.setBounds(1030, row1Y, knobW, 14);
+    stereoWidthSlider.setBounds(1030, row1Y + 14, knobW, knobH);
 
-    monoMakerLabel.setBounds(960, row1Y, knobW, 14);
-    monoMakerSlider.setBounds(960, row1Y + 14, knobW, knobH);
+    monoMakerLabel.setBounds(1170, row1Y, knobW, 14);
+    monoMakerSlider.setBounds(1170, row1Y + 14, knobW, knobH);
 
     // Row 2: Loudness, Ceiling, Out Gain
-    loudnessLabel.setBounds(848, row2Y, knobW, 14);
-    loudnessSlider.setBounds(848, row2Y + 14, knobW, knobH);
+    loudnessLabel.setBounds(1010, row2Y, knobW, 14);
+    loudnessSlider.setBounds(1010, row2Y + 14, knobW, knobH);
 
-    ceilingLabel.setBounds(922, row2Y, knobW, 14);
-    ceilingSlider.setBounds(922, row2Y + 14, knobW, knobH);
+    ceilingLabel.setBounds(1100, row2Y, knobW, 14);
+    ceilingSlider.setBounds(1100, row2Y + 14, knobW, knobH);
 
-    outGainLabel.setBounds(996, row2Y, knobW, 14);
-    outGainSlider.setBounds(996, row2Y + 14, knobW, knobH);
+    outGainLabel.setBounds(1190, row2Y, knobW, 14);
+    outGainSlider.setBounds(1190, row2Y + 14, knobW, knobH);
 }
