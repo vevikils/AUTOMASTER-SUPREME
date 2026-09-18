@@ -1,22 +1,23 @@
-# 🎛️ AUTOMASTER SUPREME 3.2: AI Mastering Suite by vevi (v3.2)
+# 🎛️ AUTOMASTER SUPREME 3.3: AI Mastering Suite by vevi (v3.3)
 
-[![Release](https://img.shields.io/badge/Release-v3.2.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
+[![Release](https://img.shields.io/badge/Release-v3.3.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
 [![Author](https://img.shields.io/badge/Author-vevi-gold.svg?style=for-the-badge)](https://github.com/vevikils)
 [![Format](https://img.shields.io/badge/Format-VST3%20%7C%20Standalone%20%7C%20WebAudio-orange.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
+[![Meters](https://img.shields.io/badge/Meters-60%20FPS%20True--Peak-red.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![Theme](https://img.shields.io/badge/Theme-Dark%20%26%20Light%20Modes-blue.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![DSP](https://img.shields.io/badge/DSP-JUCE%208%20%7C%20C%2B%2B17%20%7C%20Zero--Alloc%20Caching-purple.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![Target](https://img.shields.io/badge/Spotify-14%20LUFS%20%7C%20--1.0%20dBTP-green.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 
-**AUTOMASTER SUPREME 3.2** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
+**AUTOMASTER SUPREME 3.3** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
 
-### 🚀 Novedades de la Versión 3.2 (Dual Theme & DSP Engine Optimization):
-- **Modo Oscuro y Claro (Dark & Light Mode)**: Botón conmutador instantáneo en la barra superior (`THEME: DARK` / `THEME: LIGHT`). Permite alternar entre el chasis de estudio en grafito oscuro con cristal esmerilado y un elegante chasis diurno en platino satinado, manteniendo pantallas OLED de alto contraste para una lectura nítida de los analizadores de espectro, goniometro y vúmetros.
-- **Optimización Integral de Audio DSP (Audio-Thread Cache)**: Implementación de sistema de caché de coeficientes de filtros IIR paramétricos en `MasteringDSP.h`. Elimina por completo las asignaciones dinámicas en memoria durante el procesamiento de audio en tiempo real (~600 allocs/seg liberadas), maximizando la estabilidad y reduciendo drásticamente la carga de CPU en FL Studio.
-- **Optimización del Hilo de Renderizado GUI**: Optimización en el cálculo continuo de la curva de ecualización analítica en el analizador de espectro, reduciendo las llamadas a funciones matemáticas trascendentales sin pérdida de resolución visual.
-- **Distribución de Barra Superior Anti-Colisiones**: Reorganización milimétrica de botones y selectores en la cabecera (`PRESET`, `THEME`, `CONTROL GUIDE`, `AI AUTO-MASTER`), garantizando cero superposición en cualquier resolución.
-- **Regla de Versionado Progresivo**: Adopción de política estricta de incremento de versión (v3.2, v3.3...) con cada actualización de código.
-- **Compatibilidad 100% Caracteres ASCII**: Textos en inglés puro y caracteres estándar para evitar cualquier problema de glifos en DAWs Windows.
+### 🚀 Novedades de la Versión 3.3 (60 FPS Peak Meters & FFT Spectrogram Fix):
+- **Barras de True Peak a 60 FPS**: Los vúmetros verticales estéreo de True-Peak (L / R) ahora se actualizan de forma continua a **60 FPS** con ataque instantáneo y balística de caída suave de grado estudio profesional.
+- **Lecturas Digitales Estables (0.5s)**: Las métricas numéricas (Momentary LUFS, Short-Term LUFS, Crest Factor y estado Spotify) se actualizan de forma estable cada 0.5 segundos para una lectura descansada y sin saltos rápidos.
+- **Corrección Total del Analizador de Espectro FFT (Spectrogram)**: Corregido el mapeo de magnitudes decibélicas del FFT, haciendo que la curva de frecuencias cyan reactiva cobre vida en tiempo real bajo la curva de ecualización analítica (estilo FabFilter Pro-Q).
+- **Decaimiento Suave de Espectro**: Añadido algoritmo de release progresivo hacia el suelo de ruido cuando se pausa o detiene la música en el DAW.
+- **Cabecera Optimizada sin Puntos Suspensivos**: Bounding box ampliado a 285 px para `AUTOMASTER SUPREME 3.3`, evitando truncamiento tipográfico en FL Studio.
+- **Modo Oscuro y Claro (Dark & Light Mode)**: Conmutador instantáneo en cabecera con chasis adaptativo.
 
 ---
 
@@ -25,11 +26,11 @@
 ¿Quieres usarlo de inmediato en tu DAW o en tu escritorio?
 Descarga el paquete oficial listo para usar en un clic:
 
-👉 **[Descargar AUTOMASTER_SUPREME_v3.2.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
+👉 **[Descargar AUTOMASTER_SUPREME_v3.3.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
 
 El paquete incluye:
-- `AUTOMASTER SUPREME 3.2.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
-- `AUTOMASTER SUPREME 3.2.exe` (Ejecutable de escritorio Standalone).
+- `AUTOMASTER SUPREME 3.3.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
+- `AUTOMASTER SUPREME 3.3.exe` (Ejecutable de escritorio Standalone).
 - Guías paso a paso de instalación y configuración.
 
 ---

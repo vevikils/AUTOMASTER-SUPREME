@@ -75,7 +75,7 @@ public:
           window(AudioConstants::FFT_SIZE, juce::dsp::WindowingFunction<float>::hann)
     {
         fftFifo.fill(0.0f);
-        fftScopeData.fill(0.0f);
+        fftScopeData.fill(-100.0f);
         scopeBufferL.fill(0.0f);
         scopeBufferR.fill(0.0f);
     }
@@ -99,6 +99,7 @@ public:
         *sideHighPass.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, 110.0f, 0.707f);
 
         resetFilterCaches();
+        fftScopeData.fill(-100.0f);
 
         peakL.store(-100.0f);
         peakR.store(-100.0f);
@@ -336,6 +337,13 @@ public:
                     fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.88f + db * 0.12f; // Smooth decay
             }
             nextFFTBlockReady.store(false);
+        }
+        else
+        {
+            for (int i = 0; i < AudioConstants::FFT_SIZE / 2; ++i)
+            {
+                fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.94f + (-100.0f) * 0.06f;
+            }
         }
 
         const int maxBins = std::min(numBins, AudioConstants::FFT_SIZE / 2);

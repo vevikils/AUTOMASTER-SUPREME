@@ -323,7 +323,7 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     limiterBypassAttach = std::make_unique<ButtonAttachment>(audioProcessor.apvts, "limiterBypass", bypassLimiter);
 
     setTheme(true);
-    startTimerHz(30);
+    startTimerHz(60);
 }
 
 AutomasterSupremeAudioProcessorEditor::~AutomasterSupremeAudioProcessorEditor()
@@ -525,9 +525,29 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
     audioProcessor.dsp.getFFTMagnitudes(fftDisplayData.data(), int(fftDisplayData.size()));
     audioProcessor.dsp.getScopeSamples(scopeL.data(), scopeR.data(), int(scopeL.size()));
 
-    // Accumulate peaks & LUFS over the 0.5s window
-    accumPeakL = std::max(accumPeakL, livePeakL);
-    accumPeakR = std::max(accumPeakR, livePeakR);
+    // 1. Live True-Peak Vertical Meters update at full 60 FPS (Fast attack, smooth studio ballistics release)
+    if (livePeakL > dispPeakL)
+        dispPeakL = livePeakL;
+    else
+        dispPeakL = dispPeakL * 0.90f + livePeakL * 0.10f; // Fast, responsive decay
+
+    if (livePeakR > dispPeakR)
+        dispPeakR = livePeakR;
+    else
+        dispPeakR = dispPeakR * 0.90f + livePeakR * 0.10f;
+
+    // 60 FPS Peak Hold Indicators
+    if (dispPeakL > dispPeakHoldL)
+        dispPeakHoldL = dispPeakL;
+    else
+        dispPeakHoldL = std::max(-36.0f, dispPeakHoldL - 0.15f);
+
+    if (dispPeakR > dispPeakHoldR)
+        dispPeakHoldR = dispPeakR;
+    else
+        dispPeakHoldR = std::max(-36.0f, dispPeakHoldR - 0.15f);
+
+    // 2. Numerical Readouts (LUFS, Crest Factor, Spotify Status) update every 0.5s (30 ticks at 60Hz)
     if (liveLufs > -90.0f)
     {
         accumMomentaryLufs += liveLufs;
@@ -536,15 +556,9 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
     }
 
     meterTimerTickCount++;
-    // Running at 30 Hz -> 15 ticks = exactly 0.5 seconds (500 ms)
-    if (meterTimerTickCount >= 15)
+    if (meterTimerTickCount >= 30) // 30 ticks at 60 Hz = exactly 0.5 seconds
     {
         meterTimerTickCount = 0;
-
-        dispPeakL = accumPeakL;
-        dispPeakR = accumPeakR;
-        dispPeakHoldL = std::max(dispPeakHoldL - 0.5f, dispPeakL);
-        dispPeakHoldR = std::max(dispPeakHoldR - 0.5f, dispPeakR);
 
         if (accumSampleCount > 0)
         {
@@ -576,8 +590,6 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
         }
 
         // Reset accumulator for next 0.5s cycle
-        accumPeakL = -100.0f;
-        accumPeakR = -100.0f;
         accumMomentaryLufs = 0.0f;
         accumCrest = 0.0f;
         accumSampleCount = 0;
@@ -614,19 +626,19 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     // Title
     g.setColour(isDarkMode ? juce::Colours::white : juce::Colour(0xff0f172a));
     g.setFont(juce::Font(21.0f, juce::Font::bold));
-    g.drawText("AUTOMASTER SUPREME 3.2", 72, 12, 262, 24, juce::Justification::centredLeft);
+    g.drawText("AUTOMASTER SUPREME 3.3", 72, 12, 285, 24, juce::Justification::centredLeft);
 
-    // Version 3.2 Pill Badge
-    auto verBadge = juce::Rectangle<float>(338, 14, 44, 20);
+    // Version 3.3 Pill Badge
+    auto verBadge = juce::Rectangle<float>(362, 14, 44, 20);
     g.setColour(isDarkMode ? juce::Colour(0x3000f0ff) : juce::Colour(0x200284c7));
     g.fillRoundedRectangle(verBadge, 4.0f);
     g.setColour(isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
     g.drawRoundedRectangle(verBadge, 4.0f, 1.0f);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("v3.2", verBadge, juce::Justification::centred);
+    g.drawText("v3.3", verBadge, juce::Justification::centred);
 
     // Author Badge "BY VEVI"
-    auto authorBadge = juce::Rectangle<float>(388, 14, 72, 20);
+    auto authorBadge = juce::Rectangle<float>(412, 14, 72, 20);
     g.setColour(isDarkMode ? juce::Colour(0x25ffb92d) : juce::Colour(0x20b45309));
     g.fillRoundedRectangle(authorBadge, 4.0f);
     g.setColour(isDarkMode ? juce::Colour(0xffffb92d) : juce::Colour(0xffb45309));
@@ -637,10 +649,10 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     // Subtitle (English, no special chars)
     g.setColour(isDarkMode ? juce::Colour(0xff7e91ad) : juce::Colour(0xff64748b));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI MASTERING SUITE | BY VEVI", 72, 38, 180, 16, juce::Justification::centredLeft);
+    g.drawText("AI MASTERING SUITE | BY VEVI", 72, 38, 175, 16, juce::Justification::centredLeft);
 
-    // Spotify Reference Tag Pill (Starts at 256, ends at 476 -> 28px clean gap before presetBox at 504)
-    auto spotifyTag = juce::Rectangle<float>(256, 38, 220, 18);
+    // Spotify Reference Tag Pill (Starts at 252, width 215, ends at 467 -> 37px clean gap before presetBox at 504)
+    auto spotifyTag = juce::Rectangle<float>(252, 38, 215, 18);
     g.setColour(isDarkMode ? juce::Colour(0x2000ffaa) : juce::Colour(0x20059669));
     g.fillRoundedRectangle(spotifyTag, 4.0f);
     g.setColour(isDarkMode ? juce::Colour(0xff00ffaa) : juce::Colour(0xff059669));
@@ -709,7 +721,7 @@ void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphi
     auto header = modal.removeFromTop(56).reduced(16, 8);
     g.setColour(juce::Colours::white);
     g.setFont(juce::Font(18.0f, juce::Font::bold));
-    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.2", header.getX(), header.getY(), 750, 24, juce::Justification::left);
+    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.3", header.getX(), header.getY(), 750, 24, juce::Justification::left);
 
     g.setColour(juce::Colour(0xff00ffaa));
     g.setFont(juce::Font(11.0f, juce::Font::bold));
@@ -849,16 +861,17 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     juce::Path spectrumPath;
     spectrumPath.startNewSubPath(float(graphArea.getX()), float(graphArea.getBottom()));
 
+    const float sRate = audioProcessor.getSampleRate() > 0 ? float(audioProcessor.getSampleRate()) : 44100.0f;
     const int numBins = int(fftDisplayData.size());
     for (int i = 1; i < numBins; ++i)
     {
-        float binFreq = (float(i) * 44100.0f) / float(AudioConstants::FFT_SIZE);
+        float binFreq = (float(i) * sRate) / float(AudioConstants::FFT_SIZE);
         if (binFreq < 20.0f || binFreq > 20000.0f) continue;
 
         float normX = std::log10(binFreq / 20.0f) / std::log10(20000.0f / 20.0f);
         float px = float(graphArea.getX()) + normX * float(graphArea.getWidth());
 
-        float magDb = juce::Decibels::gainToDecibels(fftDisplayData[size_t(i)] * 2.0f, -100.0f);
+        float magDb = fftDisplayData[size_t(i)];
         float py = juce::jmap(juce::jlimit(-70.0f, 12.0f, magDb), -70.0f, 12.0f, float(graphArea.getBottom()), float(graphArea.getY()));
 
         spectrumPath.lineTo(px, py);
@@ -866,13 +879,15 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     spectrumPath.lineTo(float(graphArea.getRight()), float(graphArea.getBottom()));
     spectrumPath.closeSubPath();
 
-    // Spectrum Gradient Fill
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0x3500f0ff), float(graphArea.getX()), float(graphArea.getY()),
-                                           juce::Colour(0x02002535), float(graphArea.getX()), float(graphArea.getBottom()), false));
+    // Spectrum Gradient Fill (FabFilter Radiant Cyan Glow)
+    g.setGradientFill(juce::ColourGradient(juce::Colour(0x3800f0ff), float(graphArea.getX()), float(graphArea.getY()),
+                                           juce::Colour(0x02001525), float(graphArea.getX()), float(graphArea.getBottom()), false));
     g.fillPath(spectrumPath);
 
-    // Spectrum Outline (Sharp Cyan)
-    g.setColour(juce::Colour(0xcc00f0ff));
+    // Spectrum Outline (Glowing Radiant Cyan)
+    g.setColour(juce::Colour(0x6000f0ff));
+    g.strokePath(spectrumPath, juce::PathStrokeType(2.5f));
+    g.setColour(juce::Colour(0xee00f0ff));
     g.strokePath(spectrumPath, juce::PathStrokeType(1.2f));
 
     // EQ Filter Curve Overlay (FabFilter Style Dynamic Composite Curve)
@@ -1234,7 +1249,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
     // Header with Agent Chips
     auto chipArea = bounds.removeFromTop(32).reduced(10, 4);
 
-    const char* agentNames[] = { "Orchestrator v3.2", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
+    const char* agentNames[] = { "Orchestrator v3.3", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
     const juce::Colour agentColors[] = { juce::Colour(0xff00f0ff), juce::Colour(0xff5bc0de), juce::Colour(0xffffb92d), juce::Colour(0xff00ffaa) };
 
     int chipX = chipArea.getX();
@@ -1259,7 +1274,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
 
     g.setColour(isDarkMode ? juce::Colour(0xff00ffaa) : juce::Colour(0xff059669));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI COOPERATIVE CORE v3.2 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
+    g.drawText("AI COOPERATIVE CORE v3.3 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
 
     // Terminal Window / Interactive Legend HUD
     auto termArea = bounds.reduced(10, 8);
@@ -1307,7 +1322,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
         // Idle Mode: Legend Prompt + AI Telemetry
         g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
         g.setColour(juce::Colour(0xff00f0ff));
-        g.drawText("[INTERACTIVE LEGEND v3.2] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[INTERACTIVE LEGEND v3.3] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff5bc0de));
         g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify (-14.0 LUFS Integrated / -1.0 dBTP Ceiling)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
