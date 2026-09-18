@@ -75,7 +75,8 @@ public:
           window(AudioConstants::FFT_SIZE, juce::dsp::WindowingFunction<float>::hann)
     {
         fftFifo.fill(0.0f);
-        fftScopeData.fill(-100.0f);
+        fftScopeAvg.fill(-100.0f);
+        fftScopeMax.fill(-100.0f);
         scopeBufferL.fill(0.0f);
         scopeBufferR.fill(0.0f);
     }
@@ -99,7 +100,8 @@ public:
         *sideHighPass.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, 110.0f, 0.707f);
 
         resetFilterCaches();
-        fftScopeData.fill(-100.0f);
+        fftScopeAvg.fill(-100.0f);
+        fftScopeMax.fill(-100.0f);
 
         peakL.store(-100.0f);
         peakR.store(-100.0f);
@@ -304,7 +306,7 @@ public:
     float getCrestFactor() const { return crestFactor.load(); }
     float getPhaseCorrelation() const { return phaseCorrelation.load(); }
 
-    void getFFTMagnitudes(float* dest, int numBins)
+    void getFFTMagnitudes(float* destAvg, float* destMax, int numBins)
     {
         if (nextFFTBlockReady.load())
         {
@@ -328,13 +330,19 @@ public:
                 }
 
                 float db = mag > 1e-6f ? (juce::Decibels::gainToDecibels(mag) + tiltDb) : -100.0f;
-                db = std::clamp(db, -100.0f, 6.0f);
+                db = std::clamp(db, -100.0f, 12.0f);
 
-                // Smooth attack and release ballistics
-                if (db > fftScopeData[size_t(i)])
-                    fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.35f + db * 0.65f; // Fast attack
+                // AVG curve: Smooth attack and release ballistics (SPAN Real-time RMS)
+                if (db > fftScopeAvg[size_t(i)])
+                    fftScopeAvg[size_t(i)] = fftScopeAvg[size_t(i)] * 0.35f + db * 0.65f; // Fast attack
                 else
-                    fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.88f + db * 0.12f; // Smooth decay
+                    fftScopeAvg[size_t(i)] = fftScopeAvg[size_t(i)] * 0.88f + db * 0.12f; // Smooth decay
+
+                // MAX curve: Instant peak capture, slow envelope decay (SPAN Peak Hold)
+                if (db > fftScopeMax[size_t(i)])
+                    fftScopeMax[size_t(i)] = db;
+                else
+                    fftScopeMax[size_t(i)] = std::max(-100.0f, fftScopeMax[size_t(i)] - 0.035f);
             }
             nextFFTBlockReady.store(false);
         }
@@ -342,15 +350,27 @@ public:
         {
             for (int i = 0; i < AudioConstants::FFT_SIZE / 2; ++i)
             {
-                fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.94f + (-100.0f) * 0.06f;
+                fftScopeAvg[size_t(i)] = fftScopeAvg[size_t(i)] * 0.94f + (-100.0f) * 0.06f;
+                fftScopeMax[size_t(i)] = std::max(-100.0f, fftScopeMax[size_t(i)] - 0.08f);
             }
         }
 
         const int maxBins = std::min(numBins, AudioConstants::FFT_SIZE / 2);
-        for (int i = 0; i < maxBins; ++i)
+        if (destAvg != nullptr)
         {
-            dest[i] = fftScopeData[size_t(i)];
+            for (int i = 0; i < maxBins; ++i)
+                destAvg[i] = fftScopeAvg[size_t(i)];
         }
+        if (destMax != nullptr)
+        {
+            for (int i = 0; i < maxBins; ++i)
+                destMax[i] = fftScopeMax[size_t(i)];
+        }
+    }
+
+    void resetFFTMax()
+    {
+        fftScopeMax.fill(-100.0f);
     }
 
     void getScopeSamples(float* destL, float* destR, int count)
@@ -406,7 +426,8 @@ private:
     juce::dsp::WindowingFunction<float> window;
     std::array<float, AudioConstants::FFT_SIZE * 2> fftData {};
     std::array<float, AudioConstants::FFT_SIZE> fftFifo {};
-    std::array<float, AudioConstants::FFT_SIZE / 2> fftScopeData {};
+    std::array<float, AudioConstants::FFT_SIZE / 2> fftScopeAvg {};
+    std::array<float, AudioConstants::FFT_SIZE / 2> fftScopeMax {};
     int fifoIndex = 0;
     std::atomic<bool> nextFFTBlockReady { false };
 

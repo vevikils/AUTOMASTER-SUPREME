@@ -163,6 +163,18 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     };
     addAndMakeVisible(autoMasterButton);
 
+    // Reset Peaks Button (SPAN Dual Spectrum Header)
+    resetPeaksButton.setButtonText("RESET PEAKS");
+    resetPeaksButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0x35141e2d));
+    resetPeaksButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
+    resetPeaksButton.onClick = [this]()
+    {
+        audioProcessor.dsp.resetFFTMax();
+        fftDisplayDataMax.fill(-100.0f);
+        repaint(juce::Rectangle<int>(20, 82, 640, 300));
+    };
+    addAndMakeVisible(resetPeaksButton);
+
     // Saturation Mode Selector
     satModeBox.addItem("ANALOG TAPE", 1);
     satModeBox.addItem("TUBE TRIODE", 2);
@@ -344,6 +356,9 @@ void AutomasterSupremeAudioProcessorEditor::setTheme(bool dark)
     legendButton.setColour(juce::TextButton::buttonColourId, dark ? juce::Colour(0xff151f2d) : juce::Colour(0xffffffff));
     legendButton.setColour(juce::TextButton::textColourOffId, dark ? juce::Colour(0xffffb92d) : juce::Colour(0xffb45309));
 
+    resetPeaksButton.setColour(juce::TextButton::buttonColourId, dark ? juce::Colour(0x35141e2d) : juce::Colour(0xfff1f5f9));
+    resetPeaksButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
+
     presetBox.setColour(juce::ComboBox::backgroundColourId, dark ? juce::Colour(0xff0d131b) : juce::Colour(0xffffffff));
     presetBox.setColour(juce::ComboBox::outlineColourId, dark ? juce::Colour(0xff233144) : juce::Colour(0xff94a3b8));
     presetBox.setColour(juce::ComboBox::textColourId, dark ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
@@ -434,6 +449,25 @@ void AutomasterSupremeAudioProcessorEditor::mouseEnter(const juce::MouseEvent& e
 void AutomasterSupremeAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
 {
     updateHoverFromComponent(event.eventComponent);
+
+    auto mousePos = getMouseXYRelative().toFloat();
+    auto spectrumArea = juce::Rectangle<float>(20, 82, 640, 300);
+    auto graphArea = spectrumArea.reduced(12, 10);
+    graphArea.removeFromTop(20);
+    graphArea.removeFromBottom(6);
+
+    if (graphArea.contains(mousePos))
+    {
+        spectrumHoverPos = mousePos;
+        if (!isHoveringSpectrum)
+            isHoveringSpectrum = true;
+        repaint(spectrumArea.toNearestInt());
+    }
+    else if (isHoveringSpectrum)
+    {
+        isHoveringSpectrum = false;
+        repaint(spectrumArea.toNearestInt());
+    }
 }
 
 void AutomasterSupremeAudioProcessorEditor::mouseDrag(const juce::MouseEvent& event)
@@ -443,6 +477,12 @@ void AutomasterSupremeAudioProcessorEditor::mouseDrag(const juce::MouseEvent& ev
 
 void AutomasterSupremeAudioProcessorEditor::mouseExit(const juce::MouseEvent& event)
 {
+    if (isHoveringSpectrum)
+    {
+        isHoveringSpectrum = false;
+        repaint(juce::Rectangle<int>(20, 82, 640, 300));
+    }
+
     if (!event.mods.isAnyMouseButtonDown())
     {
         auto pos = getMouseXYRelative();
@@ -476,6 +516,16 @@ void AutomasterSupremeAudioProcessorEditor::mouseDown(const juce::MouseEvent& ev
             closeLegendButton.setVisible(false);
             repaint();
         }
+    }
+
+    // Reset Peak Hold when clicking inside the SPAN spectrum
+    auto pos = getMouseXYRelative();
+    auto spectrumArea = juce::Rectangle<int>(20, 82, 640, 300);
+    if (spectrumArea.contains(pos) && !resetPeaksButton.getBounds().contains(pos))
+    {
+        audioProcessor.dsp.resetFFTMax();
+        fftDisplayDataMax.fill(-100.0f);
+        repaint(spectrumArea);
     }
 }
 
@@ -522,7 +572,7 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
     const float liveCrest = audioProcessor.dsp.getCrestFactor();
     curPhase = audioProcessor.dsp.getPhaseCorrelation();
 
-    audioProcessor.dsp.getFFTMagnitudes(fftDisplayData.data(), int(fftDisplayData.size()));
+    audioProcessor.dsp.getFFTMagnitudes(fftDisplayDataAvg.data(), fftDisplayDataMax.data(), int(fftDisplayDataAvg.size()));
     audioProcessor.dsp.getScopeSamples(scopeL.data(), scopeR.data(), int(scopeL.size()));
 
     // 1. Live True-Peak Vertical Meters update at full 60 FPS (Fast attack, smooth studio ballistics release)
@@ -626,16 +676,16 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     // Title
     g.setColour(isDarkMode ? juce::Colours::white : juce::Colour(0xff0f172a));
     g.setFont(juce::Font(21.0f, juce::Font::bold));
-    g.drawText("AUTOMASTER SUPREME 3.3", 72, 12, 285, 24, juce::Justification::centredLeft);
+    g.drawText("AUTOMASTER SUPREME 3.4", 72, 12, 285, 24, juce::Justification::centredLeft);
 
-    // Version 3.3 Pill Badge
+    // Version 3.4 Pill Badge
     auto verBadge = juce::Rectangle<float>(362, 14, 44, 20);
     g.setColour(isDarkMode ? juce::Colour(0x3000f0ff) : juce::Colour(0x200284c7));
     g.fillRoundedRectangle(verBadge, 4.0f);
     g.setColour(isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
     g.drawRoundedRectangle(verBadge, 4.0f, 1.0f);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("v3.3", verBadge, juce::Justification::centred);
+    g.drawText("v3.4", verBadge, juce::Justification::centred);
 
     // Author Badge "BY VEVI"
     auto authorBadge = juce::Rectangle<float>(412, 14, 72, 20);
@@ -720,8 +770,8 @@ void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphi
     // Header strip
     auto header = modal.removeFromTop(56).reduced(16, 8);
     g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(18.0f, juce::Font::bold));
-    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.3", header.getX(), header.getY(), 750, 24, juce::Justification::left);
+    g.setFont(juce::Font(14.0f, juce::Font::bold));
+    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.4", header.getX(), header.getY(), 750, 24, juce::Justification::left);
 
     g.setColour(juce::Colour(0xff00ffaa));
     g.setFont(juce::Font(11.0f, juce::Font::bold));
@@ -824,21 +874,22 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     g.setColour(juce::Colour(0xff1c2738));
     g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
-    // Grid & Coordinates
-    auto graphArea = bounds.reduced(12, 14);
-    g.setColour(juce::Colour(0xff101824));
+    // Graph Area (Leave top 22px for SPAN header and bottom 12px for frequencies)
+    auto graphArea = bounds.reduced(12, 10);
+    graphArea.removeFromTop(20);
+    graphArea.removeFromBottom(6);
 
     // Horizontal dB grid lines
     const float dbMarks[] = { 12.0f, 6.0f, 0.0f, -6.0f, -12.0f, -18.0f, -24.0f };
     for (float db : dbMarks)
     {
         float y = juce::jmap(db, -28.0f, 18.0f, float(graphArea.getBottom()), float(graphArea.getY()));
+        g.setColour(juce::Colour(0xff101824));
         g.drawLine(float(graphArea.getX()), y, float(graphArea.getRight()), y, 0.7f);
 
         g.setColour(juce::Colour(0xff33445b));
         g.setFont(juce::Font("monospace", 8.5f, juce::Font::plain));
         g.drawText(juce::String(int(db)) + "dB", graphArea.getX() + 2, int(y) - 10, 32, 10, juce::Justification::left);
-        g.setColour(juce::Colour(0xff101824));
     }
 
     // Vertical Frequency grid lines (Logarithmic)
@@ -849,20 +900,20 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     {
         float normX = std::log10(freqs[i] / 20.0f) / std::log10(20000.0f / 20.0f);
         float x = float(graphArea.getX()) + normX * float(graphArea.getWidth());
+        g.setColour(juce::Colour(0xff101824));
         g.drawLine(x, float(graphArea.getY()), x, float(graphArea.getBottom()), 0.7f);
 
         g.setColour(juce::Colour(0xff33445b));
         g.setFont(juce::Font("monospace", 8.5f, juce::Font::plain));
         g.drawText(freqLabels[i], int(x) - 14, graphArea.getBottom() - 11, 28, 10, juce::Justification::centred);
-        g.setColour(juce::Colour(0xff101824));
     }
 
-    // Neon Spectrum Fill & Stroke (Reactive FFT)
-    juce::Path spectrumPath;
-    spectrumPath.startNewSubPath(float(graphArea.getX()), float(graphArea.getBottom()));
-
     const float sRate = audioProcessor.getSampleRate() > 0 ? float(audioProcessor.getSampleRate()) : 44100.0f;
-    const int numBins = int(fftDisplayData.size());
+    const int numBins = int(fftDisplayDataAvg.size());
+
+    // 1. AVERAGE (AVG) SPECTRUM CURVE (Electric Cyan Fill & Stroke)
+    juce::Path avgPath;
+    avgPath.startNewSubPath(float(graphArea.getX()), float(graphArea.getBottom()));
     for (int i = 1; i < numBins; ++i)
     {
         float binFreq = (float(i) * sRate) / float(AudioConstants::FFT_SIZE);
@@ -871,26 +922,60 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
         float normX = std::log10(binFreq / 20.0f) / std::log10(20000.0f / 20.0f);
         float px = float(graphArea.getX()) + normX * float(graphArea.getWidth());
 
-        float magDb = fftDisplayData[size_t(i)];
+        float magDb = fftDisplayDataAvg[size_t(i)];
         float py = juce::jmap(juce::jlimit(-70.0f, 12.0f, magDb), -70.0f, 12.0f, float(graphArea.getBottom()), float(graphArea.getY()));
 
-        spectrumPath.lineTo(px, py);
+        avgPath.lineTo(px, py);
     }
-    spectrumPath.lineTo(float(graphArea.getRight()), float(graphArea.getBottom()));
-    spectrumPath.closeSubPath();
+    avgPath.lineTo(float(graphArea.getRight()), float(graphArea.getBottom()));
+    avgPath.closeSubPath();
 
-    // Spectrum Gradient Fill (FabFilter Radiant Cyan Glow)
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0x3800f0ff), float(graphArea.getX()), float(graphArea.getY()),
+    // AVG Translucent Gradient Fill
+    g.setGradientFill(juce::ColourGradient(juce::Colour(0x3500d4ff), float(graphArea.getX()), float(graphArea.getY()),
                                            juce::Colour(0x02001525), float(graphArea.getX()), float(graphArea.getBottom()), false));
-    g.fillPath(spectrumPath);
+    g.fillPath(avgPath);
 
-    // Spectrum Outline (Glowing Radiant Cyan)
-    g.setColour(juce::Colour(0x6000f0ff));
-    g.strokePath(spectrumPath, juce::PathStrokeType(2.5f));
+    // AVG Glowing Outline
+    g.setColour(juce::Colour(0x5000f0ff));
+    g.strokePath(avgPath, juce::PathStrokeType(2.4f));
     g.setColour(juce::Colour(0xee00f0ff));
-    g.strokePath(spectrumPath, juce::PathStrokeType(1.2f));
+    g.strokePath(avgPath, juce::PathStrokeType(1.2f));
 
-    // EQ Filter Curve Overlay (FabFilter Style Dynamic Composite Curve)
+    // 2. MAX PEAK (MAX) SPECTRUM CURVE (High-Contrast SPAN Warm Amber / Gold)
+    juce::Path maxPath;
+    bool maxStarted = false;
+    for (int i = 1; i < numBins; ++i)
+    {
+        float binFreq = (float(i) * sRate) / float(AudioConstants::FFT_SIZE);
+        if (binFreq < 20.0f || binFreq > 20000.0f) continue;
+
+        float normX = std::log10(binFreq / 20.0f) / std::log10(20000.0f / 20.0f);
+        float px = float(graphArea.getX()) + normX * float(graphArea.getWidth());
+
+        float magDb = fftDisplayDataMax[size_t(i)];
+        float py = juce::jmap(juce::jlimit(-70.0f, 12.0f, magDb), -70.0f, 12.0f, float(graphArea.getBottom()), float(graphArea.getY()));
+
+        if (!maxStarted)
+        {
+            maxPath.startNewSubPath(px, py);
+            maxStarted = true;
+        }
+        else
+        {
+            maxPath.lineTo(px, py);
+        }
+    }
+
+    if (maxStarted)
+    {
+        // MAX Peak Stroke (Amber Glow Bloom + Crisp Line)
+        g.setColour(juce::Colour(0x40ff9900));
+        g.strokePath(maxPath, juce::PathStrokeType(2.8f));
+        g.setColour(juce::Colour(0xffffaa00));
+        g.strokePath(maxPath, juce::PathStrokeType(1.4f));
+    }
+
+    // 3. EQ Filter Curve Overlay (FabFilter Style Composite Curve)
     const float gains[] = {
         float(eqSubSlider.getValue()),
         float(eqLowMidSlider.getValue()),
@@ -918,18 +1003,13 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
         }
 
         // Add 5-band bells & shelves
-        // Band 1: Low Shelf (80Hz)
         eqTotalDb += gains[0] / (1.0f + std::pow(f / nodeFreqs[0], 2.0f));
-        // Band 2: Bell (250Hz, Q=1.0)
         float d2 = std::log2(f / nodeFreqs[1]);
         eqTotalDb += gains[1] * std::exp(-d2 * d2 * 1.8f);
-        // Band 3: Bell (1200Hz, Q=1.0)
         float d3 = std::log2(f / nodeFreqs[2]);
         eqTotalDb += gains[2] * std::exp(-d3 * d3 * 1.8f);
-        // Band 4: Bell (4500Hz, Q=1.2)
         float d4 = std::log2(f / nodeFreqs[3]);
         eqTotalDb += gains[3] * std::exp(-d4 * d4 * 2.2f);
-        // Band 5: High Shelf (12000Hz)
         eqTotalDb += gains[4] / (1.0f + std::pow(nodeFreqs[4] / f, 2.0f));
 
         float py = juce::jmap(juce::jlimit(-24.0f, 18.0f, eqTotalDb), -28.0f, 18.0f, float(graphArea.getBottom()), float(graphArea.getY()));
@@ -946,10 +1026,10 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     }
 
     // Glow bloom for FabFilter Curve
-    g.setColour(juce::Colour(0x40ffff20));
-    g.strokePath(eqCurvePath, juce::PathStrokeType(4.0f));
-    g.setColour(juce::Colour(0xffffe633));
-    g.strokePath(eqCurvePath, juce::PathStrokeType(2.0f));
+    g.setColour(juce::Colour(0x40ffff55));
+    g.strokePath(eqCurvePath, juce::PathStrokeType(3.5f));
+    g.setColour(juce::Colour(0xfffff066));
+    g.strokePath(eqCurvePath, juce::PathStrokeType(1.8f));
 
     // Draw FabFilter Interactive Visual Nodes (1 to 5)
     juce::Colour nodeColors[] = {
@@ -965,13 +1045,97 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
         drawEQNode(g, nx, ny, i + 1, gains[i], nodeColors[i]);
     }
 
-    // Screen Header Tag
+    // 4. SPAN-Style Header Bar
+    int hdrY = bounds.getY() + 6;
     g.setColour(juce::Colour(0xff00f0ff));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("FABFILTER PRO-Q STYLE SPECTRUM & ACOUSTIC CURVE", bounds.getX() + 12, bounds.getY() + 6, 360, 14, juce::Justification::left);
+    g.drawText("SPAN DUAL SPECTRUM ANALYZER", bounds.getX() + 12, hdrY, 190, 16, juce::Justification::centredLeft);
 
-    g.setColour(juce::Colour(0xffffe633));
-    g.drawText("LIVE EQ CORRECTION", bounds.getRight() - 150, bounds.getY() + 6, 138, 14, juce::Justification::right);
+    // Legend Pill 1: AVG (Cyan)
+    auto avgPill = juce::Rectangle<float>(float(bounds.getX() + 208), float(hdrY), 78.0f, 17.0f);
+    g.setColour(juce::Colour(0x2500f0ff));
+    g.fillRoundedRectangle(avgPill, 3.0f);
+    g.setColour(juce::Colour(0xff00f0ff));
+    g.drawRoundedRectangle(avgPill, 3.0f, 0.8f);
+    g.fillRect(avgPill.getX() + 6.0f, avgPill.getY() + 5.0f, 7.0f, 7.0f);
+    g.setFont(juce::Font(8.5f, juce::Font::bold));
+    g.drawText("AVG (RMS)", avgPill.withTrimmedLeft(16), juce::Justification::centredLeft);
+
+    // Legend Pill 2: MAX (Amber)
+    auto maxPill = juce::Rectangle<float>(float(bounds.getX() + 292), float(hdrY), 78.0f, 17.0f);
+    g.setColour(juce::Colour(0x25ffaa00));
+    g.fillRoundedRectangle(maxPill, 3.0f);
+    g.setColour(juce::Colour(0xffffaa00));
+    g.drawRoundedRectangle(maxPill, 3.0f, 0.8f);
+    g.fillRect(maxPill.getX() + 6.0f, maxPill.getY() + 5.0f, 7.0f, 7.0f);
+    g.setFont(juce::Font(8.5f, juce::Font::bold));
+    g.drawText("MAX PEAK", maxPill.withTrimmedLeft(16), juce::Justification::centredLeft);
+
+    // Slope Badge
+    auto slopeRect = juce::Rectangle<float>(float(bounds.getX() + 376), float(hdrY), 94.0f, 17.0f);
+    g.setColour(juce::Colour(0x1833445b));
+    g.fillRoundedRectangle(slopeRect, 3.0f);
+    g.setColour(juce::Colour(0xff475569));
+    g.drawRoundedRectangle(slopeRect, 3.0f, 0.7f);
+    g.setColour(juce::Colour(0xff94a3b8));
+    g.setFont(juce::Font(8.0f, juce::Font::plain));
+    g.drawText("+3.5 dB SLOPE", slopeRect, juce::Justification::centred);
+
+    // Live EQ Notice
+    g.setColour(juce::Colour(0xfffff066));
+    g.setFont(juce::Font(8.5f, juce::Font::bold));
+    g.drawText("LIVE EQ", bounds.getX() + 478, hdrY, 52, 17, juce::Justification::centredLeft);
+
+    // 5. SPAN Cursor Crosshair & Floating Note Inspector
+    if (isHoveringSpectrum && graphArea.toFloat().contains(spectrumHoverPos))
+    {
+        float normX = (spectrumHoverPos.x - float(graphArea.getX())) / float(graphArea.getWidth());
+        float hoverFreq = 20.0f * std::pow(20000.0f / 20.0f, std::clamp(normX, 0.001f, 0.999f));
+        float hoverDb = juce::jmap(spectrumHoverPos.y, float(graphArea.getBottom()), float(graphArea.getY()), -28.0f, 18.0f);
+
+        // Musical note calculation
+        float noteNum = 69.0f + 12.0f * std::log2(hoverFreq / 440.0f);
+        int midiNote = int(std::round(noteNum));
+        int cents = int(std::round((noteNum - float(midiNote)) * 100.0f));
+        const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        int noteIdx = (midiNote % 12 + 12) % 12;
+        int octave = (midiNote / 12) - 1;
+        juce::String noteStr = juce::String(noteNames[noteIdx]) + juce::String(octave);
+        if (cents != 0)
+            noteStr += (cents > 0 ? " +" : " ") + juce::String(cents) + "c";
+
+        juce::String freqStr;
+        if (hoverFreq >= 1000.0f)
+            freqStr = juce::String(hoverFreq / 1000.0f, 2) + " kHz";
+        else
+            freqStr = juce::String(int(std::round(hoverFreq))) + " Hz";
+
+        // Crosshairs
+        const float dashPattern[] = { 3.0f, 3.0f };
+        g.setColour(juce::Colour(0x5500f0ff));
+        juce::Line<float> vLine(spectrumHoverPos.x, float(graphArea.getY()), spectrumHoverPos.x, float(graphArea.getBottom()));
+        g.drawDashedLine(vLine, dashPattern, 2, 1.0f);
+
+        g.setColour(juce::Colour(0x55ffaa00));
+        juce::Line<float> hLine(float(graphArea.getX()), spectrumHoverPos.y, float(graphArea.getRight()), spectrumHoverPos.y);
+        g.drawDashedLine(hLine, dashPattern, 2, 1.0f);
+
+        // Floating Precision Inspector Badge
+        int badgeW = 168;
+        int badgeH = 20;
+        int badgeX = std::clamp(int(spectrumHoverPos.x) + 12, graphArea.getX() + 4, graphArea.getRight() - badgeW - 4);
+        int badgeY = std::clamp(int(spectrumHoverPos.y) - 24, graphArea.getY() + 4, graphArea.getBottom() - badgeH - 4);
+        auto badgeRect = juce::Rectangle<float>(float(badgeX), float(badgeY), float(badgeW), float(badgeH));
+
+        g.setColour(juce::Colour(0xf008101a));
+        g.fillRoundedRectangle(badgeRect, 4.0f);
+        g.setColour(juce::Colour(0xff00f0ff));
+        g.drawRoundedRectangle(badgeRect, 4.0f, 1.0f);
+
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font("monospace", 9.5f, juce::Font::bold));
+        g.drawText(freqStr + " | " + noteStr + " | " + juce::String(hoverDb, 1) + " dB", badgeRect, juce::Justification::centred);
+    }
 }
 
 // ------------------------------------------------------------------------------
@@ -1249,32 +1413,31 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
     // Header with Agent Chips
     auto chipArea = bounds.removeFromTop(32).reduced(10, 4);
 
-    const char* agentNames[] = { "Orchestrator v3.3", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
+    const char* agentNames[] = { "Orchestrator v3.4", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
     const juce::Colour agentColors[] = { juce::Colour(0xff00f0ff), juce::Colour(0xff5bc0de), juce::Colour(0xffffb92d), juce::Colour(0xff00ffaa) };
 
-    int chipX = chipArea.getX();
     for (int i = 0; i < 4; ++i)
     {
-        auto chipRect = juce::Rectangle<int>(chipX, chipArea.getY(), 190, 24);
-        g.setColour(isDarkMode ? juce::Colour(0xff111722) : juce::Colour(0xfff8fafc));
-        g.fillRoundedRectangle(chipRect.toFloat(), 12.0f);
-        g.setColour(isDarkMode ? juce::Colour(0xff222e40) : juce::Colour(0xffcbd5e1));
-        g.drawRoundedRectangle(chipRect.toFloat(), 12.0f, 1.0f);
+        int chipX = chipArea.getX() + 12 + i * 160;
+        auto chip = juce::Rectangle<float>(float(chipX), float(chipArea.getY() + 4), 150, 18);
 
-        // Glowing dot
+        g.setColour(isDarkMode ? juce::Colour(0xff121b27) : juce::Colour(0xfff1f5f9));
+        g.fillRoundedRectangle(chip, 9.0f);
+        g.setColour(isDarkMode ? juce::Colour(0xff1e2d42) : juce::Colour(0xffcbd5e1));
+        g.drawRoundedRectangle(chip, 9.0f, 0.8f);
+
+        // Active pulse dot
         g.setColour(agentColors[i]);
-        g.fillEllipse(float(chipRect.getX() + 10), float(chipRect.getY() + 8), 8.0f, 8.0f);
+        g.fillEllipse(float(chipX + 8), float(chipArea.getY() + 9), 8.0f, 8.0f);
 
         g.setColour(isDarkMode ? juce::Colours::white : juce::Colour(0xff0f172a));
-        g.setFont(juce::Font(10.0f, juce::Font::bold));
-        g.drawText(agentNames[i], chipRect.getX() + 24, chipRect.getY(), 160, 24, juce::Justification::centredLeft);
-
-        chipX += 205;
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.drawText(agentNames[i], chipX + 22, chipArea.getY() + 4, 120, 18, juce::Justification::centredLeft);
     }
 
     g.setColour(isDarkMode ? juce::Colour(0xff00ffaa) : juce::Colour(0xff059669));
-    g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI COOPERATIVE CORE v3.3 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
+    g.setFont(juce::Font(9.5f, juce::Font::bold));
+    g.drawText("AI COOPERATIVE CORE v3.4 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
 
     // Terminal Window / Interactive Legend HUD
     auto termArea = bounds.reduced(10, 8);
@@ -1322,7 +1485,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
         // Idle Mode: Legend Prompt + AI Telemetry
         g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
         g.setColour(juce::Colour(0xff00f0ff));
-        g.drawText("[INTERACTIVE LEGEND v3.3] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[INTERACTIVE LEGEND v3.4] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff5bc0de));
         g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify (-14.0 LUFS Integrated / -1.0 dBTP Ceiling)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
@@ -1367,6 +1530,9 @@ void AutomasterSupremeAudioProcessorEditor::resized()
 
     // Close button inside full legend drawer overlay
     closeLegendButton.setBounds(getWidth() - 230, 48, 160, 30);
+
+    // Reset Peaks Button (Inside SPAN Spectrum Header)
+    resetPeaksButton.setBounds(548, 88, 104, 18);
 
     const int knobW = 68;
     const int knobH = 82;

@@ -121,8 +121,12 @@ private:
     std::unique_ptr<SliderAttachment> loudnessAttach, ceilingAttach, outGainAttach;
     std::unique_ptr<ButtonAttachment> limiterBypassAttach;
 
-    // Telemetry and Drawing Caches
-    std::array<float, AudioConstants::FFT_SIZE / 2> fftDisplayData {};
+    // Telemetry and Drawing Caches (SPAN Dual Spectrum)
+    std::array<float, AudioConstants::FFT_SIZE / 2> fftDisplayDataAvg {};
+    std::array<float, AudioConstants::FFT_SIZE / 2> fftDisplayDataMax {};
+    juce::TextButton resetPeaksButton { "RESET MAX" };
+    juce::Point<float> spectrumHoverPos { -1.0f, -1.0f };
+    bool isHoveringSpectrum = false;
     std::array<float, 256> scopeL {}, scopeR {};
     float curPhase = 1.0f;
     int agentAnimationTick = 0;

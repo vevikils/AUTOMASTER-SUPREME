@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AutomasterSupreme VERSION 3.3.0 LANGUAGES CXX)
+project(AutomasterSupreme VERSION 3.4.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,17 +13,17 @@ add_subdirectory("C:/Users/alfaswz/VeviDynamicEQ1/Build/_deps/juce-src" juce EXC
 
 juce_add_plugin(AutomasterSupreme
     COMPANY_NAME "vevi"
-    BUNDLE_ID "com.vevi.automastersupreme33"
+    BUNDLE_ID "com.vevi.automastersupreme34"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Vevi
-    PLUGIN_CODE Au33
+    PLUGIN_CODE Au34
     FORMATS VST3 Standalone
-    PRODUCT_NAME "AUTOMASTER SUPREME 3.3"
-    DESCRIPTION "AI Mastering Suite v3.3 by vevi - 60FPS Peak Meters & FFT Spectrogram Engine"
+    PRODUCT_NAME "AUTOMASTER SUPREME 3.4"
+    DESCRIPTION "AI Mastering Suite v3.4 by vevi - SPAN-Style Dual Spectrum (AVG & MAX) & Note Inspector"
 )
 
 target_sources(AutomasterSupreme PRIVATE
