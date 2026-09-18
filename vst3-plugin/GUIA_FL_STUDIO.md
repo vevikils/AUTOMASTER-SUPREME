@@ -47,7 +47,7 @@ Las plataformas de streaming modernas (Spotify, Apple Music, YouTube Music, Tida
 3. **Insertar en el Canal Master**:
    - Abre la mesa de mezclas de FL Studio (**F9** o View > Mixer).
    - Selecciona el canal **Master** (el primer canal a la izquierda).
-   - En cualquiera de los 10 slots de inserción (Slot 1 a 10), haz clic y selecciona **AUTOMASTER SUPREME 3.3**.
+   - En cualquiera de los 10 slots de inserción (Slot 1 a 10), haz clic y selecciona **AUTOMASTER SUPREME 3.4**.
 
 ---
 
