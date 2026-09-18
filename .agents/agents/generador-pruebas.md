@@ -1,7 +1,7 @@
 ---
 name: generador-pruebas
 description: Subagente especializado en diseño e implementación de pruebas unitarias, de integración, mocks y cobertura de código (QA).
-model: gemini-2.5-flash
+model: gemini-3
 subagent: true
 inheritCustomizations: true
 tools:

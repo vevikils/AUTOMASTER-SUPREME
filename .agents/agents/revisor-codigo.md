@@ -1,7 +1,7 @@
 ---
 name: revisor-codigo
 description: Subagente especializado en revisión estática de código, análisis de seguridad (OWASP), refactorización y cumplimiento de buenas prácticas.
-model: gemini-2.5-flash
+model: gemini-3
 subagent: true
 inheritCustomizations: true
 tools:

@@ -1,7 +1,7 @@
 ---
 name: arquitecto-documentador
 description: Subagente especializado en arquitectura de sistemas, diagramas Mermaid, especificación de APIs y documentación técnica clara y concisa.
-model: gemini-2.5-flash
+model: gemini-3
 subagent: true
 inheritCustomizations: true
 tools:

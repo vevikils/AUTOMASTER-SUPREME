@@ -1,7 +1,7 @@
 ---
 name: agentes-personalizados
 description: Agente personalizado principal y orquestador del proyecto. Coordina tareas de desarrollo, integración y supervisión de subagentes especializados.
-model: gemini-2.5-pro
+model: gemini-3
 subagent: true
 inheritCustomizations: true
 tools:
