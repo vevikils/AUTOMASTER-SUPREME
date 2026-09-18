@@ -231,22 +231,78 @@ void AutomasterSupremeAudioProcessorEditor::configureBypassButton(juce::ToggleBu
 
 void AutomasterSupremeAudioProcessorEditor::timerCallback()
 {
-    curPeakL = audioProcessor.dsp.getPeakL();
-    curPeakR = audioProcessor.dsp.getPeakR();
-
-    if (curPeakL > peakHoldL) peakHoldL = curPeakL;
-    else peakHoldL = std::max(-100.0f, peakHoldL - 0.5f);
-
-    if (curPeakR > peakHoldR) peakHoldR = curPeakR;
-    else peakHoldR = std::max(-100.0f, peakHoldR - 0.5f);
-
-    curLufs = audioProcessor.dsp.getMomentaryLUFS();
-    shortTermLufs = audioProcessor.dsp.getShortTermLUFS();
-    curCrest = audioProcessor.dsp.getCrestFactor();
+    // Real-time audio readings
+    const float livePeakL = audioProcessor.dsp.getPeakL();
+    const float livePeakR = audioProcessor.dsp.getPeakR();
+    const float liveLufs = audioProcessor.dsp.getMomentaryLUFS();
+    const float liveShortTerm = audioProcessor.dsp.getShortTermLUFS();
+    const float liveCrest = audioProcessor.dsp.getCrestFactor();
     curPhase = audioProcessor.dsp.getPhaseCorrelation();
 
     audioProcessor.dsp.getFFTMagnitudes(fftDisplayData.data(), int(fftDisplayData.size()));
     audioProcessor.dsp.getScopeSamples(scopeL.data(), scopeR.data(), int(scopeL.size()));
+
+    // Accumulate peaks & LUFS over the 0.5s window
+    accumPeakL = std::max(accumPeakL, livePeakL);
+    accumPeakR = std::max(accumPeakR, livePeakR);
+    if (liveLufs > -90.0f)
+    {
+        accumMomentaryLufs += liveLufs;
+        accumCrest += liveCrest;
+        accumSampleCount++;
+    }
+
+    meterTimerTickCount++;
+    // Running at 30 Hz -> 15 ticks = exactly 0.5 seconds (500 ms)
+    if (meterTimerTickCount >= 15)
+    {
+        meterTimerTickCount = 0;
+
+        dispPeakL = accumPeakL;
+        dispPeakR = accumPeakR;
+
+        if (dispPeakL > dispPeakHoldL) dispPeakHoldL = dispPeakL;
+        else dispPeakHoldL = std::max(-100.0f, dispPeakHoldL - 1.5f);
+
+        if (dispPeakR > dispPeakHoldR) dispPeakHoldR = dispPeakR;
+        else dispPeakHoldR = std::max(-100.0f, dispPeakHoldR - 1.5f);
+
+        if (accumSampleCount > 0)
+        {
+            dispMomentaryLufs = accumMomentaryLufs / float(accumSampleCount);
+            dispCrest = accumCrest / float(accumSampleCount);
+        }
+        else
+        {
+            dispMomentaryLufs = liveLufs;
+            dispCrest = liveCrest;
+        }
+        dispShortTermLufs = liveShortTerm;
+
+        // Spotify status determination
+        if (dispMomentaryLufs <= -13.0f && dispMomentaryLufs >= -15.5f)
+        {
+            dispSpotifyStatus = "-14 TARGET";
+            dispSpotifyCol = juce::Colour(0xff00ffaa); // Green
+        }
+        else if (dispMomentaryLufs > -12.5f)
+        {
+            dispSpotifyStatus = "TOO LOUD";
+            dispSpotifyCol = juce::Colour(0xffff3366); // Red
+        }
+        else
+        {
+            dispSpotifyStatus = "LOW LEVEL";
+            dispSpotifyCol = juce::Colour(0xffffb92d); // Amber
+        }
+
+        // Reset accumulator for next 0.5s cycle
+        accumPeakL = -100.0f;
+        accumPeakR = -100.0f;
+        accumMomentaryLufs = 0.0f;
+        accumCrest = 0.0f;
+        accumSampleCount = 0;
+    }
 
     agentAnimationTick++;
     repaint();
@@ -375,10 +431,14 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     const float oy = float(displayArea.getY());
 
     // Grid lines (dB)
+    const float minDb = -66.0f;
+    const float maxDb = 6.0f;
+    const float dbRange = maxDb - minDb; // 72 dB
+
     g.setColour(juce::Colour(0x15ffffff));
     for (float db = 0.0f; db >= -60.0f; db -= 12.0f)
     {
-        float normY = oy + h - ((db - (-70.0f)) / 76.0f) * h;
+        float normY = oy + h - ((db - minDb) / dbRange) * h;
         g.drawLine(ox, normY, ox + w, normY, 1.0f);
         g.setColour(juce::Colour(0x55ffffff));
         g.setFont(juce::Font(8.0f, juce::Font::plain));
@@ -389,12 +449,13 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     // Grid lines (Hz)
     const float minLog = std::log10(20.0f);
     const float maxLog = std::log10(20000.0f);
+    const float logRange = maxLog - minLog;
     const float freqs[] = { 50.0f, 100.0f, 250.0f, 500.0f, 1000.0f, 2500.0f, 5000.0f, 10000.0f, 20000.0f };
     const char* freqLabels[] = { "50", "100", "250", "500", "1k", "2.5k", "5k", "10k", "20k" };
 
     for (int i = 0; i < 9; ++i)
     {
-        float normX = ox + ((std::log10(freqs[i]) - minLog) / (maxLog - minLog)) * w;
+        float normX = ox + ((std::log10(freqs[i]) - minLog) / logRange) * w;
         g.drawLine(normX, oy, normX, oy + h, 1.0f);
         g.setColour(juce::Colour(0x55ffffff));
         g.setFont(juce::Font(8.0f, juce::Font::plain));
@@ -403,21 +464,56 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     }
 
     // Draw Live FFT Curve (Post-Master with Neon Cyan Glow)
+    const double sr = audioProcessor.dsp.getSampleRate();
+    const float binStep = float(AudioConstants::FFT_SIZE) / float(sr > 0 ? sr : 44100.0);
+    const int totalBins = int(fftDisplayData.size());
+
     juce::Path fftPath;
-    fftPath.startNewSubPath(ox, oy + h);
     bool started = false;
+    const int numPoints = int(w);
 
-    for (int i = 1; i < 256; ++i)
+    for (int px = 0; px < numPoints; ++px)
     {
-        const float freq = (float(i) / 256.0f) * 22050.0f;
-        if (freq < 20.0f || freq > 20000.0f) continue;
+        const float normX = ox + float(px);
+        const float t1 = float(px) / float(numPoints);
+        const float t2 = float(px + 1) / float(numPoints);
 
-        const float normX = ox + ((std::log10(freq) - minLog) / (maxLog - minLog)) * w;
-        const float db = fftDisplayData[size_t(i)];
-        const float normY = oy + h - std::clamp(((db - (-70.0f)) / 76.0f), 0.0f, 1.0f) * h;
+        const float f1 = std::pow(10.0f, minLog + t1 * logRange);
+        const float f2 = std::pow(10.0f, minLog + t2 * logRange);
 
-        if (!started) { fftPath.startNewSubPath(normX, normY); started = true; }
-        else { fftPath.lineTo(normX, normY); }
+        const float binExact = f1 * binStep;
+        const float binNext = f2 * binStep;
+
+        float maxBinDb = -100.0f;
+        const int startBin = std::clamp(int(binExact), 0, totalBins - 1);
+        const int endBin = std::clamp(int(binNext), startBin, totalBins - 1);
+
+        if (endBin > startBin)
+        {
+            for (int b = startBin; b <= endBin; ++b)
+            {
+                if (fftDisplayData[size_t(b)] > maxBinDb)
+                    maxBinDb = fftDisplayData[size_t(b)];
+            }
+        }
+        else
+        {
+            const int b0 = std::clamp(int(binExact), 0, totalBins - 2);
+            const float frac = binExact - float(b0);
+            maxBinDb = fftDisplayData[size_t(b0)] * (1.0f - frac) + fftDisplayData[size_t(b0 + 1)] * frac;
+        }
+
+        const float normY = oy + h - std::clamp((maxBinDb - minDb) / dbRange, 0.0f, 1.0f) * h;
+
+        if (!started)
+        {
+            fftPath.startNewSubPath(normX, normY);
+            started = true;
+        }
+        else
+        {
+            fftPath.lineTo(normX, normY);
+        }
     }
 
     if (started)
@@ -428,12 +524,12 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
         fillPath.closeSubPath();
 
         // Neon Gradient Fill
-        g.setGradientFill(juce::ColourGradient(juce::Colour(0x4400f0ff), ox, oy, juce::Colour(0x0000f0ff), ox, oy + h, false));
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0x3300f0ff), ox, oy, juce::Colour(0x0000f0ff), ox, oy + h, false));
         g.fillPath(fillPath);
 
         // Neon Stroke Line
         g.setColour(juce::Colour(0xff00f0ff));
-        g.strokePath(fftPath, juce::PathStrokeType(2.0f));
+        g.strokePath(fftPath, juce::PathStrokeType(1.8f));
     }
 
     // Draw Dynamic Parametric EQ Curve (Yellow Dashed)
@@ -447,7 +543,7 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
     for (int i = 0; i <= 60; ++i)
     {
         const float f = 20.0f * std::pow(1000.0f, float(i) / 60.0f);
-        const float x = ox + ((std::log10(f) - minLog) / (maxLog - minLog)) * w;
+        const float x = ox + ((std::log10(f) - minLog) / logRange) * w;
 
         float totalGain = 0.0f;
         if (f < 160.0f) totalGain += gSub * (1.0f - f / 200.0f);
@@ -457,7 +553,7 @@ void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g
         if (f > 6000.0f) totalGain += gAir * std::min(1.0f, (f - 6000.0f) / 6000.0f);
 
         // Center around -18dB line
-        const float y = oy + h - ((totalGain - 18.0f - (-70.0f)) / 76.0f) * h;
+        const float y = oy + h - ((totalGain - 18.0f - minDb) / dbRange) * h;
         if (i == 0) eqCurve.startNewSubPath(x, y);
         else eqCurve.lineTo(x, y);
     }
@@ -563,12 +659,12 @@ void AutomasterSupremeAudioProcessorEditor::drawMetersScreen(juce::Graphics& g, 
     g.setColour(juce::Colour(0xff00f0ff));
     g.drawText("ITU-R BS.1770", headerRect.getRight() - 100, headerRect.getY(), 90, 24, juce::Justification::right);
 
-    // Left & Right Segmented Peak Meters
+    // Left & Right Segmented Peak Meters (0.5s held values for clear visibility)
     auto meterArea = bounds.removeFromTop(120).reduced(12, 6);
-    const float toPercentL = std::clamp((curPeakL + 48.0f) / 48.0f, 0.0f, 1.0f);
-    const float toPercentR = std::clamp((curPeakR + 48.0f) / 48.0f, 0.0f, 1.0f);
-    const float holdPercentL = std::clamp((peakHoldL + 48.0f) / 48.0f, 0.0f, 1.0f);
-    const float holdPercentR = std::clamp((peakHoldR + 48.0f) / 48.0f, 0.0f, 1.0f);
+    const float toPercentL = std::clamp((dispPeakL + 48.0f) / 48.0f, 0.0f, 1.0f);
+    const float toPercentR = std::clamp((dispPeakR + 48.0f) / 48.0f, 0.0f, 1.0f);
+    const float holdPercentL = std::clamp((dispPeakHoldL + 48.0f) / 48.0f, 0.0f, 1.0f);
+    const float holdPercentR = std::clamp((dispPeakHoldR + 48.0f) / 48.0f, 0.0f, 1.0f);
 
     const int barW = 12;
     const int gap = 14;
@@ -606,7 +702,7 @@ void AutomasterSupremeAudioProcessorEditor::drawMetersScreen(juce::Graphics& g, 
     g.drawText("L", leftX - 2, barY + barH + 2, barW + 4, 12, juce::Justification::centred);
     g.drawText("R", rightX - 2, barY + barH + 2, barW + 4, 12, juce::Justification::centred);
 
-    // Digital Readouts below
+    // Digital Readouts below (Stabilized 0.5s refresh rate)
     auto digitalBox = bounds.reduced(10, 4);
     g.setColour(juce::Colour(0xff06090e));
     g.fillRoundedRectangle(digitalBox.toFloat(), 4.0f);
@@ -620,8 +716,8 @@ void AutomasterSupremeAudioProcessorEditor::drawMetersScreen(juce::Graphics& g, 
 
     g.setFont(juce::Font("monospace", 14.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xff00f0ff));
-    g.drawText(juce::String(curLufs, 1), digitalBox.getX() + 6, digitalBox.getY() + 16, 80, 16, juce::Justification::left);
-    g.drawText(juce::String(shortTermLufs, 1), digitalBox.getRight() - 86, digitalBox.getY() + 16, 80, 16, juce::Justification::right);
+    g.drawText(juce::String(dispMomentaryLufs, 1), digitalBox.getX() + 6, digitalBox.getY() + 16, 80, 16, juce::Justification::left);
+    g.drawText(juce::String(dispShortTermLufs, 1), digitalBox.getRight() - 86, digitalBox.getY() + 16, 80, 16, juce::Justification::right);
 
     // Crest Factor & Spotify Status
     g.setFont(juce::Font(8.5f, juce::Font::bold));
@@ -631,12 +727,11 @@ void AutomasterSupremeAudioProcessorEditor::drawMetersScreen(juce::Graphics& g, 
 
     g.setFont(juce::Font("monospace", 12.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xff00ffaa));
-    g.drawText(juce::String(curCrest, 1) + " dB", digitalBox.getX() + 6, digitalBox.getY() + 50, 80, 14, juce::Justification::left);
+    g.drawText(juce::String(dispCrest, 1) + " dB", digitalBox.getX() + 6, digitalBox.getY() + 50, 80, 14, juce::Justification::left);
 
     // Spotify status color (Green if -14 LUFS compliant, Red if too loud)
-    juce::Colour statusCol = (curLufs <= -13.2f && curLufs >= -15.5f) ? juce::Colour(0xff00ffaa) : (curLufs > -12.5f ? juce::Colour(0xffff3366) : juce::Colour(0xffffb92d));
-    g.setColour(statusCol);
-    g.drawText(curLufs > -12.5f ? "TOO LOUD" : "-14 TARGET", digitalBox.getRight() - 86, digitalBox.getY() + 50, 80, 14, juce::Justification::right);
+    g.setColour(dispSpotifyCol);
+    g.drawText(dispSpotifyStatus, digitalBox.getRight() - 86, digitalBox.getY() + 50, 80, 14, juce::Justification::right);
 }
 
 // ------------------------------------------------------------------------------

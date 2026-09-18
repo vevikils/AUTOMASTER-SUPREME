@@ -81,17 +81,29 @@ private:
     std::unique_ptr<ButtonAttachment> limiterBypassAttach;
 
     // Telemetry and Drawing Caches
-    std::array<float, 512> fftDisplayData {};
+    std::array<float, AudioConstants::FFT_SIZE / 2> fftDisplayData {};
     std::array<float, 256> scopeL {}, scopeR {};
-    float curPeakL = -100.0f;
-    float curPeakR = -100.0f;
-    float peakHoldL = -100.0f;
-    float peakHoldR = -100.0f;
-    float curLufs = -14.0f;
-    float shortTermLufs = -14.0f;
-    float curCrest = 10.0f;
     float curPhase = 1.0f;
     int agentAnimationTick = 0;
+
+    // 0.5-second meter refresh tracking (updates every 500ms for stable reading)
+    int meterTimerTickCount = 0;
+    float accumPeakL = -100.0f;
+    float accumPeakR = -100.0f;
+    float accumMomentaryLufs = 0.0f;
+    float accumCrest = 0.0f;
+    int accumSampleCount = 0;
+
+    // Stable values displayed on the right-hand meters (refreshed every 0.5s)
+    float dispPeakL = -100.0f;
+    float dispPeakR = -100.0f;
+    float dispPeakHoldL = -100.0f;
+    float dispPeakHoldR = -100.0f;
+    float dispMomentaryLufs = -14.0f;
+    float dispShortTermLufs = -14.0f;
+    float dispCrest = 10.0f;
+    juce::String dispSpotifyStatus { "-14 TARGET" };
+    juce::Colour dispSpotifyCol { 0xff00ffaa };
 
     void configureKnob(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix = "", juce::Colour accent = juce::Colour(0xff00f0ff));
     void configureBypassButton(juce::ToggleButton& btn);

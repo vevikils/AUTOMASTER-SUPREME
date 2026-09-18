@@ -8,7 +8,7 @@ namespace AudioConstants
 {
     static constexpr float SPOTIFY_TARGET_LUFS = -14.0f;
     static constexpr float SPOTIFY_CEILING_DBTP = -1.0f;
-    static constexpr int FFT_ORDER = 10; // 1024 points
+    static constexpr int FFT_ORDER = 11; // 2048 points
     static constexpr int FFT_SIZE = 1 << FFT_ORDER;
     static constexpr int SCOPE_SIZE = 256;
 }
@@ -189,7 +189,8 @@ public:
         float* ch0 = buffer.getWritePointer(0);
         float* ch1 = buffer.getWritePointer(1);
 
-        float maxSamplePeak = 0.0f;
+        float maxSamplePeakL = 0.0f;
+        float maxSamplePeakR = 0.0f;
         float sumSquare = 0.0f;
         float sumLR = 0.0f;
         float sumL2 = 0.0f;
@@ -224,8 +225,10 @@ public:
             // Push to FFT FIFO for Spectrum
             pushToFFT(0.5f * (s0 + s1));
 
-            const float currentPeak = std::max(std::abs(s0), std::abs(s1));
-            if (currentPeak > maxSamplePeak) maxSamplePeak = currentPeak;
+            const float currentPeakL = std::abs(s0);
+            const float currentPeakR = std::abs(s1);
+            if (currentPeakL > maxSamplePeakL) maxSamplePeakL = currentPeakL;
+            if (currentPeakR > maxSamplePeakR) maxSamplePeakR = currentPeakR;
             sumSquare += (s0 * s0 + s1 * s1) * 0.5f;
 
             sumLR += s0 * s1;
@@ -236,7 +239,10 @@ public:
         // Output Gain
         if (std::abs(params.outputGain) > 0.01f)
         {
-            buffer.applyGain(juce::Decibels::decibelsToGain(params.outputGain));
+            const float og = juce::Decibels::decibelsToGain(params.outputGain);
+            buffer.applyGain(og);
+            maxSamplePeakL *= og;
+            maxSamplePeakR *= og;
         }
 
         // Phase Correlation
@@ -247,10 +253,11 @@ public:
             phaseCorrelation.store(phaseCorrelation.load() * 0.9f + corr * 0.1f);
         }
 
-        // Update Meters
-        updateMeters(maxSamplePeak, std::sqrt(sumSquare / float(numSamples)));
+        // Update Meters with true Stereo Peaks
+        updateMeters(maxSamplePeakL, maxSamplePeakR, std::sqrt(sumSquare / float(numSamples)));
     }
 
+    double getSampleRate() const { return currentSampleRate; }
     float getPeakL() const { return peakL.load(); }
     float getPeakR() const { return peakR.load(); }
     float getMomentaryLUFS() const { return momentaryLUFS.load(); }
@@ -265,11 +272,30 @@ public:
             window.multiplyWithWindowingTable(fftData.data(), AudioConstants::FFT_SIZE);
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data());
 
+            // Normalization: Hann window coherent gain is 0.5, so 2.0 / FFT_SIZE maps 0 dBFS sine to 0 dB
+            const float normFactor = 2.0f / float(AudioConstants::FFT_SIZE);
+            const float binFreqStep = float(currentSampleRate) / float(AudioConstants::FFT_SIZE);
+
             for (int i = 0; i < AudioConstants::FFT_SIZE / 2; ++i)
             {
-                const float mag = fftData[size_t(i)];
-                const float db = mag > 0.00001f ? juce::Decibels::gainToDecibels(mag) : -100.0f;
-                fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.7f + db * 0.3f;
+                const float freq = float(i) * binFreqStep;
+                const float mag = fftData[size_t(i)] * normFactor;
+
+                // Mastering Pink-Noise Acoustic Tilt (+3.5 dB/octave above 1kHz) for balanced visual display
+                float tiltDb = 0.0f;
+                if (freq > 20.0f)
+                {
+                    tiltDb = std::log2(freq / 1000.0f) * 3.5f;
+                }
+
+                float db = mag > 1e-6f ? (juce::Decibels::gainToDecibels(mag) + tiltDb) : -100.0f;
+                db = std::clamp(db, -100.0f, 6.0f);
+
+                // Smooth attack and release ballistics
+                if (db > fftScopeData[size_t(i)])
+                    fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.35f + db * 0.65f; // Fast attack
+                else
+                    fftScopeData[size_t(i)] = fftScopeData[size_t(i)] * 0.88f + db * 0.12f; // Smooth decay
             }
             nextFFTBlockReady.store(false);
         }
@@ -330,6 +356,7 @@ private:
             if (!nextFFTBlockReady.load())
             {
                 std::copy(fftFifo.begin(), fftFifo.end(), fftData.begin());
+                std::fill(fftData.begin() + AudioConstants::FFT_SIZE, fftData.end(), 0.0f);
                 nextFFTBlockReady.store(true);
             }
             fifoIndex = 0;
@@ -397,17 +424,18 @@ private:
         *eq5.state = *juce::dsp::IIR::Coefficients<float>::makeHighShelf(currentSampleRate, 12000.0f, 0.707f, 1.0f);
     }
 
-    void updateMeters(float peak, float rms)
+    void updateMeters(float peakLeft, float peakRight, float rms)
     {
-        const float peakDb = peak > 0.00001f ? juce::Decibels::gainToDecibels(peak) : -100.0f;
+        const float peakDbL = peakLeft > 0.00001f ? juce::Decibels::gainToDecibels(peakLeft) : -100.0f;
+        const float peakDbR = peakRight > 0.00001f ? juce::Decibels::gainToDecibels(peakRight) : -100.0f;
         const float rmsDb = rms > 0.00001f ? juce::Decibels::gainToDecibels(rms) : -100.0f;
 
-        peakL.store(peakDb);
-        peakR.store(peakDb);
+        peakL.store(peakDbL);
+        peakR.store(peakDbR);
 
         const float curLufs = rmsDb + 0.69f;
         momentaryLUFS.store(curLufs);
         shortTermLUFS.store(shortTermLUFS.load() * 0.95f + curLufs * 0.05f);
-        crestFactor.store(std::max(0.0f, peakDb - rmsDb));
+        crestFactor.store(std::max(0.0f, std::max(peakDbL, peakDbR) - rmsDb));
     }
 };
