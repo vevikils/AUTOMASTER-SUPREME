@@ -189,90 +189,90 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     configureKnob(ceilingSlider, ceilingLabel, "CEILING", " dBTP", red);
     configureKnob(outGainSlider, outGainLabel, "OUT GAIN", " dB", cyan);
 
-    // Register interactive legends for every control
-    registerLegend(inGainSlider, { "IN GAIN", "1. INPUT & SUB", "-18.0 dB a +18.0 dB", "0.0 dB",
-        "Calibra el nivel de la mezcla previa antes de ingresar a ecualizadores y compresores.",
-        "Ajusta para que los vumétros piquen entre -6 y -3 dBFS antes de procesar.", cyan });
+    // Register interactive legends for every control (100% English ASCII)
+    registerLegend(inGainSlider, { "IN GAIN", "1. INPUT & SUB", "-18.0 dB to +18.0 dB", "0.0 dB",
+        "Input gain trim before dynamic and tone shaping stages.",
+        "Adjust so peak levels hover between -6 and -3 dBFS before EQ.", cyan });
 
-    registerLegend(lowCutSlider, { "LOW CUT (Sub-Tamer)", "1. INPUT & SUB", "20 Hz a 80 Hz", "30 Hz (18dB/oct)",
-        "Filtro pasa-altos quirúrgico que suprime ruidos inaudibles (<30Hz) que restan energía al limitador.",
-        "30 a 35 Hz. Limpia el fango en el sub-grave y previene sobremodulación en Spotify.", gold });
+    registerLegend(lowCutSlider, { "LOW CUT (Sub-Tamer)", "1. INPUT & SUB", "20 Hz to 80 Hz", "30 Hz (18dB/oct)",
+        "High-pass filter removing inaudible sub-bass (<30Hz) that wastes limiter headroom.",
+        "30 to 35 Hz cleans mud and prevents inter-sample overmodulation in Spotify.", gold });
 
-    registerLegend(eqSubSlider, { "SUB BASS (80 Hz Low-Shelf)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+0.5 dB",
-        "Controla el peso y la potencia del bombo (kick) y las frecuencias fundamentales del bajo.",
-        "Incrementos discretos (+0.5 a +1.5 dB) añaden pegada sólida sin penalización de LUFS.", cyan });
+    registerLegend(eqSubSlider, { "SUB BASS (80 Hz Low-Shelf)", "2. 5-BAND EQUALIZER", "-12.0 dB to +12.0 dB", "+0.5 dB",
+        "Controls weight and fundamental punch for kick drum and synth sub bass.",
+        "Subtle boosts (+0.5 to +1.5 dB) provide solid low-end without loudness penalties.", cyan });
 
-    registerLegend(eqLowMidSlider, { "LOW-MID (250 Hz Mud Control)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "-0.8 dB",
-        "Limpia la zona pastosa y resonante de cajas acústicas y salas que enturbian la mezcla.",
-        "Atenuación sutil (-0.5 a -1.5 dB) aporta claridad inmediata y separa la voz del bajo.", cyan });
+    registerLegend(eqLowMidSlider, { "LOW-MID (250 Hz Mud Control)", "2. 5-BAND EQUALIZER", "-12.0 dB to +12.0 dB", "-0.8 dB",
+        "Cleans boxy resonance, room boom, and low-mid buildup that muddies mixes.",
+        "Gentle cuts (-0.5 to -1.5 dB) create immediate clarity and separate vocals from bass.", cyan });
 
-    registerLegend(eqMidSlider, { "PRESENCE (1.2 kHz Vocal Body)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+0.2 dB",
-        "Aporta cuerpo y definición a la voz principal, guitarras líderes y el impacto de la caja.",
-        "Mantener neutro o ligero realce (+0.5 dB) para destacar la voz en altavoces de móvil.", cyan });
+    registerLegend(eqMidSlider, { "PRESENCE (1.2 kHz Vocal Body)", "2. 5-BAND EQUALIZER", "-12.0 dB to +12.0 dB", "+0.2 dB",
+        "Central tone articulation for lead vocals, guitars, and snare body.",
+        "Keep flat or apply gentle boost (+0.5 dB) for vocal clarity on mobile speakers.", cyan });
 
-    registerLegend(eqClaritySlider, { "CLARITY (4.5 kHz Transient Bite)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+0.8 dB",
-        "Resalta la articulación de transientes, consonantes vocales y brillo de guitarras.",
-        "+0.5 a +1.5 dB abre la mezcla sin causar asperezas ni fatiga auditiva en escuchas largas.", cyan });
+    registerLegend(eqClaritySlider, { "CLARITY (4.5 kHz Transient Bite)", "2. 5-BAND EQUALIZER", "-12.0 dB to +12.0 dB", "+0.8 dB",
+        "Upper-mid articulation for vocal consonants, pick attacks, and crispness.",
+        "+0.5 to +1.5 dB opens up the track without harshness or listening fatigue.", cyan });
 
-    registerLegend(eqAirSlider, { "AIR SHEEN (12 kHz High-Shelf)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+1.2 dB",
-        "Añade aire sedoso ('silk air') y tridimensionalidad de estudio comercial de alta gama.",
-        "+1.0 a +2.0 dB confiere apertura espacial brillante y sedosa en auriculares.", gold });
+    registerLegend(eqAirSlider, { "AIR SHEEN (12 kHz High-Shelf)", "2. 5-BAND EQUALIZER", "-12.0 dB to +12.0 dB", "+1.2 dB",
+        "Adds ultra-high silky sheen and expensive modern studio dimension.",
+        "+1.0 to +2.0 dB adds commercial open sparkle and wide headphone depth.", gold });
 
-    registerLegend(satDriveSlider, { "TAPE DRIVE (Harmonic Exciter)", "3. TAPE WARMTH", "0% a 100%", "15%",
-        "Genera armónicos analógicos para 'pegar' los elementos de la mezcla (*glue effect*).",
-        "10% a 25% genera cohesión analógica cálida sin provocar distorsión audible.", gold });
+    registerLegend(satDriveSlider, { "TAPE DRIVE (Harmonic Exciter)", "3. TAPE WARMTH", "0% to 100%", "15%",
+        "Generates analog tape harmonics to glue mix elements together seamlessly.",
+        "10% to 25% provides warm analog cohesion without audible distortion.", gold });
 
-    registerLegend(satWarmthSlider, { "ANALOG WARMTH", "3. TAPE WARMTH", "0% a 100%", "20%",
-        "Redondea transientes estridentes y satura suavemente las frecuencias graves.",
-        "15% a 30% otorga textura de transformador de consola vintage.", gold });
+    registerLegend(satWarmthSlider, { "ANALOG WARMTH", "3. TAPE WARMTH", "0% to 100%", "20%",
+        "Smooths harsh transients and adds analog transformer weight to low frequencies.",
+        "15% to 30% yields vintage console texture and rounder punch.", gold });
 
-    registerLegend(satModeBox, { "CIRCUITO DE SATURACIÓN", "3. TAPE WARMTH", "Tape / Tube / Console / Neve", "Analog Tape",
-        "Topología del circuito de saturación modelado analógicamente.",
-        "Tape para cohesión general; Tube para voces; Neve para graves rotundos.", gold });
+    registerLegend(satModeBox, { "SATURATION CIRCUIT", "3. TAPE WARMTH", "Tape / Tube / Console / Neve", "Analog Tape",
+        "Analog modeling topology: Tape glue, Tube vocal warmth, Console, or Vintage Neve.",
+        "Tape for general glue; Tube for vocal air; Neve for dense solid low-end.", gold });
 
-    registerLegend(mbLowSlider, { "MB LOW DYNAMICS (<200 Hz)", "4. MULTIBAND", "-24.0 dB a 0.0 dB", "-6.0 dB",
-        "Comprime y aprieta el sub-grave y bombo para evitar bombeo descontrolado en sistemas PA.",
-        "Controla la energía de sub para que el limitador final trabaje con total soltura.", emerald });
+    registerLegend(mbLowSlider, { "MB LOW DYNAMICS (<200 Hz)", "4. MULTIBAND", "-24.0 dB to 0.0 dB", "-6.0 dB",
+        "Multiband compression clamping sub-bass energy and kick dynamics.",
+        "Controls low-end energy so the final limiter operates with maximum transparency.", emerald });
 
-    registerLegend(mbMidSlider, { "MB MID DYNAMICS (200 Hz - 4 kHz)", "4. MULTIBAND", "-24.0 dB a 0.0 dB", "-4.0 dB",
-        "Mantiene la consistencia de energía en el rango vocal e instrumental medio.",
-        "1 a 2 dB de reducción de ganancia asegura un volumen uniforme en todo el track.", emerald });
+    registerLegend(mbMidSlider, { "MB MID DYNAMICS (200 Hz - 4 kHz)", "4. MULTIBAND", "-24.0 dB to 0.0 dB", "-4.0 dB",
+        "Maintains steady RMS consistency across vocal and mid instrumentation.",
+        "1 to 2 dB gain reduction ensures consistent loudness across streaming playlists.", emerald });
 
-    registerLegend(mbHighSlider, { "MB HIGH DYNAMICS (>4 kHz)", "4. MULTIBAND", "-24.0 dB a 0.0 dB", "-5.0 dB",
-        "Controlador dinámico de agudos y platos para prevenir fatiga auditiva.",
-        "Vital para prevenir distorsión al convertir a formatos con pérdidas (Ogg/AAC en Spotify).", emerald });
+    registerLegend(mbHighSlider, { "MB HIGH DYNAMICS (>4 kHz)", "4. MULTIBAND", "-24.0 dB to 0.0 dB", "-5.0 dB",
+        "Controls cymbals and harsh sibilance before final true-peak limiting.",
+        "Prevents harsh high-frequency distortion during lossy AAC/Ogg Vorbis encoding.", emerald });
 
-    registerLegend(stereoWidthSlider, { "STEREO WIDTH (M/S Spatializer)", "5. STEREO & LIMITER", "0% (Mono) a 200% (Wide)", "110%",
-        "Expande la imagen estereofónica en medios y agudos manteniendo el centro mono sólido.",
-        "105% a 120%. Evitar superar 135% para no degradar la correlación de fase.", cyan });
+    registerLegend(stereoWidthSlider, { "STEREO WIDTH (M/S Spatializer)", "5. STEREO & LIMITER", "0% (Mono) to 200% (Wide)", "110%",
+        "Expands the stereo image in mids and highs while keeping center mono solid.",
+        "105% to 120% recommended. Avoid exceeding 135% to prevent mono phase cancellation.", cyan });
 
-    registerLegend(monoMakerSlider, { "MONO SUB (Mono-Maker 110Hz)", "5. STEREO & LIMITER", "20 Hz a 300 Hz", "110 Hz",
-        "Suma a mono estricto todas las frecuencias inferiores a la fijada (Side = 0).",
-        "100 a 120 Hz: estándar de oro para graves con máxima pegada y compatibilidad mono.", cyan });
+    registerLegend(monoMakerSlider, { "MONO SUB (Mono-Maker 110Hz)", "5. STEREO & LIMITER", "20 Hz to 300 Hz", "110 Hz",
+        "Collapses all frequencies below cutoff to strict mono (Side channel = 0).",
+        "100 to 120 Hz is golden standard: massive punch without phase issues in clubs/mobile.", cyan });
 
-    registerLegend(loudnessSlider, { "LOUDNESS DRIVE (Intelligent Maximizer)", "5. STEREO & LIMITER", "0.0 dB a +14.0 dB", "+3.5 dB",
-        "Maximiza la sonoridad RMS y LUFS sin recortar transientes de forma destructiva.",
-        "Ajusta con la música sonando hasta que SHORT-TERM marque exactamente -14.0 LUFS.", red });
+    registerLegend(loudnessSlider, { "LOUDNESS DRIVE (Intelligent Maximizer)", "5. STEREO & LIMITER", "0.0 dB to +14.0 dB", "+3.5 dB",
+        "Maximizes perceived RMS and integrated LUFS loudness transparently.",
+        "Push during the loudest section until Short-Term LUFS reads exactly -14.0 LUFS.", red });
 
-    registerLegend(ceilingSlider, { "TRUE-PEAK CEILING", "5. STEREO & LIMITER", "-3.0 dBTP a 0.0 dBTP", "-1.0 dBTP",
-        "Tope contra picos inter-muestras generados en la reconstrucción digital-analógica.",
-        "-1.0 dBTP es el mandato estricto de Spotify para evitar recorte inter-sample.", red });
+    registerLegend(ceilingSlider, { "TRUE-PEAK CEILING", "5. STEREO & LIMITER", "-3.0 dBTP to 0.0 dBTP", "-1.0 dBTP",
+        "Absolute wall preventing inter-sample peaks during D/A conversion and compression.",
+        "-1.0 dBTP is mandatory for Spotify to avoid clipping on streaming playback.", red });
 
-    registerLegend(outGainSlider, { "OUTPUT TRIM", "5. STEREO & LIMITER", "-12.0 dB a +6.0 dB", "0.0 dB",
-        "Control maestro de nivel post-procesamiento.",
-        "Mantener en 0.0 dB para preservar la calibración exacta del limitador True-Peak.", cyan });
+    registerLegend(outGainSlider, { "OUTPUT TRIM", "5. STEREO & LIMITER", "-12.0 dB to +6.0 dB", "0.0 dB",
+        "Final master output trim post-limiter.",
+        "Leave at 0.0 dB to preserve true-peak limiter calibration.", cyan });
 
-    registerLegend(presetBox, { "SELECTOR DE PRESETS", "MASTER CONSOLE", "5 Calibraciones", "Spotify Standard",
-        "Presets calibrados para streaming según género musical.",
-        "Elige el género más cercano a tu canción como punto de partida auditado.", cyan });
+    registerLegend(presetBox, { "PRESET SELECTOR", "MASTER CONSOLE", "5 Calibration Profiles", "Spotify Standard",
+        "Pre-calibrated profiles tailored to streaming standards per genre.",
+        "Select the profile closest to your track genre as a verified starting point.", cyan });
 
-    registerLegend(autoMasterButton, { "AI AUTO-MASTER ENGINE", "AI COOPERATIVE CORE", "Auto-Engine", "One-Click",
-        "Ajusta dinámicamente ecualización y limitación hacia el estándar de Spotify.",
-        "Haz sonar el estribillo o clímax de tu canción y pulsa para calibración instantánea.", emerald });
+    registerLegend(autoMasterButton, { "AI AUTO-MASTER ENGINE", "AI COOPERATIVE CORE", "Automated", "One-Click",
+        "Automatically calibrates EQ curves and loudness to target Spotify reference.",
+        "Play your track chorus or drop and click for instant mastering calibration.", emerald });
 
-    registerLegend(legendButton, { "GUÍA & LEYENDA COMPLETA", "INSPECTOR", "Modal Completo", "Click",
-        "Abre el panel interactivo con la tabla completa de parámetros y objetivos Spotify.",
-        "Consúltalo en cualquier momento para guiar tu proceso de masterización.", gold });
+    registerLegend(legendButton, { "CONTROL GUIDE", "INSPECTOR", "Full Manual", "Modal",
+        "Opens the interactive guide with the full matrix of modules and Spotify parameters.",
+        "Click anytime to reference optimal parameter targets and signal routing.", gold });
 
     // Parameter Attachments
     inGainAttach = std::make_unique<SliderAttachment>(audioProcessor.apvts, "inGain", inGainSlider);
@@ -319,7 +319,7 @@ void AutomasterSupremeAudioProcessorEditor::registerLegend(juce::Component& comp
     comp.addMouseListener(this, true);
     if (auto* sc = dynamic_cast<juce::SettableTooltipClient*>(&comp))
     {
-        sc->setTooltip(info.name + " (" + info.moduleName + ")\n" + info.description + "\n🎯 Target Spotify: " + info.spotifyTip);
+        sc->setTooltip(info.name + " (" + info.moduleName + ")\n" + info.description + "\nTarget Spotify: " + info.spotifyTip);
     }
 }
 
@@ -342,7 +342,7 @@ void AutomasterSupremeAudioProcessorEditor::updateHoverFromComponent(juce::Compo
             }
             else
             {
-                activeControlValue = "ACTIVO";
+                activeControlValue = "ACTIVE";
             }
             isControlActive = true;
             repaint();
@@ -532,13 +532,13 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font(22.0f, juce::Font::bold));
     g.drawText("A3", logoRect, juce::Justification::centred);
 
-    // Title & Version 3.1 Pill Badge
+    // Title
     g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(22.0f, juce::Font::bold));
-    g.drawText("AUTOMASTER SUPREME 3.1", 72, 11, 330, 26, juce::Justification::centredLeft);
+    g.setFont(juce::Font(21.0f, juce::Font::bold));
+    g.drawText("AUTOMASTER SUPREME 3.1", 72, 12, 270, 24, juce::Justification::centredLeft);
 
     // Version 3.1 Pill Badge
-    auto verBadge = juce::Rectangle<float>(410, 15, 48, 20);
+    auto verBadge = juce::Rectangle<float>(348, 14, 44, 20);
     g.setColour(juce::Colour(0x3000f0ff));
     g.fillRoundedRectangle(verBadge, 4.0f);
     g.setColour(juce::Colour(0xff00f0ff));
@@ -547,7 +547,7 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawText("v3.1", verBadge, juce::Justification::centred);
 
     // Author Badge "BY VEVI"
-    auto authorBadge = juce::Rectangle<float>(466, 15, 82, 20);
+    auto authorBadge = juce::Rectangle<float>(398, 14, 72, 20);
     g.setColour(juce::Colour(0x25ffb92d));
     g.fillRoundedRectangle(authorBadge, 4.0f);
     g.setColour(juce::Colour(0xffffb92d));
@@ -555,18 +555,18 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font(10.0f, juce::Font::bold));
     g.drawText("BY VEVI", authorBadge, juce::Justification::centred);
 
-    // Subtitle
+    // Subtitle (English, no special chars)
     g.setColour(juce::Colour(0xff7e91ad));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI MASTERING SUITE · BY VEVI", 72, 40, 190, 16, juce::Justification::centredLeft);
+    g.drawText("AI MASTERING SUITE | BY VEVI", 72, 38, 185, 16, juce::Justification::centredLeft);
 
-    // Spotify Reference Tag Pill
-    auto spotifyTag = juce::Rectangle<float>(272, 39, 265, 19);
+    // Spotify Reference Tag Pill (Starts at 264, ends at 494 -> Leaves 78px margin before presetBox at 572)
+    auto spotifyTag = juce::Rectangle<float>(264, 38, 230, 18);
     g.setColour(juce::Colour(0x2000ffaa));
     g.fillRoundedRectangle(spotifyTag, 4.0f);
     g.setColour(juce::Colour(0xff00ffaa));
     g.drawRoundedRectangle(spotifyTag, 4.0f, 1.0f);
-    g.setFont(juce::Font(9.5f, juce::Font::bold));
+    g.setFont(juce::Font(9.0f, juce::Font::bold));
     g.drawText("SPOTIFY TARGET (-14.0 LUFS / -1.0 dBTP)", spotifyTag, juce::Justification::centred);
 
     // 3. Upper Deck: 3 OLED Screen Frames (FabFilter & Waves Style, Scaled +20%)
@@ -630,11 +630,11 @@ void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphi
     auto header = modal.removeFromTop(56).reduced(16, 8);
     g.setColour(juce::Colours::white);
     g.setFont(juce::Font(18.0f, juce::Font::bold));
-    g.drawText("📖 GUÍA Y LEYENDA INTERACTIVA DE MASTERIZACIÓN · AUTOMASTER SUPREME 3.1", header.getX(), header.getY(), 750, 24, juce::Justification::left);
+    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.1", header.getX(), header.getY(), 750, 24, juce::Justification::left);
 
     g.setColour(juce::Colour(0xff00ffaa));
     g.setFont(juce::Font(11.0f, juce::Font::bold));
-    g.drawText("CALIBRACIÓN ESTRICTA SPOTIFY (-14.0 LUFS / -1.0 dBTP) · POR VEVI", header.getX(), header.getY() + 24, 600, 16, juce::Justification::left);
+    g.drawText("OFFICIAL SPOTIFY STREAMING CALIBRATION (-14.0 LUFS / -1.0 dBTP) | BY VEVI", header.getX(), header.getY() + 24, 600, 16, juce::Justification::left);
 
     // 5 Columns for 5 Modules
     auto contentArea = modal.reduced(14, 10);
@@ -650,32 +650,32 @@ void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphi
 
     std::vector<ModuleGuide> guides = {
         { "1. INPUT & SUB", juce::Colour(0xff00f0ff), {
-            { "IN GAIN", "Nivel de entrada previa (-18 a +18dB). Pica a -6/-3 dBFS." },
-            { "LOW CUT", "Filtro sub 20-80Hz. 30-35Hz libera headroom para el limitador." }
+            { "IN GAIN", "Pre-processing level trim (-18 to +18 dB). Peak -6 to -3 dBFS." },
+            { "LOW CUT", "High-pass sub filter (20 to 80 Hz). 30-35 Hz frees limiter headroom." }
         }},
         { "2. 5-BAND EQ", juce::Colour(0xff00f0ff), {
-            { "SUB BASS (80Hz)", "Low-Shelf. +0.5 a +1.5dB da pegada de bombo sólida." },
-            { "LOW-MID (250Hz)", "Bell anti-fango. -0.5 a -1.5dB limpia y destaca voces." },
-            { "PRESENCE (1.2k)", "Cuerpo vocal y de caja. Mantener neutro o +0.5dB." },
-            { "CLARITY (4.5k)", "Apertura y ataque. +0.5 a +1.5dB abre la mezcla." },
-            { "AIR SHEEN (12k)", "High-Shelf sedoso. +1.0 a +2.0dB brillo comercial." }
+            { "SUB BASS (80Hz)", "Low-shelf. +0.5 to +1.5 dB adds solid kick/bass punch." },
+            { "LOW-MID (250Hz)", "Mud control bell. -0.5 to -1.5 dB cleans boxy mix buildup." },
+            { "PRESENCE (1.2k)", "Vocal body and snare snap. Keep neutral or +0.5 dB." },
+            { "CLARITY (4.5k)", "Transient bite and articulation. +0.5 to +1.5 dB opens clarity." },
+            { "AIR SHEEN (12k)", "High-shelf sheen. +1.0 to +2.0 dB adds expensive studio air." }
         }},
         { "3. TAPE WARMTH", juce::Colour(0xffffb92d), {
-            { "TAPE DRIVE", "Saturación armónica. 10-25% une la mezcla (*glue*)." },
-            { "WARMTH", "Calidez de transformador. 15-30% suaviza transientes." },
-            { "CIRCUITO", "Tape (general), Tube (voces), Console, Neve (graves)." }
+            { "TAPE DRIVE", "Harmonic exciter. 10-25% glues instruments with analog color." },
+            { "WARMTH", "Low-end saturation. 15-30% smooths harsh transients." },
+            { "CIRCUIT", "Tape (glue), Tube (vocals), Console, Neve (thick bass)." }
         }},
         { "4. MULTIBAND", juce::Colour(0xff00ffaa), {
-            { "MB LOW (<200Hz)", "Compresión de sub y pegada. 1-2dB reducción." },
-            { "MB MID (200-4k)", "Estabilidad vocal y consistencia RMS." },
-            { "MB HIGH (>4kHz)", "Control de platos y sibilancias para compresión AAC." }
+            { "MB LOW (<200Hz)", "Sub and kick compression. 1-2 dB reduction prevents pumping." },
+            { "MB MID (200-4k)", "Vocal core stability and RMS loudness consistency." },
+            { "MB HIGH (>4kHz)", "Tames harsh cymbals before lossy AAC/Ogg Vorbis encoding." }
         }},
         { "5. STEREO & LIMIT", juce::Colour(0xffff3366), {
-            { "STEREO WIDTH", "Espacialidad M/S. 105-120% ideal para streaming." },
-            { "MONO SUB (110Hz)", "Mono-Maker. Graves a mono: pegada masiva en club." },
-            { "LOUDNESS DRIVE", "Maximización a -14.0 LUFS sin distorsionar." },
-            { "TRUE-PEAK CEIL", "-1.0 dBTP obligatorio para evitar clip en Spotify." },
-            { "OUTPUT TRIM", "Trim post-limitador (mantener en 0.0 dB)." }
+            { "STEREO WIDTH", "Mid/Side width. 105-120% optimal for streaming expansion." },
+            { "MONO SUB (110Hz)", "Elliptic mono maker. Tight punch without phase cancellation." },
+            { "LOUDNESS DRIVE", "Intelligent maximizer. Push until Short-Term reads -14.0 LUFS." },
+            { "TRUE-PEAK CEIL", "-1.0 dBTP ceiling required by Spotify to stop DAC clip." },
+            { "OUTPUT TRIM", "Final master trim (keep at 0.0 dB for strict calibration)." }
         }}
     };
 
@@ -718,7 +718,7 @@ void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphi
     g.setColour(juce::Colour(0xff00ffaa));
     g.drawRoundedRectangle(footerArea.toFloat(), 5.0f, 0.8f);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("💡 REGLA DE ORO SPOTIFY: Masterizar por encima de -14 LUFS provoca atenuación algorítmica obligatoria en streaming. ¡Deja respirar la dinámica de tu mezcla!",
+    g.drawText("SPOTIFY GOLDEN RULE: Mastering louder than -14 LUFS triggers automatic attenuation penalty. Preserve dynamics and punch!",
                footerArea.reduced(10, 0), juce::Justification::centred);
 }
 
@@ -1164,7 +1164,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
 
     g.setColour(juce::Colour(0xff00ffaa));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI COOPERATIVE CORE v3.1 · BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
+    g.drawText("AI COOPERATIVE CORE v3.1 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
 
     // Terminal Window / Interactive Legend HUD
     auto termArea = bounds.reduced(10, 8);
@@ -1180,46 +1180,46 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
         // Line 1: Control Identification & Current Value
         g.setFont(juce::Font("monospace", 11.0f, juce::Font::bold));
         g.setColour(activeLegend.accent);
-        g.drawText("[LEYENDA ACTIVA] " + activeLegend.name, termArea.getX() + 10, termArea.getY() + 4, 380, 16, juce::Justification::left);
+        g.drawText("[ACTIVE CONTROL] " + activeLegend.name, termArea.getX() + 10, termArea.getY() + 4, 380, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff94a3b8));
-        g.drawText("MÓDULO: " + activeLegend.moduleName + "  |  RANGO: " + activeLegend.rangeStr, termArea.getX() + 390, termArea.getY() + 4, 460, 16, juce::Justification::left);
+        g.drawText("MODULE: " + activeLegend.moduleName + "  |  RANGE: " + activeLegend.rangeStr, termArea.getX() + 390, termArea.getY() + 4, 460, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff00ffaa));
-        g.drawText("VALOR: " + activeControlValue, termArea.getRight() - 200, termArea.getY() + 4, 190, 16, juce::Justification::right);
+        g.drawText("LIVE: " + activeControlValue, termArea.getRight() - 200, termArea.getY() + 4, 190, 16, juce::Justification::right);
 
         // Line 2: Function Description
         g.setFont(juce::Font(10.5f, juce::Font::plain));
         g.setColour(juce::Colour(0xffffb92d));
-        g.drawText("📖 FUNCIÓN:", termArea.getX() + 10, termArea.getY() + 24, 75, 16, juce::Justification::left);
+        g.drawText("FUNCTION:", termArea.getX() + 10, termArea.getY() + 24, 75, 16, juce::Justification::left);
         g.setColour(juce::Colours::white);
         g.drawText(activeLegend.description, termArea.getX() + 90, termArea.getY() + 24, termArea.getWidth() - 100, 16, juce::Justification::left);
 
         // Line 3: Spotify Target Rule
         g.setColour(juce::Colour(0xff00ffaa));
-        g.drawText("🎯 REGLA SPOTIFY:", termArea.getX() + 10, termArea.getY() + 44, 115, 16, juce::Justification::left);
+        g.drawText("SPOTIFY TARGET:", termArea.getX() + 10, termArea.getY() + 44, 115, 16, juce::Justification::left);
         g.setColour(juce::Colour(0xffcbd5e1));
         g.drawText(activeLegend.spotifyTip, termArea.getX() + 130, termArea.getY() + 44, termArea.getWidth() - 340, 16, juce::Justification::left);
 
         // Interaction shortcut
         g.setColour(juce::Colour(0xff64748b));
-        g.drawText("🖱️ Arrastre vertical / rueda | Doble-clic reset", termArea.getRight() - 300, termArea.getY() + 44, 290, 16, juce::Justification::right);
+        g.drawText("TIP: Vertical drag / mouse wheel | Double-click to reset", termArea.getRight() - 340, termArea.getY() + 44, 330, 16, juce::Justification::right);
     }
     else
     {
         // Idle Mode: Legend Prompt + AI Telemetry
         g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
         g.setColour(juce::Colour(0xff00f0ff));
-        g.drawText("💡 [LEYENDA INTERACTIVA v3.1] Pasa el cursor o ajusta cualquier control para ver su guía, objetivo para Spotify y función.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[INTERACTIVE LEGEND v3.1] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff5bc0de));
-        g.drawText("[DSP Architect] 5 bandas analógicas dinámicas calibradas a Spotify (-14.0 LUFS Integrados / -1.0 dBTP Ceiling)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify (-14.0 LUFS Integrated / -1.0 dBTP Ceiling)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xffffb92d));
-        g.drawText("[True-Peak Guard] Limitador inter-sample activo | Mono-Maker (<110Hz) fijado para pegada limpia sin desfase", termArea.getX() + 10, termArea.getY() + 42, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[True-Peak Guard] Inter-sample peak limiter active | Mono-Maker (<110Hz) locked for tight sub bass", termArea.getX() + 10, termArea.getY() + 42, termArea.getWidth() - 20, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff00ffaa));
-        g.drawText("[Estado Global] CERTIFICADO PARA SPOTIFY | Presiona '📖 LEYENDA DE CONTROLES' arriba para abrir la guía completa", termArea.getX() + 10, termArea.getY() + 60, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[Global Status] CERTIFIED FOR SPOTIFY MASTERING | Click 'CONTROL GUIDE' above for full module manual", termArea.getX() + 10, termArea.getY() + 60, termArea.getWidth() - 20, 16, juce::Justification::left);
     }
 }
 
@@ -1228,13 +1228,28 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::resized()
 {
-    // Top Bar controls (Width: 1296)
-    presetBox.setBounds(getWidth() - 770, 17, 280, 34);
-    legendButton.setBounds(getWidth() - 475, 17, 250, 34);
-    autoMasterButton.setBounds(getWidth() - 210, 17, 186, 34);
+    // Top Bar controls (Width: 1296) - ZERO OVERLAPS
+    const int topBarY = 17;
+    const int topBarH = 34;
 
-    // Close button for full legend drawer overlay
-    closeLegendButton.setBounds(getWidth() - 230, 52, 160, 30);
+    // AI Auto Master on far right
+    const int ambW = 150;
+    const int ambX = getWidth() - 20 - ambW; // 1296 - 20 - 150 = 1126
+    autoMasterButton.setBounds(ambX, topBarY, ambW, topBarH);
+
+    // Control Guide Button
+    const int legW = 150;
+    const int legX = ambX - 12 - legW; // 1126 - 12 - 150 = 964
+    legendButton.setBounds(legX, topBarY, legW, topBarH);
+
+    // Preset ComboBox (Fits full name comfortably)
+    const int pbW = 380;
+    const int pbX = legX - 14 - pbW; // 964 - 14 - 380 = 570
+    presetBox.setBounds(pbX, topBarY, pbW, topBarH);
+    // Note: Left side spotifyTag ends at 494 -> 76px clean gap before presetBox!
+
+    // Close button inside full legend drawer overlay
+    closeLegendButton.setBounds(getWidth() - 230, 48, 160, 30);
 
     const int knobW = 68;
     const int knobH = 82;

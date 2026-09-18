@@ -4,6 +4,10 @@ project(AutomasterSupreme VERSION 3.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 # Point to local JUCE installation
 add_subdirectory("C:/Users/alfaswz/VeviDynamicEQ1/Build/_deps/juce-src" juce EXCLUDE_FROM_ALL)
 

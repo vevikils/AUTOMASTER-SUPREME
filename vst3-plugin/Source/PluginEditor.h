@@ -60,9 +60,9 @@ private:
 
     // GUI Top Bar
     juce::ComboBox presetBox;
+    juce::TextButton legendButton { "CONTROL GUIDE" };
     juce::TextButton autoMasterButton { "AI AUTO-MASTER" };
-    juce::TextButton legendButton { "📖 LEYENDA DE CONTROLES" };
-    juce::TextButton closeLegendButton { "CERRAR GUÍA ✕" };
+    juce::TextButton closeLegendButton { "[X] CLOSE GUIDE" };
 
     // Module Bypass Buttons
     juce::ToggleButton bypassLowCut { "ON" };
