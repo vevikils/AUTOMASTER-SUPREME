@@ -58,7 +58,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AutomasterSupremeAudioProces
     return { params.begin(), params.end() };
 }
 
-const juce::String AutomasterSupremeAudioProcessor::getName() const { return "AUTOMASTER SUPREME 3"; }
+const juce::String AutomasterSupremeAudioProcessor::getName() const { return "AUTOMASTER SUPREME 3.1"; }
 bool AutomasterSupremeAudioProcessor::acceptsMidi() const { return false; }
 bool AutomasterSupremeAudioProcessor::producesMidi() const { return false; }
 bool AutomasterSupremeAudioProcessor::isMidiEffect() const { return false; }

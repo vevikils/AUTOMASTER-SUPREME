@@ -1,21 +1,20 @@
-# 🎛️ AUTOMASTER SUPREME 3: AI Mastering Suite by vevi (v3.0)
+# 🎛️ AUTOMASTER SUPREME 3.1: AI Mastering Suite by vevi (v3.1)
 
-[![Release](https://img.shields.io/badge/Release-v3.0.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
+[![Release](https://img.shields.io/badge/Release-v3.1.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
 [![Author](https://img.shields.io/badge/Author-vevi-gold.svg?style=for-the-badge)](https://github.com/vevikils)
 [![Format](https://img.shields.io/badge/Format-VST3%20%7C%20Standalone%20%7C%20WebAudio-orange.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
-[![UI](https://img.shields.io/badge/Design-FabFilter%20%26%20Waves%20Style%20%28%2B20%25%20Scale%29-magenta.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
+[![UI](https://img.shields.io/badge/Interactive-Live%20Control%20Legend%20%26%20Guide-yellow.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![DSP](https://img.shields.io/badge/DSP-JUCE%208%20%7C%20C%2B%2B17%20%7C%2064--bit-purple.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![Target](https://img.shields.io/badge/Spotify-14%20LUFS%20%7C%20--1.0%20dBTP-green.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 
-**AUTOMASTER SUPREME 3** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
+**AUTOMASTER SUPREME 3.1** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
 
-### 🚀 Novedades de la Versión 3.0:
-- **Autoría Oficial "vevi"**: Distintivo de autoría incorporado en los metadatos del plugin VST3, cabecera de la UI y consola de telemetría de agentes.
-- **Ventana un 20% más amplia (1296 x 888 px)**: Pantallas de espectro, goniómetro y medidores de nivel expandidas, perillas más grandes (68x82 px) con mayor resolución táctil al estilo FabFilter.
-- **Cabeceras de Módulos Limpias**: Eliminación completa de las casillas rojas/marcas innecesarias para un diseño de hardware studio pulido y diáfano.
-- **Puente de Medición Waves Estabilizado**: Vúmetros verticales con escala de precisión dBTP, indicadores *Peak Hold* de alta visibilidad y lecturas digitales de LUFS y Crest Factor estabilizadas a **0.5 segundos**.
-- **Identidad Oficial**: Binarios nativos renombrados a `AUTOMASTER SUPREME 3.vst3` y `AUTOMASTER SUPREME 3.exe`.
+### 🚀 Novedades de la Versión 3.1 (Sistema de Leyenda Interactiva):
+- **Inspector y Leyenda Interactiva en Tiempo Real**: Al pasar el ratón (*hover*) o arrastrar cualquier perilla o selector, la consola inferior se transforma al instante en un panel HUD con el nombre del control, rango de valores, valor en vivo, explicación clara de su función y la recomendación oficial para Spotify.
+- **Botón y Modal de Guía Rápida (`📖 LEYENDA DE CONTROLES`)**: Acceso con un clic en la barra superior a la matriz completa de los 5 módulos de procesamiento, detallando qué hace cada perilla y cómo interactúan entre sí.
+- **Tooltips Nativos de Precisión**: Cada potenciómetro integra descripción flotante inmediata con guía de uso e interacción (*arrastre vertical, rueda del ratón y doble clic para restablecer*).
+- **Ventana +20% (1296 x 888 px) y Autoría vevi**: Diseño espacioso estilo FabFilter Pro-Q y Waves, cabeceras limpias y metadatos de plugin actualizados a `AUTOMASTER SUPREME 3.1`.
 
 ---
 
@@ -24,11 +23,11 @@
 ¿Quieres usarlo de inmediato en tu DAW o en tu escritorio?
 Descarga el paquete oficial listo para usar en un clic:
 
-👉 **[Descargar AUTOMASTER_SUPREME_v3.0.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
+👉 **[Descargar AUTOMASTER_SUPREME_v3.1.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
 
 El paquete incluye:
-- `AUTOMASTER SUPREME 3.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
-- `AUTOMASTER SUPREME 3.exe` (Ejecutable de escritorio Standalone).
+- `AUTOMASTER SUPREME 3.1.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
+- `AUTOMASTER SUPREME 3.1.exe` (Ejecutable de escritorio Standalone).
 - Guías paso a paso de instalación y configuración.
 
 ---

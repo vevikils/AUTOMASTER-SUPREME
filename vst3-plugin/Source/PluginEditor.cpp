@@ -112,6 +112,30 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     };
     addAndMakeVisible(presetBox);
 
+    // Interactive Legend Button (Top Bar)
+    legendButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff151f2d));
+    legendButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffb92d));
+    legendButton.onClick = [this]()
+    {
+        showLegendDrawer = !showLegendDrawer;
+        closeLegendButton.setVisible(showLegendDrawer);
+        if (showLegendDrawer) closeLegendButton.toFront(true);
+        repaint();
+    };
+    addAndMakeVisible(legendButton);
+
+    // Close button for overlay drawer
+    closeLegendButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff281118));
+    closeLegendButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffff3366));
+    closeLegendButton.onClick = [this]()
+    {
+        showLegendDrawer = false;
+        closeLegendButton.setVisible(false);
+        repaint();
+    };
+    closeLegendButton.setVisible(false);
+    addChildComponent(closeLegendButton);
+
     // AI Auto Master Button
     autoMasterButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff0088cc));
     autoMasterButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
@@ -165,6 +189,91 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     configureKnob(ceilingSlider, ceilingLabel, "CEILING", " dBTP", red);
     configureKnob(outGainSlider, outGainLabel, "OUT GAIN", " dB", cyan);
 
+    // Register interactive legends for every control
+    registerLegend(inGainSlider, { "IN GAIN", "1. INPUT & SUB", "-18.0 dB a +18.0 dB", "0.0 dB",
+        "Calibra el nivel de la mezcla previa antes de ingresar a ecualizadores y compresores.",
+        "Ajusta para que los vumétros piquen entre -6 y -3 dBFS antes de procesar.", cyan });
+
+    registerLegend(lowCutSlider, { "LOW CUT (Sub-Tamer)", "1. INPUT & SUB", "20 Hz a 80 Hz", "30 Hz (18dB/oct)",
+        "Filtro pasa-altos quirúrgico que suprime ruidos inaudibles (<30Hz) que restan energía al limitador.",
+        "30 a 35 Hz. Limpia el fango en el sub-grave y previene sobremodulación en Spotify.", gold });
+
+    registerLegend(eqSubSlider, { "SUB BASS (80 Hz Low-Shelf)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+0.5 dB",
+        "Controla el peso y la potencia del bombo (kick) y las frecuencias fundamentales del bajo.",
+        "Incrementos discretos (+0.5 a +1.5 dB) añaden pegada sólida sin penalización de LUFS.", cyan });
+
+    registerLegend(eqLowMidSlider, { "LOW-MID (250 Hz Mud Control)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "-0.8 dB",
+        "Limpia la zona pastosa y resonante de cajas acústicas y salas que enturbian la mezcla.",
+        "Atenuación sutil (-0.5 a -1.5 dB) aporta claridad inmediata y separa la voz del bajo.", cyan });
+
+    registerLegend(eqMidSlider, { "PRESENCE (1.2 kHz Vocal Body)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+0.2 dB",
+        "Aporta cuerpo y definición a la voz principal, guitarras líderes y el impacto de la caja.",
+        "Mantener neutro o ligero realce (+0.5 dB) para destacar la voz en altavoces de móvil.", cyan });
+
+    registerLegend(eqClaritySlider, { "CLARITY (4.5 kHz Transient Bite)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+0.8 dB",
+        "Resalta la articulación de transientes, consonantes vocales y brillo de guitarras.",
+        "+0.5 a +1.5 dB abre la mezcla sin causar asperezas ni fatiga auditiva en escuchas largas.", cyan });
+
+    registerLegend(eqAirSlider, { "AIR SHEEN (12 kHz High-Shelf)", "2. 5-BAND EQUALIZER", "-12.0 dB a +12.0 dB", "+1.2 dB",
+        "Añade aire sedoso ('silk air') y tridimensionalidad de estudio comercial de alta gama.",
+        "+1.0 a +2.0 dB confiere apertura espacial brillante y sedosa en auriculares.", gold });
+
+    registerLegend(satDriveSlider, { "TAPE DRIVE (Harmonic Exciter)", "3. TAPE WARMTH", "0% a 100%", "15%",
+        "Genera armónicos analógicos para 'pegar' los elementos de la mezcla (*glue effect*).",
+        "10% a 25% genera cohesión analógica cálida sin provocar distorsión audible.", gold });
+
+    registerLegend(satWarmthSlider, { "ANALOG WARMTH", "3. TAPE WARMTH", "0% a 100%", "20%",
+        "Redondea transientes estridentes y satura suavemente las frecuencias graves.",
+        "15% a 30% otorga textura de transformador de consola vintage.", gold });
+
+    registerLegend(satModeBox, { "CIRCUITO DE SATURACIÓN", "3. TAPE WARMTH", "Tape / Tube / Console / Neve", "Analog Tape",
+        "Topología del circuito de saturación modelado analógicamente.",
+        "Tape para cohesión general; Tube para voces; Neve para graves rotundos.", gold });
+
+    registerLegend(mbLowSlider, { "MB LOW DYNAMICS (<200 Hz)", "4. MULTIBAND", "-24.0 dB a 0.0 dB", "-6.0 dB",
+        "Comprime y aprieta el sub-grave y bombo para evitar bombeo descontrolado en sistemas PA.",
+        "Controla la energía de sub para que el limitador final trabaje con total soltura.", emerald });
+
+    registerLegend(mbMidSlider, { "MB MID DYNAMICS (200 Hz - 4 kHz)", "4. MULTIBAND", "-24.0 dB a 0.0 dB", "-4.0 dB",
+        "Mantiene la consistencia de energía en el rango vocal e instrumental medio.",
+        "1 a 2 dB de reducción de ganancia asegura un volumen uniforme en todo el track.", emerald });
+
+    registerLegend(mbHighSlider, { "MB HIGH DYNAMICS (>4 kHz)", "4. MULTIBAND", "-24.0 dB a 0.0 dB", "-5.0 dB",
+        "Controlador dinámico de agudos y platos para prevenir fatiga auditiva.",
+        "Vital para prevenir distorsión al convertir a formatos con pérdidas (Ogg/AAC en Spotify).", emerald });
+
+    registerLegend(stereoWidthSlider, { "STEREO WIDTH (M/S Spatializer)", "5. STEREO & LIMITER", "0% (Mono) a 200% (Wide)", "110%",
+        "Expande la imagen estereofónica en medios y agudos manteniendo el centro mono sólido.",
+        "105% a 120%. Evitar superar 135% para no degradar la correlación de fase.", cyan });
+
+    registerLegend(monoMakerSlider, { "MONO SUB (Mono-Maker 110Hz)", "5. STEREO & LIMITER", "20 Hz a 300 Hz", "110 Hz",
+        "Suma a mono estricto todas las frecuencias inferiores a la fijada (Side = 0).",
+        "100 a 120 Hz: estándar de oro para graves con máxima pegada y compatibilidad mono.", cyan });
+
+    registerLegend(loudnessSlider, { "LOUDNESS DRIVE (Intelligent Maximizer)", "5. STEREO & LIMITER", "0.0 dB a +14.0 dB", "+3.5 dB",
+        "Maximiza la sonoridad RMS y LUFS sin recortar transientes de forma destructiva.",
+        "Ajusta con la música sonando hasta que SHORT-TERM marque exactamente -14.0 LUFS.", red });
+
+    registerLegend(ceilingSlider, { "TRUE-PEAK CEILING", "5. STEREO & LIMITER", "-3.0 dBTP a 0.0 dBTP", "-1.0 dBTP",
+        "Tope contra picos inter-muestras generados en la reconstrucción digital-analógica.",
+        "-1.0 dBTP es el mandato estricto de Spotify para evitar recorte inter-sample.", red });
+
+    registerLegend(outGainSlider, { "OUTPUT TRIM", "5. STEREO & LIMITER", "-12.0 dB a +6.0 dB", "0.0 dB",
+        "Control maestro de nivel post-procesamiento.",
+        "Mantener en 0.0 dB para preservar la calibración exacta del limitador True-Peak.", cyan });
+
+    registerLegend(presetBox, { "SELECTOR DE PRESETS", "MASTER CONSOLE", "5 Calibraciones", "Spotify Standard",
+        "Presets calibrados para streaming según género musical.",
+        "Elige el género más cercano a tu canción como punto de partida auditado.", cyan });
+
+    registerLegend(autoMasterButton, { "AI AUTO-MASTER ENGINE", "AI COOPERATIVE CORE", "Auto-Engine", "One-Click",
+        "Ajusta dinámicamente ecualización y limitación hacia el estándar de Spotify.",
+        "Haz sonar el estribillo o clímax de tu canción y pulsa para calibración instantánea.", emerald });
+
+    registerLegend(legendButton, { "GUÍA & LEYENDA COMPLETA", "INSPECTOR", "Modal Completo", "Click",
+        "Abre el panel interactivo con la tabla completa de parámetros y objetivos Spotify.",
+        "Consúltalo en cualquier momento para guiar tu proceso de masterización.", gold });
+
     // Parameter Attachments
     inGainAttach = std::make_unique<SliderAttachment>(audioProcessor.apvts, "inGain", inGainSlider);
     lowCutAttach = std::make_unique<SliderAttachment>(audioProcessor.apvts, "lowCut", lowCutSlider);
@@ -204,6 +313,97 @@ AutomasterSupremeAudioProcessorEditor::~AutomasterSupremeAudioProcessorEditor()
     setLookAndFeel(nullptr);
 }
 
+void AutomasterSupremeAudioProcessorEditor::registerLegend(juce::Component& comp, const ControlLegendInfo& info)
+{
+    controlLegends.push_back({ &comp, info });
+    comp.addMouseListener(this, true);
+    if (auto* sc = dynamic_cast<juce::SettableTooltipClient*>(&comp))
+    {
+        sc->setTooltip(info.name + " (" + info.moduleName + ")\n" + info.description + "\n🎯 Target Spotify: " + info.spotifyTip);
+    }
+}
+
+void AutomasterSupremeAudioProcessorEditor::updateHoverFromComponent(juce::Component* comp)
+{
+    if (comp == nullptr) return;
+
+    for (const auto& pair : controlLegends)
+    {
+        if (comp == pair.first || pair.first->isParentOf(comp))
+        {
+            activeLegend = pair.second;
+            if (auto* slider = dynamic_cast<juce::Slider*>(pair.first))
+            {
+                activeControlValue = juce::String(slider->getValue(), 1) + slider->getTextValueSuffix();
+            }
+            else if (auto* box = dynamic_cast<juce::ComboBox*>(pair.first))
+            {
+                activeControlValue = box->getText();
+            }
+            else
+            {
+                activeControlValue = "ACTIVO";
+            }
+            isControlActive = true;
+            repaint();
+            return;
+        }
+    }
+}
+
+void AutomasterSupremeAudioProcessorEditor::mouseEnter(const juce::MouseEvent& event)
+{
+    updateHoverFromComponent(event.eventComponent);
+}
+
+void AutomasterSupremeAudioProcessorEditor::mouseMove(const juce::MouseEvent& event)
+{
+    updateHoverFromComponent(event.eventComponent);
+}
+
+void AutomasterSupremeAudioProcessorEditor::mouseDrag(const juce::MouseEvent& event)
+{
+    updateHoverFromComponent(event.eventComponent);
+}
+
+void AutomasterSupremeAudioProcessorEditor::mouseExit(const juce::MouseEvent& event)
+{
+    if (!event.mods.isAnyMouseButtonDown())
+    {
+        auto pos = getMouseXYRelative();
+        auto* hit = getComponentAt(pos);
+        bool hitFound = false;
+        for (const auto& pair : controlLegends)
+        {
+            if (hit == pair.first || (hit != nullptr && pair.first->isParentOf(hit)))
+            {
+                updateHoverFromComponent(hit);
+                hitFound = true;
+                break;
+            }
+        }
+        if (!hitFound)
+        {
+            isControlActive = false;
+            repaint();
+        }
+    }
+}
+
+void AutomasterSupremeAudioProcessorEditor::mouseDown(const juce::MouseEvent& event)
+{
+    if (showLegendDrawer)
+    {
+        auto modal = getLocalBounds().reduced(60, 45);
+        if (!modal.contains(event.getPosition()))
+        {
+            showLegendDrawer = false;
+            closeLegendButton.setVisible(false);
+            repaint();
+        }
+    }
+}
+
 void AutomasterSupremeAudioProcessorEditor::configureKnob(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix, juce::Colour accent)
 {
     slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
@@ -213,6 +413,14 @@ void AutomasterSupremeAudioProcessorEditor::configureKnob(juce::Slider& slider, 
     slider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff080b11));
     slider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0xff1a2434));
     slider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    slider.onValueChange = [this, &slider]()
+    {
+        if (isControlActive)
+        {
+            activeControlValue = juce::String(slider.getValue(), 1) + slider.getTextValueSuffix();
+            repaint();
+        }
+    };
     addAndMakeVisible(slider);
 
     label.setText(text, juce::dontSendNotification);
@@ -227,7 +435,6 @@ void AutomasterSupremeAudioProcessorEditor::configureBypassButton(juce::ToggleBu
     btn.setColour(juce::ToggleButton::textColourId, juce::Colour(0xff00ffaa));
     btn.setColour(juce::ToggleButton::tickColourId, juce::Colour(0xff00ffaa));
     btn.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colour(0xffff3366));
-    addAndMakeVisible(btn);
 }
 
 void AutomasterSupremeAudioProcessorEditor::timerCallback()
@@ -261,12 +468,8 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
 
         dispPeakL = accumPeakL;
         dispPeakR = accumPeakR;
-
-        if (dispPeakL > dispPeakHoldL) dispPeakHoldL = dispPeakL;
-        else dispPeakHoldL = std::max(-100.0f, dispPeakHoldL - 1.5f);
-
-        if (dispPeakR > dispPeakHoldR) dispPeakHoldR = dispPeakR;
-        else dispPeakHoldR = std::max(-100.0f, dispPeakHoldR - 1.5f);
+        dispPeakHoldL = std::max(dispPeakHoldL - 0.5f, dispPeakL);
+        dispPeakHoldR = std::max(dispPeakHoldR - 0.5f, dispPeakR);
 
         if (accumSampleCount > 0)
         {
@@ -280,21 +483,21 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
         }
         dispShortTermLufs = liveShortTerm;
 
-        // Spotify status determination
-        if (dispMomentaryLufs <= -13.0f && dispMomentaryLufs >= -15.5f)
+        // Spotify Certification Logic
+        if (dispShortTermLufs > -13.0f)
         {
-            dispSpotifyStatus = "-14 TARGET";
-            dispSpotifyCol = juce::Colour(0xff00ffaa); // Green
+            dispSpotifyStatus = "LOUD PENALTY";
+            dispSpotifyCol = juce::Colour(0xffff3366);
         }
-        else if (dispMomentaryLufs > -12.5f)
+        else if (dispShortTermLufs < -16.0f)
         {
-            dispSpotifyStatus = "TOO LOUD";
-            dispSpotifyCol = juce::Colour(0xffff3366); // Red
+            dispSpotifyStatus = "LOW LEVEL";
+            dispSpotifyCol = juce::Colour(0xffffb92d);
         }
         else
         {
-            dispSpotifyStatus = "LOW LEVEL";
-            dispSpotifyCol = juce::Colour(0xffffb92d); // Amber
+            dispSpotifyStatus = "-14 TARGET OK";
+            dispSpotifyCol = juce::Colour(0xff00ffaa);
         }
 
         // Reset accumulator for next 0.5s cycle
@@ -329,22 +532,22 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font(22.0f, juce::Font::bold));
     g.drawText("A3", logoRect, juce::Justification::centred);
 
-    // Title & Version 3 Pill Badge
+    // Title & Version 3.1 Pill Badge
     g.setColour(juce::Colours::white);
     g.setFont(juce::Font(22.0f, juce::Font::bold));
-    g.drawText("AUTOMASTER SUPREME 3", 72, 11, 315, 26, juce::Justification::centredLeft);
+    g.drawText("AUTOMASTER SUPREME 3.1", 72, 11, 330, 26, juce::Justification::centredLeft);
 
-    // Version 3.0 Pill Badge
-    auto verBadge = juce::Rectangle<float>(392, 15, 48, 20);
+    // Version 3.1 Pill Badge
+    auto verBadge = juce::Rectangle<float>(410, 15, 48, 20);
     g.setColour(juce::Colour(0x3000f0ff));
     g.fillRoundedRectangle(verBadge, 4.0f);
     g.setColour(juce::Colour(0xff00f0ff));
     g.drawRoundedRectangle(verBadge, 4.0f, 1.0f);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("v3.0", verBadge, juce::Justification::centred);
+    g.drawText("v3.1", verBadge, juce::Justification::centred);
 
     // Author Badge "BY VEVI"
-    auto authorBadge = juce::Rectangle<float>(448, 15, 82, 20);
+    auto authorBadge = juce::Rectangle<float>(466, 15, 82, 20);
     g.setColour(juce::Colour(0x25ffb92d));
     g.fillRoundedRectangle(authorBadge, 4.0f);
     g.setColour(juce::Colour(0xffffb92d));
@@ -355,10 +558,10 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     // Subtitle
     g.setColour(juce::Colour(0xff7e91ad));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI MASTERING SUITE · BY VEVI", 72, 40, 185, 16, juce::Justification::centredLeft);
+    g.drawText("AI MASTERING SUITE · BY VEVI", 72, 40, 190, 16, juce::Justification::centredLeft);
 
     // Spotify Reference Tag Pill
-    auto spotifyTag = juce::Rectangle<float>(265, 39, 265, 19);
+    auto spotifyTag = juce::Rectangle<float>(272, 39, 265, 19);
     g.setColour(juce::Colour(0x2000ffaa));
     g.fillRoundedRectangle(spotifyTag, 4.0f);
     g.setColour(juce::Colour(0xff00ffaa));
@@ -368,373 +571,418 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
 
     // 3. Upper Deck: 3 OLED Screen Frames (FabFilter & Waves Style, Scaled +20%)
     drawSpectrumScreen(g, juce::Rectangle<int>(20, 82, 640, 300));
-    drawGoniometerScreen(g, juce::Rectangle<int>(672, 82, 310, 300));
+    drawGoniometerScreen(g, juce::Rectangle<int>(674, 82, 310, 300));
     drawMetersScreen(g, juce::Rectangle<int>(994, 82, 282, 300));
 
-    // 4. Lower Deck: 5 Hardware Rack Modules (Frosted dark glass with color accents, Scaled +20%)
+    // 4. Middle Deck: 5 Hardware Module Cards
     drawModuleCard(g, juce::Rectangle<int>(20, 396, 160, 330), "1. INPUT & SUB", juce::Colour(0xff00f0ff));
     drawModuleCard(g, juce::Rectangle<int>(194, 396, 420, 330), "2. 5-BAND EQUALIZER", juce::Colour(0xff00f0ff));
     drawModuleCard(g, juce::Rectangle<int>(628, 396, 166, 330), "3. TAPE WARMTH", juce::Colour(0xffffb92d));
     drawModuleCard(g, juce::Rectangle<int>(808, 396, 176, 330), "4. MULTIBAND", juce::Colour(0xff00ffaa));
     drawModuleCard(g, juce::Rectangle<int>(998, 396, 278, 330), "5. STEREO & LIMITER", juce::Colour(0xffff3366));
 
-    // Frequency badges for 5-Band EQ (FabFilter style pills, Scaled)
-    const char* eqFreqLabels[] = { "35 Hz", "300 Hz", "1.5 kHz", "4.5 kHz", "12 kHz" };
-    const char* eqTypeLabels[] = { "LOW SHELF", "BELL (Q 1.0)", "BELL (Q 1.2)", "BELL (Q 1.1)", "HIGH SHELF" };
+    // EQ Frequency Pill Badges
+    const char* eqFreqs[] = { "80 Hz", "250 Hz", "1.2 kHz", "4.5 kHz", "12 kHz" };
+    g.setFont(juce::Font(9.0f, juce::Font::bold));
     for (int i = 0; i < 5; ++i)
     {
         int bandX = 204 + i * 80;
-        auto badgeRect = juce::Rectangle<float>(float(bandX + 2), 548.0f, 64.0f, 28.0f);
-        g.setColour(juce::Colour(0xff0a0e16));
-        g.fillRoundedRectangle(badgeRect, 4.0f);
-        g.setColour(juce::Colour(0xff1e2a3c));
-        g.drawRoundedRectangle(badgeRect, 4.0f, 1.0f);
-        g.setFont(juce::Font(8.5f, juce::Font::bold));
-        g.setColour(i == 4 ? juce::Colour(0xffffb92d) : juce::Colour(0xff00f0ff));
-        g.drawText(eqFreqLabels[i], badgeRect.removeFromTop(14.0f), juce::Justification::centred);
-        g.setFont(juce::Font(7.5f, juce::Font::plain));
-        g.setColour(juce::Colour(0xff8b9bb4));
-        g.drawText(eqTypeLabels[i], badgeRect, juce::Justification::centred);
+        auto badge = juce::Rectangle<float>(float(bandX), 548.0f, 68.0f, 15.0f);
+        g.setColour(juce::Colour(0x2000f0ff));
+        g.fillRoundedRectangle(badge, 3.0f);
+        g.setColour(juce::Colour(0x5000f0ff));
+        g.drawRoundedRectangle(badge, 3.0f, 0.8f);
+        g.setColour(juce::Colour(0xff80eeff));
+        g.drawText(eqFreqs[i], badge, juce::Justification::centred);
     }
 
-    // 5. Bottom Multi-Agent Telemetry Bar (Scaled +20%)
-    drawAgentDeck(g, juce::Rectangle<int>(20, 740, getWidth() - 40, 126));
+    // 5. Lower Deck: Multi-Agent AI Console & Interactive Control Legend HUD
+    drawAgentDeck(g, juce::Rectangle<int>(20, 740, 1256, 126));
 }
 
-// ------------------------------------------------------------------------------
-// Draw Floating FabFilter-Style EQ Node
-// ------------------------------------------------------------------------------
-void AutomasterSupremeAudioProcessorEditor::drawEQNode(juce::Graphics& g, float x, float y, int bandNum, float gainDb, juce::Colour col)
+void AutomasterSupremeAudioProcessorEditor::paintOverChildren(juce::Graphics& g)
 {
-    // 1. Ambient Glow Halo (FabFilter bloom)
-    g.setColour(col.withAlpha(0.22f));
-    g.fillEllipse(x - 12.0f, y - 12.0f, 24.0f, 24.0f);
-
-    // 2. Outer Ring
-    g.setColour(col.withAlpha(0.75f));
-    g.drawEllipse(x - 8.5f, y - 8.5f, 17.0f, 17.0f, 1.2f);
-
-    // 3. Inner Node Body (Dark core with colored rim)
-    g.setColour(juce::Colour(0xff0a0e16));
-    g.fillEllipse(x - 7.0f, y - 7.0f, 14.0f, 14.0f);
-    g.setColour(col);
-    g.drawEllipse(x - 7.0f, y - 7.0f, 14.0f, 14.0f, 1.5f);
-
-    // 4. Band Number in center
-    g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(9.0f, juce::Font::bold));
-    g.drawText(juce::String(bandNum), int(x - 7.0f), int(y - 7.0f), 14, 14, juce::Justification::centred);
-
-    // 5. Floating Gain Tag Pill (FabFilter Pro-Q style)
-    juce::String tagText = (gainDb >= 0.0f ? "+" : "") + juce::String(gainDb, 1) + " dB";
-    const int tagW = 44;
-    const int tagH = 15;
-    const int tagX = int(x) - tagW / 2;
-    const int tagY = (gainDb >= 0.0f) ? int(y - 24.0f) : int(y + 11.0f);
-
-    auto tagRect = juce::Rectangle<float>(float(tagX), float(tagY), float(tagW), float(tagH));
-    g.setColour(juce::Colour(0xd8090d14));
-    g.fillRoundedRectangle(tagRect, 3.5f);
-    g.setColour(col.withAlpha(0.85f));
-    g.drawRoundedRectangle(tagRect, 3.5f, 1.0f);
-
-    g.setFont(juce::Font(8.0f, juce::Font::bold));
-    g.setColour(col);
-    g.drawText(tagText, tagRect, juce::Justification::centred);
+    if (showLegendDrawer)
+    {
+        drawLegendDrawerOverlay(g);
+    }
 }
 
 // ------------------------------------------------------------------------------
-// Draw Spectrum Analyzer & EQ Curve Screen (FabFilter Pro-Q Style)
+// Draw Interactive Full Legend / Guide Overlay Drawer
+// ------------------------------------------------------------------------------
+void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphics& g)
+{
+    // Backdrop dark dimming
+    g.fillAll(juce::Colour(0xdc05080e));
+
+    auto modal = getLocalBounds().reduced(50, 36);
+
+    // Modal Chassis (Dark Frosted Glass with Neon Glow border)
+    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff111722), float(modal.getX()), float(modal.getY()),
+                                           juce::Colour(0xff090d14), float(modal.getX()), float(modal.getBottom()), false));
+    g.fillRoundedRectangle(modal.toFloat(), 12.0f);
+
+    g.setColour(juce::Colour(0xffffb92d));
+    g.drawRoundedRectangle(modal.toFloat(), 12.0f, 1.5f);
+
+    // Header strip
+    auto header = modal.removeFromTop(56).reduced(16, 8);
+    g.setColour(juce::Colours::white);
+    g.setFont(juce::Font(18.0f, juce::Font::bold));
+    g.drawText("📖 GUÍA Y LEYENDA INTERACTIVA DE MASTERIZACIÓN · AUTOMASTER SUPREME 3.1", header.getX(), header.getY(), 750, 24, juce::Justification::left);
+
+    g.setColour(juce::Colour(0xff00ffaa));
+    g.setFont(juce::Font(11.0f, juce::Font::bold));
+    g.drawText("CALIBRACIÓN ESTRICTA SPOTIFY (-14.0 LUFS / -1.0 dBTP) · POR VEVI", header.getX(), header.getY() + 24, 600, 16, juce::Justification::left);
+
+    // 5 Columns for 5 Modules
+    auto contentArea = modal.reduced(14, 10);
+    const int colW = (contentArea.getWidth() - 32) / 5;
+    const int colH = contentArea.getHeight() - 40;
+
+    struct ModuleGuide
+    {
+        const char* title;
+        juce::Colour col;
+        std::vector<std::pair<const char*, const char*>> items;
+    };
+
+    std::vector<ModuleGuide> guides = {
+        { "1. INPUT & SUB", juce::Colour(0xff00f0ff), {
+            { "IN GAIN", "Nivel de entrada previa (-18 a +18dB). Pica a -6/-3 dBFS." },
+            { "LOW CUT", "Filtro sub 20-80Hz. 30-35Hz libera headroom para el limitador." }
+        }},
+        { "2. 5-BAND EQ", juce::Colour(0xff00f0ff), {
+            { "SUB BASS (80Hz)", "Low-Shelf. +0.5 a +1.5dB da pegada de bombo sólida." },
+            { "LOW-MID (250Hz)", "Bell anti-fango. -0.5 a -1.5dB limpia y destaca voces." },
+            { "PRESENCE (1.2k)", "Cuerpo vocal y de caja. Mantener neutro o +0.5dB." },
+            { "CLARITY (4.5k)", "Apertura y ataque. +0.5 a +1.5dB abre la mezcla." },
+            { "AIR SHEEN (12k)", "High-Shelf sedoso. +1.0 a +2.0dB brillo comercial." }
+        }},
+        { "3. TAPE WARMTH", juce::Colour(0xffffb92d), {
+            { "TAPE DRIVE", "Saturación armónica. 10-25% une la mezcla (*glue*)." },
+            { "WARMTH", "Calidez de transformador. 15-30% suaviza transientes." },
+            { "CIRCUITO", "Tape (general), Tube (voces), Console, Neve (graves)." }
+        }},
+        { "4. MULTIBAND", juce::Colour(0xff00ffaa), {
+            { "MB LOW (<200Hz)", "Compresión de sub y pegada. 1-2dB reducción." },
+            { "MB MID (200-4k)", "Estabilidad vocal y consistencia RMS." },
+            { "MB HIGH (>4kHz)", "Control de platos y sibilancias para compresión AAC." }
+        }},
+        { "5. STEREO & LIMIT", juce::Colour(0xffff3366), {
+            { "STEREO WIDTH", "Espacialidad M/S. 105-120% ideal para streaming." },
+            { "MONO SUB (110Hz)", "Mono-Maker. Graves a mono: pegada masiva en club." },
+            { "LOUDNESS DRIVE", "Maximización a -14.0 LUFS sin distorsionar." },
+            { "TRUE-PEAK CEIL", "-1.0 dBTP obligatorio para evitar clip en Spotify." },
+            { "OUTPUT TRIM", "Trim post-limitador (mantener en 0.0 dB)." }
+        }}
+    };
+
+    for (int c = 0; c < 5; ++c)
+    {
+        auto colRect = juce::Rectangle<int>(contentArea.getX() + c * (colW + 8), contentArea.getY(), colW, colH);
+        g.setColour(juce::Colour(0xff0c111a));
+        g.fillRoundedRectangle(colRect.toFloat(), 6.0f);
+        g.setColour(guides[c].col.withAlpha(0.4f));
+        g.drawRoundedRectangle(colRect.toFloat(), 6.0f, 1.0f);
+
+        // Module title strip
+        auto colHeader = colRect.removeFromTop(24);
+        g.setColour(guides[c].col.withAlpha(0.18f));
+        g.fillRect(colHeader);
+        g.setColour(guides[c].col);
+        g.setFont(juce::Font(10.5f, juce::Font::bold));
+        g.drawText(guides[c].title, colHeader.reduced(8, 0), juce::Justification::centredLeft);
+
+        // Parameters in this module
+        int itemY = colRect.getY() + 8;
+        for (const auto& item : guides[c].items)
+        {
+            g.setColour(juce::Colours::white);
+            g.setFont(juce::Font(10.0f, juce::Font::bold));
+            g.drawText(item.first, colRect.getX() + 8, itemY, colW - 16, 15, juce::Justification::left);
+
+            g.setColour(juce::Colour(0xff94a3b8));
+            g.setFont(juce::Font(9.0f, juce::Font::plain));
+            g.drawFittedText(item.second, colRect.getX() + 8, itemY + 16, colW - 16, 46, juce::Justification::topLeft, 3);
+
+            itemY += 66;
+        }
+    }
+
+    // Footer Rule
+    auto footerArea = juce::Rectangle<int>(contentArea.getX(), contentArea.getBottom() - 32, contentArea.getWidth(), 30);
+    g.setColour(juce::Colour(0xff121b27));
+    g.fillRoundedRectangle(footerArea.toFloat(), 5.0f);
+    g.setColour(juce::Colour(0xff00ffaa));
+    g.drawRoundedRectangle(footerArea.toFloat(), 5.0f, 0.8f);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("💡 REGLA DE ORO SPOTIFY: Masterizar por encima de -14 LUFS provoca atenuación algorítmica obligatoria en streaming. ¡Deja respirar la dinámica de tu mezcla!",
+               footerArea.reduced(10, 0), juce::Justification::centred);
+}
+
+// ------------------------------------------------------------------------------
+// Draw Real-Time Spectrum Analyzer Screen (FabFilter Style)
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::drawSpectrumScreen(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
-    // Dark glass background
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff0c1017), float(bounds.getX()), float(bounds.getY()),
-                                           juce::Colour(0xff070a0f), float(bounds.getX()), float(bounds.getBottom()), false));
+    // Screen Chassis
+    g.setColour(juce::Colour(0xff06090e));
     g.fillRoundedRectangle(bounds.toFloat(), 8.0f);
     g.setColour(juce::Colour(0xff1c2738));
-    g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.2f);
+    g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
-    // Screen Header
-    auto headerRect = bounds.removeFromTop(24);
-    g.setColour(juce::Colour(0x12ffffff));
-    g.fillRect(headerRect);
-    g.setColour(juce::Colour(0xff00f0ff));
-    g.fillRoundedRectangle(float(headerRect.getX() + 8), float(headerRect.getY() + 6), 3.0f, 12.0f, 1.5f);
+    // Grid & Coordinates
+    auto graphArea = bounds.reduced(12, 14);
+    g.setColour(juce::Colour(0xff101824));
 
-    g.setColour(juce::Colour(0xffcbd5e1));
-    g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("SPECTRUM ANALYZER & MASTERING EQ (v2.0)", headerRect.getX() + 16, headerRect.getY(), 320, 24, juce::Justification::centredLeft);
-
-    // Legend
-    g.setFont(juce::Font(9.0f, juce::Font::plain));
-    g.setColour(juce::Colour(0xff00f0ff));
-    g.drawText("* Live FFT (Post)", headerRect.getRight() - 170, headerRect.getY(), 95, 24, juce::Justification::centredLeft);
-    g.setColour(juce::Colour(0xffffe600));
-    g.drawText("-- Curva EQ", headerRect.getRight() - 70, headerRect.getY(), 65, 24, juce::Justification::centredLeft);
-
-    auto displayArea = bounds.reduced(8, 6);
-    const float w = float(displayArea.getWidth());
-    const float h = float(displayArea.getHeight());
-    const float ox = float(displayArea.getX());
-    const float oy = float(displayArea.getY());
-
-    // Grid lines (dB)
-    const float minDb = -66.0f;
-    const float maxDb = 6.0f;
-    const float dbRange = maxDb - minDb; // 72 dB
-
-    g.setColour(juce::Colour(0x10ffffff));
-    for (float db = 0.0f; db >= -60.0f; db -= 12.0f)
+    // Horizontal dB grid lines
+    const float dbMarks[] = { 12.0f, 6.0f, 0.0f, -6.0f, -12.0f, -18.0f, -24.0f };
+    for (float db : dbMarks)
     {
-        float normY = oy + h - ((db - minDb) / dbRange) * h;
-        g.drawLine(ox, normY, ox + w, normY, 0.8f);
-        g.setColour(juce::Colour(0x40ffffff));
-        g.setFont(juce::Font(8.0f, juce::Font::plain));
-        g.drawText(juce::String(int(db)) + " dB", ox + 2, normY - 8, 32, 10, juce::Justification::left);
-        g.setColour(juce::Colour(0x10ffffff));
+        float y = juce::jmap(db, -28.0f, 18.0f, float(graphArea.getBottom()), float(graphArea.getY()));
+        g.drawLine(float(graphArea.getX()), y, float(graphArea.getRight()), y, 0.7f);
+
+        g.setColour(juce::Colour(0xff33445b));
+        g.setFont(juce::Font("monospace", 8.5f, juce::Font::plain));
+        g.drawText(juce::String(int(db)) + "dB", graphArea.getX() + 2, int(y) - 10, 32, 10, juce::Justification::left);
+        g.setColour(juce::Colour(0xff101824));
     }
 
-    // Grid lines (Hz)
-    const float minLog = std::log10(20.0f);
-    const float maxLog = std::log10(20000.0f);
-    const float logRange = maxLog - minLog;
+    // Vertical Frequency grid lines (Logarithmic)
     const float freqs[] = { 50.0f, 100.0f, 250.0f, 500.0f, 1000.0f, 2500.0f, 5000.0f, 10000.0f, 20000.0f };
     const char* freqLabels[] = { "50", "100", "250", "500", "1k", "2.5k", "5k", "10k", "20k" };
 
     for (int i = 0; i < 9; ++i)
     {
-        float normX = ox + ((std::log10(freqs[i]) - minLog) / logRange) * w;
-        g.drawLine(normX, oy, normX, oy + h, 0.8f);
-        g.setColour(juce::Colour(0x40ffffff));
-        g.setFont(juce::Font(8.0f, juce::Font::plain));
-        g.drawText(freqLabels[i], normX + 2, oy + h - 10, 25, 10, juce::Justification::left);
-        g.setColour(juce::Colour(0x10ffffff));
+        float normX = std::log10(freqs[i] / 20.0f) / std::log10(20000.0f / 20.0f);
+        float x = float(graphArea.getX()) + normX * float(graphArea.getWidth());
+        g.drawLine(x, float(graphArea.getY()), x, float(graphArea.getBottom()), 0.7f);
+
+        g.setColour(juce::Colour(0xff33445b));
+        g.setFont(juce::Font("monospace", 8.5f, juce::Font::plain));
+        g.drawText(freqLabels[i], int(x) - 14, graphArea.getBottom() - 11, 28, 10, juce::Justification::centred);
+        g.setColour(juce::Colour(0xff101824));
     }
 
-    // Draw Live FFT Curve (Post-Master with Neon Cyan Glow)
-    const double sr = audioProcessor.dsp.getSampleRate();
-    const float binStep = float(AudioConstants::FFT_SIZE) / float(sr > 0 ? sr : 44100.0);
-    const int totalBins = int(fftDisplayData.size());
+    // Neon Spectrum Fill & Stroke (Reactive FFT)
+    juce::Path spectrumPath;
+    spectrumPath.startNewSubPath(float(graphArea.getX()), float(graphArea.getBottom()));
 
-    juce::Path fftPath;
-    bool started = false;
-    const int numPoints = int(w);
-
-    for (int px = 0; px < numPoints; ++px)
+    const int numBins = int(fftDisplayData.size());
+    for (int i = 1; i < numBins; ++i)
     {
-        const float normX = ox + float(px);
-        const float t1 = float(px) / float(numPoints);
-        const float t2 = float(px + 1) / float(numPoints);
+        float binFreq = (float(i) * 44100.0f) / float(AudioConstants::FFT_SIZE);
+        if (binFreq < 20.0f || binFreq > 20000.0f) continue;
 
-        const float f1 = std::pow(10.0f, minLog + t1 * logRange);
-        const float f2 = std::pow(10.0f, minLog + t2 * logRange);
+        float normX = std::log10(binFreq / 20.0f) / std::log10(20000.0f / 20.0f);
+        float px = float(graphArea.getX()) + normX * float(graphArea.getWidth());
 
-        const float binExact = f1 * binStep;
-        const float binNext = f2 * binStep;
+        float magDb = juce::Decibels::gainToDecibels(fftDisplayData[size_t(i)] * 2.0f, -100.0f);
+        float py = juce::jmap(juce::jlimit(-70.0f, 12.0f, magDb), -70.0f, 12.0f, float(graphArea.getBottom()), float(graphArea.getY()));
 
-        float maxBinDb = -100.0f;
-        const int startBin = std::clamp(int(binExact), 0, totalBins - 1);
-        const int endBin = std::clamp(int(binNext), startBin, totalBins - 1);
+        spectrumPath.lineTo(px, py);
+    }
+    spectrumPath.lineTo(float(graphArea.getRight()), float(graphArea.getBottom()));
+    spectrumPath.closeSubPath();
 
-        if (endBin > startBin)
+    // Spectrum Gradient Fill
+    g.setGradientFill(juce::ColourGradient(juce::Colour(0x3500f0ff), float(graphArea.getX()), float(graphArea.getY()),
+                                           juce::Colour(0x02002535), float(graphArea.getX()), float(graphArea.getBottom()), false));
+    g.fillPath(spectrumPath);
+
+    // Spectrum Outline (Sharp Cyan)
+    g.setColour(juce::Colour(0xcc00f0ff));
+    g.strokePath(spectrumPath, juce::PathStrokeType(1.2f));
+
+    // EQ Filter Curve Overlay (FabFilter Style Dynamic Composite Curve)
+    const float gains[] = {
+        float(eqSubSlider.getValue()),
+        float(eqLowMidSlider.getValue()),
+        float(eqMidSlider.getValue()),
+        float(eqClaritySlider.getValue()),
+        float(eqAirSlider.getValue())
+    };
+    const float nodeFreqs[] = { 80.0f, 250.0f, 1200.0f, 4500.0f, 12000.0f };
+
+    juce::Path eqCurvePath;
+    bool pathStarted = false;
+
+    for (int px = graphArea.getX(); px <= graphArea.getRight(); px += 2)
+    {
+        float normX = float(px - graphArea.getX()) / float(graphArea.getWidth());
+        float f = 20.0f * std::pow(20000.0f / 20.0f, normX);
+
+        // Low cut attenuation
+        float lowCutFreq = float(lowCutSlider.getValue());
+        float eqTotalDb = 0.0f;
+        if (f < lowCutFreq)
         {
-            for (int b = startBin; b <= endBin; ++b)
-            {
-                if (fftDisplayData[size_t(b)] > maxBinDb)
-                    maxBinDb = fftDisplayData[size_t(b)];
-            }
+            float octavesBelow = std::log2(lowCutFreq / f);
+            eqTotalDb -= octavesBelow * 18.0f; // 18 dB/oct HPF
+        }
+
+        // Add 5-band bells & shelves
+        // Band 1: Low Shelf (80Hz)
+        eqTotalDb += gains[0] / (1.0f + std::pow(f / nodeFreqs[0], 2.0f));
+        // Band 2: Bell (250Hz, Q=1.0)
+        float d2 = std::log2(f / nodeFreqs[1]);
+        eqTotalDb += gains[1] * std::exp(-d2 * d2 * 1.8f);
+        // Band 3: Bell (1200Hz, Q=1.0)
+        float d3 = std::log2(f / nodeFreqs[2]);
+        eqTotalDb += gains[2] * std::exp(-d3 * d3 * 1.8f);
+        // Band 4: Bell (4500Hz, Q=1.2)
+        float d4 = std::log2(f / nodeFreqs[3]);
+        eqTotalDb += gains[3] * std::exp(-d4 * d4 * 2.2f);
+        // Band 5: High Shelf (12000Hz)
+        eqTotalDb += gains[4] / (1.0f + std::pow(nodeFreqs[4] / f, 2.0f));
+
+        float py = juce::jmap(juce::jlimit(-24.0f, 18.0f, eqTotalDb), -28.0f, 18.0f, float(graphArea.getBottom()), float(graphArea.getY()));
+
+        if (!pathStarted)
+        {
+            eqCurvePath.startNewSubPath(float(px), py);
+            pathStarted = true;
         }
         else
         {
-            const int b0 = std::clamp(int(binExact), 0, totalBins - 2);
-            const float frac = binExact - float(b0);
-            maxBinDb = fftDisplayData[size_t(b0)] * (1.0f - frac) + fftDisplayData[size_t(b0 + 1)] * frac;
-        }
-
-        const float normY = oy + h - std::clamp((maxBinDb - minDb) / dbRange, 0.0f, 1.0f) * h;
-
-        if (!started)
-        {
-            fftPath.startNewSubPath(normX, normY);
-            started = true;
-        }
-        else
-        {
-            fftPath.lineTo(normX, normY);
+            eqCurvePath.lineTo(float(px), py);
         }
     }
 
-    if (started)
-    {
-        juce::Path fillPath = fftPath;
-        fillPath.lineTo(ox + w, oy + h);
-        fillPath.lineTo(ox, oy + h);
-        fillPath.closeSubPath();
+    // Glow bloom for FabFilter Curve
+    g.setColour(juce::Colour(0x40ffff20));
+    g.strokePath(eqCurvePath, juce::PathStrokeType(4.0f));
+    g.setColour(juce::Colour(0xffffe633));
+    g.strokePath(eqCurvePath, juce::PathStrokeType(2.0f));
 
-        // Neon Gradient Fill (Ambient glow style FabFilter)
-        g.setGradientFill(juce::ColourGradient(juce::Colour(0x3500f0ff), ox, oy, juce::Colour(0x02001524), ox, oy + h, false));
-        g.fillPath(fillPath);
-
-        // Ambient glow stroke behind curve
-        g.setColour(juce::Colour(0x4000f0ff));
-        g.strokePath(fftPath, juce::PathStrokeType(3.5f));
-
-        // Core line
-        g.setColour(juce::Colour(0xff00f0ff));
-        g.strokePath(fftPath, juce::PathStrokeType(1.6f));
-    }
-
-    // Dynamic Parametric EQ Curve & FabFilter Band Nodes
-    const float gSub = audioProcessor.apvts.getRawParameterValue("eqLowShelfGain")->load();
-    const float gLowMid = audioProcessor.apvts.getRawParameterValue("eqLowMidGain")->load();
-    const float gMid = audioProcessor.apvts.getRawParameterValue("eqMidGain")->load();
-    const float gClarity = audioProcessor.apvts.getRawParameterValue("eqHighMidGain")->load();
-    const float gAir = audioProcessor.apvts.getRawParameterValue("eqHighShelfGain")->load();
-
-    auto getEqCurveY = [&](float f) -> float {
-        float totalGain = 0.0f;
-        if (f < 160.0f) totalGain += gSub * (1.0f - f / 200.0f);
-        totalGain += gLowMid * std::exp(-std::abs(std::log2(f / 300.0f)) * 1.5f);
-        totalGain += gMid * std::exp(-std::abs(std::log2(f / 1500.0f)) * 1.5f);
-        totalGain += gClarity * std::exp(-std::abs(std::log2(f / 4500.0f)) * 1.5f);
-        if (f > 6000.0f) totalGain += gAir * std::min(1.0f, (f - 6000.0f) / 6000.0f);
-
-        return oy + h - ((totalGain - 18.0f - minDb) / dbRange) * h;
+    // Draw FabFilter Interactive Visual Nodes (1 to 5)
+    juce::Colour nodeColors[] = {
+        juce::Colour(0xff00f0ff), juce::Colour(0xff00ffaa), juce::Colour(0xff33ccff),
+        juce::Colour(0xffffb92d), juce::Colour(0xffff55aa)
     };
-
-    auto getFreqX = [&](float f) -> float {
-        return ox + ((std::log10(f) - minLog) / logRange) * w;
-    };
-
-    juce::Path eqCurve;
-    for (int i = 0; i <= 100; ++i)
+    for (int i = 0; i < 5; ++i)
     {
-        const float f = 20.0f * std::pow(1000.0f, float(i) / 100.0f);
-        const float x = getFreqX(f);
-        const float y = getEqCurveY(f);
+        float normX = std::log10(nodeFreqs[i] / 20.0f) / std::log10(20000.0f / 20.0f);
+        float nx = float(graphArea.getX()) + normX * float(graphArea.getWidth());
+        float ny = juce::jmap(juce::jlimit(-24.0f, 18.0f, gains[i]), -28.0f, 18.0f, float(graphArea.getBottom()), float(graphArea.getY()));
 
-        if (i == 0) eqCurve.startNewSubPath(x, y);
-        else eqCurve.lineTo(x, y);
+        drawEQNode(g, nx, ny, i + 1, gains[i], nodeColors[i]);
     }
 
-    // EQ Curve with glow
-    g.setColour(juce::Colour(0x35ffe600));
-    g.strokePath(eqCurve, juce::PathStrokeType(3.5f));
+    // Screen Header Tag
+    g.setColour(juce::Colour(0xff00f0ff));
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("FABFILTER PRO-Q STYLE SPECTRUM & ACOUSTIC CURVE", bounds.getX() + 12, bounds.getY() + 6, 360, 14, juce::Justification::left);
 
-    g.setColour(juce::Colour(0xffffe600));
-    juce::PathStrokeType stroke(1.8f);
-    juce::Path dashedEqCurve;
-    float dashes[] = { 4.0f, 3.0f };
-    stroke.createDashedStroke(dashedEqCurve, eqCurve, dashes, 2);
-    g.strokePath(dashedEqCurve, stroke);
-
-    // Floating Interactive EQ Nodes (FabFilter Pro-Q Style)
-    drawEQNode(g, getFreqX(35.0f), getEqCurveY(35.0f), 1, gSub, juce::Colour(0xff00f0ff));
-    drawEQNode(g, getFreqX(300.0f), getEqCurveY(300.0f), 2, gLowMid, juce::Colour(0xff00f0ff));
-    drawEQNode(g, getFreqX(1500.0f), getEqCurveY(1500.0f), 3, gMid, juce::Colour(0xff00f0ff));
-    drawEQNode(g, getFreqX(4500.0f), getEqCurveY(4500.0f), 4, gClarity, juce::Colour(0xff00f0ff));
-    drawEQNode(g, getFreqX(12000.0f), getEqCurveY(12000.0f), 5, gAir, juce::Colour(0xffffb92d));
+    g.setColour(juce::Colour(0xffffe633));
+    g.drawText("LIVE EQ CORRECTION", bounds.getRight() - 150, bounds.getY() + 6, 138, 14, juce::Justification::right);
 }
 
 // ------------------------------------------------------------------------------
-// Draw Lissajous Stereo Goniometer Screen
+// Draw Interactive EQ Node Marker
+// ------------------------------------------------------------------------------
+void AutomasterSupremeAudioProcessorEditor::drawEQNode(juce::Graphics& g, float x, float y, int bandNum, float gainDb, juce::Colour col)
+{
+    // Outer Ring Glow
+    g.setColour(col.withAlpha(0.35f));
+    g.fillEllipse(x - 9.0f, y - 9.0f, 18.0f, 18.0f);
+
+    // Inner Solid Circle
+    g.setColour(juce::Colour(0xff080d14));
+    g.fillEllipse(x - 6.5f, y - 6.5f, 13.0f, 13.0f);
+
+    g.setColour(col);
+    g.drawEllipse(x - 6.5f, y - 6.5f, 13.0f, 13.0f, 1.8f);
+
+    // Band Number Inside Node
+    g.setColour(juce::Colours::white);
+    g.setFont(juce::Font(8.0f, juce::Font::bold));
+    g.drawText(juce::String(bandNum), int(x - 6.0f), int(y - 6.0f), 12, 12, juce::Justification::centred);
+
+    // Floating gain tag pill
+    if (std::abs(gainDb) > 0.05f)
+    {
+        auto tagRect = juce::Rectangle<float>(x - 18.0f, y - 24.0f, 36.0f, 13.0f);
+        g.setColour(juce::Colour(0xee080e18));
+        g.fillRoundedRectangle(tagRect, 3.0f);
+        g.setColour(col);
+        g.drawRoundedRectangle(tagRect, 3.0f, 0.8f);
+        g.setFont(juce::Font(7.5f, juce::Font::bold));
+        juce::String sign = gainDb > 0 ? "+" : "";
+        g.drawText(sign + juce::String(gainDb, 1), tagRect, juce::Justification::centred);
+    }
+}
+
+// ------------------------------------------------------------------------------
+// Draw Stereo Goniometer & Phase Screen
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::drawGoniometerScreen(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff0c1017), float(bounds.getX()), float(bounds.getY()),
-                                           juce::Colour(0xff070a0f), float(bounds.getX()), float(bounds.getBottom()), false));
+    g.setColour(juce::Colour(0xff06090e));
     g.fillRoundedRectangle(bounds.toFloat(), 8.0f);
     g.setColour(juce::Colour(0xff1c2738));
-    g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.2f);
+    g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
-    // Screen Header
-    auto headerRect = bounds.removeFromTop(24);
-    g.setColour(juce::Colour(0x12ffffff));
-    g.fillRect(headerRect);
-    g.setColour(juce::Colour(0xff00ffaa));
-    g.fillRoundedRectangle(float(headerRect.getX() + 8), float(headerRect.getY() + 6), 3.0f, 12.0f, 1.5f);
+    auto scopeArea = bounds.reduced(10, 16);
+    float cx = float(scopeArea.getCentreX());
+    float cy = float(scopeArea.getCentreY()) - 8.0f;
+    float r = float(std::min(scopeArea.getWidth(), scopeArea.getHeight())) * 0.44f;
 
-    g.setColour(juce::Colour(0xffcbd5e1));
-    g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("STEREO GONIOMETER", headerRect.getX() + 16, headerRect.getY(), 150, 24, juce::Justification::centredLeft);
-    g.setColour(juce::Colour(0xff00ffaa));
-    g.setFont(juce::Font(8.5f, juce::Font::bold));
-    g.drawText("LISSAJOUS", headerRect.getRight() - 75, headerRect.getY(), 65, 24, juce::Justification::right);
+    // Crosshairs
+    g.setColour(juce::Colour(0xff131c2a));
+    g.drawEllipse(cx - r, cy - r, r * 2.0f, r * 2.0f, 1.0f);
+    g.drawEllipse(cx - r * 0.5f, cy - r * 0.5f, r, r, 0.7f);
+    g.drawLine(cx - r, cy, cx + r, cy, 0.7f);
+    g.drawLine(cx, cy - r, cx, cy + r, 0.7f);
+    // Diagonal 45 deg M/S guides
+    g.drawLine(cx - r * 0.7f, cy - r * 0.7f, cx + r * 0.7f, cy + r * 0.7f, 0.5f);
+    g.drawLine(cx - r * 0.7f, cy + r * 0.7f, cx + r * 0.7f, cy - r * 0.7f, 0.5f);
 
-    auto scopeArea = bounds.removeFromTop(185).reduced(10);
-    const float cx = scopeArea.getCentreX();
-    const float cy = scopeArea.getCentreY();
-    const float radius = float(std::min(scopeArea.getWidth(), scopeArea.getHeight())) * 0.48f;
-
-    // Reticle concentric rings
-    g.setColour(juce::Colour(0x1200f0ff));
-    g.drawEllipse(cx - radius * 0.5f, cy - radius * 0.5f, radius, radius, 0.8f);
-    g.setColour(juce::Colour(0x1a00f0ff));
-    g.drawEllipse(cx - radius, cy - radius, radius * 2.0f, radius * 2.0f, 1.0f);
-    g.drawLine(cx - radius, cy, cx + radius, cy, 0.8f);
-    g.drawLine(cx, cy - radius, cx, cy + radius, 0.8f);
-
-    // Diagonal axis guides
-    g.setColour(juce::Colour(0x1000f0ff));
-    const float diag = radius * 0.707f;
-    g.drawLine(cx - diag, cy - diag, cx + diag, cy + diag, 0.8f);
-    g.drawLine(cx - diag, cy + diag, cx + diag, cy - diag, 0.8f);
-
-    g.setColour(juce::Colour(0x5500f0ff));
-    g.setFont(juce::Font(9.0f, juce::Font::bold));
-    g.drawText("L", cx - radius + 4, cy - 10, 15, 10, juce::Justification::left);
-    g.drawText("R", cx + radius - 18, cy - 10, 15, 10, juce::Justification::right);
-    g.drawText("MID", cx - 12, cy - radius + 4, 24, 10, juce::Justification::centred);
-
-    // Lissajous Phosphor Beam
-    juce::Path beam;
-    bool beamStarted = false;
-    for (int i = 0; i < 256; i += 2)
+    // Lissajous Cloud
+    const int numSamples = int(scopeL.size());
+    g.setColour(juce::Colour(0xa000ffaa));
+    for (int i = 0; i < numSamples; i += 2)
     {
-        const float l = scopeL[size_t(i)];
-        const float r = scopeR[size_t(i)];
+        float l = scopeL[size_t(i)];
+        float rSample = scopeR[size_t(i)];
 
-        const float x = cx + (l - r) * 0.707f * radius * 1.5f;
-        const float y = cy - (l + r) * 0.707f * radius * 1.5f;
+        // Mid/Side rotation: X = Side (L - R), Y = Mid (L + R)
+        float side = (l - rSample) * 0.707f;
+        float mid = (l + rSample) * 0.707f;
 
-        if (!beamStarted) { beam.startNewSubPath(x, y); beamStarted = true; }
-        else { beam.lineTo(x, y); }
+        float px = cx + juce::jlimit(-1.0f, 1.0f, side * 2.0f) * r;
+        float py = cy - juce::jlimit(-1.0f, 1.0f, mid * 2.0f) * r;
+
+        g.fillEllipse(px - 1.0f, py - 1.0f, 2.0f, 2.0f);
     }
 
-    // Phosphor glow pass
-    g.setColour(juce::Colour(0x3500ffaa));
-    g.strokePath(beam, juce::PathStrokeType(2.8f));
+    // Phase Correlation Bar at Bottom
+    auto phaseBar = juce::Rectangle<float>(float(bounds.getX() + 16), float(bounds.getBottom() - 26), float(bounds.getWidth() - 32), 8.0f);
+    g.setColour(juce::Colour(0xff0d131b));
+    g.fillRoundedRectangle(phaseBar, 3.0f);
 
-    // Core beam
-    g.setColour(juce::Colour(0xd000ffaa));
-    g.strokePath(beam, juce::PathStrokeType(1.2f));
+    float phaseNorm = juce::jmap(juce::jlimit(-1.0f, 1.0f, curPhase), -1.0f, 1.0f, 0.0f, 1.0f);
+    float thumbX = phaseBar.getX() + phaseNorm * phaseBar.getWidth();
 
-    // Phase Correlation Bar at bottom of screen
-    auto phaseArea = bounds.reduced(10, 6);
-    g.setColour(juce::Colour(0xff05070c));
-    g.fillRoundedRectangle(phaseArea.toFloat(), 3.0f);
-    g.setColour(juce::Colour(0xff161e2b));
-    g.drawRoundedRectangle(phaseArea.toFloat(), 3.0f, 1.0f);
+    // Center zero mark
+    g.setColour(juce::Colour(0xff33445b));
+    g.drawLine(phaseBar.getCentreX(), phaseBar.getY() - 2, phaseBar.getCentreX(), phaseBar.getBottom() + 2, 1.0f);
 
-    // Center divider
-    g.setColour(juce::Colour(0x30ffffff));
-    g.drawLine(float(phaseArea.getCentreX()), float(phaseArea.getY()), float(phaseArea.getCentreX()), float(phaseArea.getBottom()), 1.0f);
-
-    const float normPhase = std::clamp((curPhase + 1.0f) * 0.5f, 0.0f, 1.0f);
-    const float cursorX = phaseArea.getX() + normPhase * float(phaseArea.getWidth());
-
-    // Correlation cursor color (Green if >0, Red if <0)
-    juce::Colour phaseCol = (curPhase >= 0.0f) ? juce::Colour(0xff00ffaa) : juce::Colour(0xffff3366);
-    g.setColour(phaseCol.withAlpha(0.3f));
-    g.fillEllipse(cursorX - 5.0f, float(phaseArea.getCentreY()) - 5.0f, 10.0f, 10.0f);
+    // Phase thumb indicator
+    juce::Colour phaseCol = curPhase >= 0.0f ? juce::Colour(0xff00ffaa) : juce::Colour(0xffff3366);
     g.setColour(phaseCol);
-    g.fillRoundedRectangle(cursorX - 2.5f, float(phaseArea.getY() + 1), 5.0f, float(phaseArea.getHeight() - 2), 1.5f);
+    g.fillRoundedRectangle(thumbX - 4.0f, phaseBar.getY() - 2.0f, 8.0f, 12.0f, 2.0f);
 
-    g.setFont(juce::Font(7.5f, juce::Font::plain));
-    g.setColour(juce::Colour(0x60ffffff));
-    g.drawText("-1 (Anti)", phaseArea.getX() + 2, phaseArea.getY() - 10, 45, 10, juce::Justification::left);
-    g.drawText("+1 (Mono)", phaseArea.getRight() - 52, phaseArea.getY() - 10, 50, 10, juce::Justification::right);
+    // Screen Header Tag
+    g.setColour(juce::Colour(0xff00ffaa));
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("STEREO GONIOMETER & PHASE", bounds.getX() + 10, bounds.getY() + 6, 200, 14, juce::Justification::left);
+
+    g.setFont(juce::Font("monospace", 9.0f, juce::Font::bold));
+    g.setColour(phaseCol);
+    g.drawText("CORR: " + juce::String(curPhase, 2), bounds.getRight() - 90, bounds.getY() + 6, 80, 14, juce::Justification::right);
 }
 
 // ------------------------------------------------------------------------------
@@ -742,101 +990,81 @@ void AutomasterSupremeAudioProcessorEditor::drawGoniometerScreen(juce::Graphics&
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::drawMetersScreen(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff0c1017), float(bounds.getX()), float(bounds.getY()),
-                                           juce::Colour(0xff070a0f), float(bounds.getX()), float(bounds.getBottom()), false));
+    g.setColour(juce::Colour(0xff06090e));
     g.fillRoundedRectangle(bounds.toFloat(), 8.0f);
     g.setColour(juce::Colour(0xff1c2738));
-    g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.2f);
+    g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
-    // Screen Header
-    auto headerRect = bounds.removeFromTop(24);
-    g.setColour(juce::Colour(0x12ffffff));
-    g.fillRect(headerRect);
-    g.setColour(juce::Colour(0xffff3366));
-    g.fillRoundedRectangle(float(headerRect.getX() + 8), float(headerRect.getY() + 6), 3.0f, 12.0f, 1.5f);
-
-    g.setColour(juce::Colour(0xffcbd5e1));
-    g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("PRECISION METERS", headerRect.getX() + 16, headerRect.getY(), 110, 24, juce::Justification::centredLeft);
+    // Screen Header Tag
     g.setColour(juce::Colour(0xff00f0ff));
-    g.setFont(juce::Font(8.0f, juce::Font::bold));
-    g.drawText("BS.1770 / EBU", headerRect.getRight() - 85, headerRect.getY(), 75, 24, juce::Justification::right);
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("PRECISION TRUE-PEAK & LUFS", bounds.getX() + 10, bounds.getY() + 6, 200, 14, juce::Justification::left);
 
-    // Left & Right Segmented Peak Meters (Waves style LED ladder with 0.5s hold)
-    auto meterArea = bounds.removeFromTop(120).reduced(10, 6);
-    const float toPercentL = std::clamp((dispPeakL + 48.0f) / 48.0f, 0.0f, 1.0f);
-    const float toPercentR = std::clamp((dispPeakR + 48.0f) / 48.0f, 0.0f, 1.0f);
-    const float holdPercentL = std::clamp((dispPeakHoldL + 48.0f) / 48.0f, 0.0f, 1.0f);
-    const float holdPercentR = std::clamp((dispPeakHoldR + 48.0f) / 48.0f, 0.0f, 1.0f);
+    auto meterArea = bounds.reduced(12, 16);
+    meterArea.removeFromTop(10);
 
-    const int barW = 14;
-    const int gap = 20;
-    const int leftX = meterArea.getCentreX() - barW - gap / 2;
-    const int rightX = meterArea.getCentreX() + gap / 2;
-    const int barH = meterArea.getHeight() - 14;
-    const int barY = meterArea.getY();
+    // Left half: Twin dBTP vertical bar meters (L / R)
+    const int barW = 16;
+    const int meterH = meterArea.getHeight() - 74;
+    const int barY = meterArea.getY() + 4;
+    const int barLX = meterArea.getX() + 14;
+    const int barRX = barLX + barW + 8;
 
-    // Scale ticks between L and R meters
-    const float scaleDbs[] = { 0.0f, -3.0f, -6.0f, -12.0f, -18.0f, -24.0f, -36.0f, -48.0f };
-    g.setFont(juce::Font(7.5f, juce::Font::bold));
+    // Scale from -36 dBTP to +3 dBTP
+    auto dbToY = [barY, meterH](float db)
+    {
+        return juce::jmap(juce::jlimit(-36.0f, 3.0f, db), -36.0f, 3.0f, float(barY + meterH), float(barY));
+    };
+
+    // Draw meter backgrounds
+    g.setColour(juce::Colour(0xff0d131c));
+    g.fillRoundedRectangle(float(barLX), float(barY), float(barW), float(meterH), 3.0f);
+    g.fillRoundedRectangle(float(barRX), float(barY), float(barW), float(meterH), 3.0f);
+
+    // Draw active level bars
+    float yPeakL = dbToY(dispPeakL);
+    float yPeakR = dbToY(dispPeakR);
+
+    juce::ColourGradient grad(juce::Colour(0xffff3366), float(barLX), float(barY),
+                              juce::Colour(0xff00ffaa), float(barLX), float(barY + meterH), false);
+    grad.addColour(0.3, juce::Colour(0xffffb92d));
+    grad.addColour(0.6, juce::Colour(0xff00f0ff));
+
+    // Left Bar
+    g.setGradientFill(grad);
+    g.fillRoundedRectangle(float(barLX), yPeakL, float(barW), float(barY + meterH) - yPeakL, 3.0f);
+    // Right Bar
+    g.fillRoundedRectangle(float(barRX), yPeakR, float(barW), float(barY + meterH) - yPeakR, 3.0f);
+
+    // Peak Hold Indicators
+    float yHoldL = dbToY(dispPeakHoldL);
+    float yHoldR = dbToY(dispPeakHoldR);
+    g.setColour(juce::Colours::white);
+    g.drawLine(float(barLX), yHoldL, float(barLX + barW), yHoldL, 2.0f);
+    g.drawLine(float(barRX), yHoldR, float(barRX + barW), yHoldR, 2.0f);
+
+    // Target -1.0 dBTP Marker line across both meters
+    float ySpotifyCeil = dbToY(-1.0f);
+    g.setColour(juce::Colour(0xffff3366));
+    g.drawLine(float(barLX - 4), ySpotifyCeil, float(barRX + barW + 4), ySpotifyCeil, 1.2f);
+
+    // Scale ticks
+    const float scaleDbs[] = { 0.0f, -1.0f, -6.0f, -12.0f, -18.0f, -24.0f };
     for (float db : scaleDbs)
     {
-        const float norm = (db + 48.0f) / 48.0f;
-        const int tickY = int(barY + barH - norm * float(barH));
-        g.setColour(juce::Colour(0x35ffffff));
-        g.drawHorizontalLine(tickY, leftX - 4, leftX);
-        g.drawHorizontalLine(tickY, rightX + barW, rightX + barW + 4);
+        float y = dbToY(db);
+        g.setColour(db == -1.0f ? juce::Colour(0xffff3366) : juce::Colour(0xff475569));
+        g.drawLine(float(barRX + barW + 4), y, float(barRX + barW + 10), y, 1.0f);
 
-        g.setColour(db >= -1.0f ? juce::Colour(0xffff3366) : (db >= -14.0f ? juce::Colour(0xff00ffaa) : juce::Colour(0x55ffffff)));
-        juce::String txt = (db == 0.0f) ? "0" : juce::String(int(db));
-        g.drawText(txt, leftX + barW, tickY - 5, gap, 10, juce::Justification::centred);
+        g.setFont(juce::Font("monospace", 8.0f, juce::Font::bold));
+        g.drawText(juce::String(int(db)), barRX + barW + 12, int(y) - 6, 26, 12, juce::Justification::left);
     }
 
-    // Channel L & R Background Tracks
-    g.setColour(juce::Colour(0xff06090e));
-    g.fillRoundedRectangle(float(leftX), float(barY), float(barW), float(barH), 2.0f);
-    g.fillRoundedRectangle(float(rightX), float(barY), float(barW), float(barH), 2.0f);
-    g.setColour(juce::Colour(0xff182230));
-    g.drawRoundedRectangle(float(leftX), float(barY), float(barW), float(barH), 2.0f, 1.0f);
-    g.drawRoundedRectangle(float(rightX), float(barY), float(barW), float(barH), 2.0f, 1.0f);
-
-    // Segmented LED appearance
-    const int fillHL = int(toPercentL * float(barH));
-    const int fillHR = int(toPercentR * float(barH));
-
-    juce::ColourGradient meterGrad(juce::Colour(0xffff3366), float(leftX), float(barY),
-                                   juce::Colour(0xff00e676), float(leftX), float(barY + barH), false);
-    meterGrad.addColour(0.20, juce::Colour(0xffff9500));
-    meterGrad.addColour(0.40, juce::Colour(0xff00f0ff));
-
-    g.setGradientFill(meterGrad);
-    if (fillHL > 0) g.fillRect(leftX + 1, barY + barH - fillHL, barW - 2, fillHL);
-    if (fillHR > 0) g.fillRect(rightX + 1, barY + barH - fillHR, barW - 2, fillHR);
-
-    // LED segment lines for authentic Waves / hardware console feel
-    g.setColour(juce::Colour(0xff06090e));
-    for (int y = barY; y < barY + barH; y += 3)
-    {
-        g.drawHorizontalLine(y, leftX, leftX + barW);
-        g.drawHorizontalLine(y, rightX, rightX + barW);
-    }
-
-    // High-visibility Peak Hold Needles (Updated every 0.5s)
-    g.setColour(juce::Colours::white);
-    g.fillRect(leftX, int(barY + barH - holdPercentL * float(barH)), barW, 2);
-    g.fillRect(rightX, int(barY + barH - holdPercentR * float(barH)), barW, 2);
-
-    // Channel Labels L and R
-    g.setFont(juce::Font(9.0f, juce::Font::bold));
-    g.setColour(juce::Colour(0xff8b9bb4));
-    g.drawText("L", leftX, barY + barH + 2, barW, 12, juce::Justification::centred);
-    g.drawText("R", rightX, barY + barH + 2, barW, 12, juce::Justification::centred);
-
-    // Digital Readouts below (Stabilized 0.5s refresh rate)
-    auto digitalBox = bounds.reduced(8, 4);
-    g.setColour(juce::Colour(0xff06090e));
+    // Right half: Digital Readouts (Waves Master Style)
+    auto digitalBox = juce::Rectangle<int>(meterArea.getX() + 98, barY + 2, meterArea.getWidth() - 100, meterH);
+    g.setColour(juce::Colour(0xff090e15));
     g.fillRoundedRectangle(digitalBox.toFloat(), 5.0f);
-    g.setColour(juce::Colour(0xff182232));
+    g.setColour(juce::Colour(0xff1a2636));
     g.drawRoundedRectangle(digitalBox.toFloat(), 5.0f, 1.0f);
 
     g.setFont(juce::Font(8.0f, juce::Font::bold));
@@ -898,7 +1126,7 @@ void AutomasterSupremeAudioProcessorEditor::drawModuleCard(juce::Graphics& g, ju
 }
 
 // ------------------------------------------------------------------------------
-// Draw Multi-Agent Live Console & Telemetry Deck
+// Draw Multi-Agent Live Console & Dynamic Interactive Legend HUD
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
@@ -911,7 +1139,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
     // Header with Agent Chips
     auto chipArea = bounds.removeFromTop(32).reduced(10, 4);
 
-    const char* agentNames[] = { "Orchestrator v3", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
+    const char* agentNames[] = { "Orchestrator v3.1", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
     const juce::Colour agentColors[] = { juce::Colour(0xff00f0ff), juce::Colour(0xff5bc0de), juce::Colour(0xffffb92d), juce::Colour(0xff00ffaa) };
 
     int chipX = chipArea.getX();
@@ -936,25 +1164,63 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
 
     g.setColour(juce::Colour(0xff00ffaa));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI COOPERATIVE CORE v3.0 · BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
+    g.drawText("AI COOPERATIVE CORE v3.1 · BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
 
-    // Terminal Window with Live Telemetry
+    // Terminal Window / Interactive Legend HUD
     auto termArea = bounds.reduced(10, 8);
     g.setColour(juce::Colour(0xff040609));
     g.fillRoundedRectangle(termArea.toFloat(), 5.0f);
 
-    g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
-    g.setColour(juce::Colour(0xff00f0ff));
-    g.drawText("[Orchestrator v3] Real-time FL Studio audio pipe | 64-bit IEEE float processing | Latency: 0 samples", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
+    if (isControlActive)
+    {
+        // Active Control Glowing Accent Border
+        g.setColour(activeLegend.accent.withAlpha(0.6f));
+        g.drawRoundedRectangle(termArea.toFloat(), 5.0f, 1.2f);
 
-    g.setColour(juce::Colour(0xff5bc0de));
-    g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify acoustic reference (-14.0 LUFS Target)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
+        // Line 1: Control Identification & Current Value
+        g.setFont(juce::Font("monospace", 11.0f, juce::Font::bold));
+        g.setColour(activeLegend.accent);
+        g.drawText("[LEYENDA ACTIVA] " + activeLegend.name, termArea.getX() + 10, termArea.getY() + 4, 380, 16, juce::Justification::left);
 
-    g.setColour(juce::Colour(0xffffb92d));
-    g.drawText("[True-Peak Guard] Inter-sample peak limiter clamped at -1.0 dBTP | Elliptic mono-sub (<110Hz) locked", termArea.getX() + 10, termArea.getY() + 42, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.setColour(juce::Colour(0xff94a3b8));
+        g.drawText("MÓDULO: " + activeLegend.moduleName + "  |  RANGO: " + activeLegend.rangeStr, termArea.getX() + 390, termArea.getY() + 4, 460, 16, juce::Justification::left);
 
-    g.setColour(juce::Colour(0xff00ffaa));
-    g.drawText("[Spotify QA Engine] Status: CERTIFIED FOR SPOTIFY MASTERING | Dynamic Range intact without inter-sample clip", termArea.getX() + 10, termArea.getY() + 60, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.setColour(juce::Colour(0xff00ffaa));
+        g.drawText("VALOR: " + activeControlValue, termArea.getRight() - 200, termArea.getY() + 4, 190, 16, juce::Justification::right);
+
+        // Line 2: Function Description
+        g.setFont(juce::Font(10.5f, juce::Font::plain));
+        g.setColour(juce::Colour(0xffffb92d));
+        g.drawText("📖 FUNCIÓN:", termArea.getX() + 10, termArea.getY() + 24, 75, 16, juce::Justification::left);
+        g.setColour(juce::Colours::white);
+        g.drawText(activeLegend.description, termArea.getX() + 90, termArea.getY() + 24, termArea.getWidth() - 100, 16, juce::Justification::left);
+
+        // Line 3: Spotify Target Rule
+        g.setColour(juce::Colour(0xff00ffaa));
+        g.drawText("🎯 REGLA SPOTIFY:", termArea.getX() + 10, termArea.getY() + 44, 115, 16, juce::Justification::left);
+        g.setColour(juce::Colour(0xffcbd5e1));
+        g.drawText(activeLegend.spotifyTip, termArea.getX() + 130, termArea.getY() + 44, termArea.getWidth() - 340, 16, juce::Justification::left);
+
+        // Interaction shortcut
+        g.setColour(juce::Colour(0xff64748b));
+        g.drawText("🖱️ Arrastre vertical / rueda | Doble-clic reset", termArea.getRight() - 300, termArea.getY() + 44, 290, 16, juce::Justification::right);
+    }
+    else
+    {
+        // Idle Mode: Legend Prompt + AI Telemetry
+        g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
+        g.setColour(juce::Colour(0xff00f0ff));
+        g.drawText("💡 [LEYENDA INTERACTIVA v3.1] Pasa el cursor o ajusta cualquier control para ver su guía, objetivo para Spotify y función.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
+
+        g.setColour(juce::Colour(0xff5bc0de));
+        g.drawText("[DSP Architect] 5 bandas analógicas dinámicas calibradas a Spotify (-14.0 LUFS Integrados / -1.0 dBTP Ceiling)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
+
+        g.setColour(juce::Colour(0xffffb92d));
+        g.drawText("[True-Peak Guard] Limitador inter-sample activo | Mono-Maker (<110Hz) fijado para pegada limpia sin desfase", termArea.getX() + 10, termArea.getY() + 42, termArea.getWidth() - 20, 16, juce::Justification::left);
+
+        g.setColour(juce::Colour(0xff00ffaa));
+        g.drawText("[Estado Global] CERTIFICADO PARA SPOTIFY | Presiona '📖 LEYENDA DE CONTROLES' arriba para abrir la guía completa", termArea.getX() + 10, termArea.getY() + 60, termArea.getWidth() - 20, 16, juce::Justification::left);
+    }
 }
 
 // ------------------------------------------------------------------------------
@@ -963,8 +1229,12 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
 void AutomasterSupremeAudioProcessorEditor::resized()
 {
     // Top Bar controls (Width: 1296)
-    presetBox.setBounds(getWidth() - 540, 17, 310, 34);
+    presetBox.setBounds(getWidth() - 770, 17, 280, 34);
+    legendButton.setBounds(getWidth() - 475, 17, 250, 34);
     autoMasterButton.setBounds(getWidth() - 210, 17, 186, 34);
+
+    // Close button for full legend drawer overlay
+    closeLegendButton.setBounds(getWidth() - 230, 52, 160, 30);
 
     const int knobW = 68;
     const int knobH = 82;

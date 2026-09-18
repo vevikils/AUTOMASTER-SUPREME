@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AutomasterSupreme VERSION 3.0.0 LANGUAGES CXX)
+project(AutomasterSupreme VERSION 3.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,17 +9,17 @@ add_subdirectory("C:/Users/alfaswz/VeviDynamicEQ1/Build/_deps/juce-src" juce EXC
 
 juce_add_plugin(AutomasterSupreme
     COMPANY_NAME "vevi"
-    BUNDLE_ID "com.vevi.automastersupreme3"
+    BUNDLE_ID "com.vevi.automastersupreme31"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Vevi
-    PLUGIN_CODE AuS3
+    PLUGIN_CODE Au31
     FORMATS VST3 Standalone
-    PRODUCT_NAME "AUTOMASTER SUPREME 3"
-    DESCRIPTION "AI Mastering Suite v3 by vevi - Calibrated for Spotify (-14 LUFS / -1.0 dBTP)"
+    PRODUCT_NAME "AUTOMASTER SUPREME 3.1"
+    DESCRIPTION "AI Mastering Suite v3.1 by vevi - Interactive Control Legend & Spotify Reference"
 )
 
 target_sources(AutomasterSupreme PRIVATE

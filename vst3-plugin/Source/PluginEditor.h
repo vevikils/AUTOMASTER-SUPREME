@@ -13,6 +13,18 @@ public:
                           float rotaryEndAngle, juce::Slider& slider) override;
 };
 
+// Interactive Legend / Inspector Data Model
+struct ControlLegendInfo
+{
+    juce::String name;
+    juce::String moduleName;
+    juce::String rangeStr;
+    juce::String defaultStr;
+    juce::String description;
+    juce::String spotifyTip;
+    juce::Colour accent;
+};
+
 class AutomasterSupremeAudioProcessorEditor : public juce::AudioProcessorEditor,
                                               public juce::Timer
 {
@@ -21,16 +33,36 @@ public:
     ~AutomasterSupremeAudioProcessorEditor() override;
 
     void paint(juce::Graphics&) override;
+    void paintOverChildren(juce::Graphics&) override;
     void resized() override;
     void timerCallback() override;
+
+    void mouseEnter(const juce::MouseEvent& event) override;
+    void mouseExit(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
+    void mouseDrag(const juce::MouseEvent& event) override;
+    void mouseDown(const juce::MouseEvent& event) override;
 
 private:
     AutomasterSupremeAudioProcessor& audioProcessor;
     SupremeKnobLookAndFeel customKnobLAF;
+    juce::TooltipWindow tooltipWindow { this, 450 };
+
+    // Interactive Legend / Inspector State
+    std::vector<std::pair<juce::Component*, ControlLegendInfo>> controlLegends;
+    ControlLegendInfo activeLegend;
+    juce::String activeControlValue;
+    bool isControlActive = false;
+    bool showLegendDrawer = false;
+
+    void registerLegend(juce::Component& comp, const ControlLegendInfo& info);
+    void updateHoverFromComponent(juce::Component* comp);
 
     // GUI Top Bar
     juce::ComboBox presetBox;
     juce::TextButton autoMasterButton { "AI AUTO-MASTER" };
+    juce::TextButton legendButton { "📖 LEYENDA DE CONTROLES" };
+    juce::TextButton closeLegendButton { "CERRAR GUÍA ✕" };
 
     // Module Bypass Buttons
     juce::ToggleButton bypassLowCut { "ON" };
@@ -114,6 +146,7 @@ private:
     void drawMetersScreen(juce::Graphics& g, juce::Rectangle<int> bounds);
     void drawModuleCard(juce::Graphics& g, juce::Rectangle<int> bounds, const juce::String& title, juce::Colour accentCol = juce::Colour(0xff00f0ff));
     void drawAgentDeck(juce::Graphics& g, juce::Rectangle<int> bounds);
+    void drawLegendDrawerOverlay(juce::Graphics& g);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AutomasterSupremeAudioProcessorEditor)
 };
