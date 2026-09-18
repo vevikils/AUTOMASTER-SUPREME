@@ -1,0 +1,156 @@
+/* AUTOMASTER SUPREME - Visualizers & LED Metering Systems */
+
+/* Meter Tower Unit */
+.meter-rack-unit {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  gap: 12px;
+}
+
+.stereo-bars-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: flex-end;
+  height: 150px;
+  background: #06080c;
+  border: 1px solid #141c28;
+  border-radius: 6px;
+  padding: 8px 12px;
+  position: relative;
+}
+
+.meter-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  flex: 1;
+}
+
+.meter-track {
+  width: 12px;
+  height: 100%;
+  background: #0d1219;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.meter-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(0deg, #00ffaa 0%, #00f0ff 60%, #ffb92d 85%, #ff3366 100%);
+  box-shadow: 0 0 10px var(--accent-cyan-dim);
+  transition: height 0.05s ease-out;
+}
+
+.meter-hold {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #ff3366;
+  box-shadow: 0 0 6px #ff3366;
+  transition: top 0.1s linear;
+}
+
+.meter-channel-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.meter-values-row {
+  display: flex;
+  justify-content: space-around;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* Phase Correlation Meter */
+.phase-correlation-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.phase-track {
+  height: 8px;
+  background: #090d13;
+  border: 1px solid #182230;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.phase-center-mark {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.phase-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 8px;
+  margin-left: -4px;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+  border-radius: 2px;
+  transition: left 0.08s ease-out;
+}
+
+.phase-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* Digital Loudness Readout Box */
+.loudness-readout-unit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: #06090e;
+  border: 1px solid #131b26;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.lufs-metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lufs-metric-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.lufs-metric-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+}

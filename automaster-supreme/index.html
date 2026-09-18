@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AUTOMASTER SUPREME - AI VST Mastering Suite</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/knobs.css">
+  <link rel="stylesheet" href="css/visualizers.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- VST Main Rack Chassis -->
+  <main class="vst-chassis" id="vst-chassis">
+
+    <!-- Top Header Bar -->
+    <header class="vst-header">
+      <div class="brand-section">
+        <div class="brand-logo-icon">⚡</div>
+        <div>
+          <h1 class="brand-title">AUTOMASTER SUPREME</h1>
+        </div>
+        <span class="brand-badge">AI VST MASTERING SUITE</span>
+      </div>
+
+      <!-- Presets & AI Launch Toolbar -->
+      <div class="toolbar-section">
+        <div class="preset-box">
+          <label for="genre-preset-select">GÉNERO:</label>
+          <select id="genre-preset-select">
+            <option value="spotify" selected>Spotify Standard Reference (-14 LUFS / -1.0 dBTP)</option>
+            <option value="pop">Modern Pop (Spotify -14 LUFS)</option>
+            <option value="hiphop">Hip-Hop / Trap (Spotify -13.5 LUFS)</option>
+            <option value="edm">EDM / Dance (Spotify -13 LUFS)</option>
+            <option value="reggaeton">Reggaeton / Urban (Spotify -13.5 LUFS)</option>
+            <option value="rock">Rock / Metal (Spotify -14 LUFS)</option>
+            <option value="lofi">Lo-Fi / Chillhop (Spotify -14 LUFS)</option>
+            <option value="acoustic">Acoustic / Dynamic (Spotify -15 LUFS)</option>
+            <option value="cinematic">Cinematic / Classical (Spotify -16 LUFS)</option>
+          </select>
+        </div>
+
+        <button class="btn-vst" id="btn-save-preset" title="Guardar Preset en JSON">💾 Guardar</button>
+        <button class="btn-vst" id="btn-load-preset" title="Cargar Preset JSON">📂 Cargar</button>
+        <input type="file" id="preset-file-input" accept=".json" style="display: none;">
+
+        <button class="btn-vst" id="btn-load-demo" title="Sintetizar pista multitrack demo">🎵 Pista Demo</button>
+
+        <button class="btn-auto-master" id="btn-auto-master">
+          <span>⚡ AUTO-MASTER AI</span>
+        </button>
+
+        <button class="btn-vst" id="btn-export-master" style="background: linear-gradient(180deg, #10b981 0%, #059669 100%); color: #fff; border-color: #34d399;">
+          <span>💾 EXPORTAR MÁSTER</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Master AI Notification Banner -->
+    <div class="ai-master-banner" id="ai-master-banner">
+      <span class="banner-text"></span>
+      <span style="font-size: 11px; font-weight: bold; opacity: 0.8;">DSP 64-BIT PRECISION</span>
+    </div>
+
+    <!-- Upper Deck: High-Res Visualizers & Precision Metering -->
+    <section class="vst-deck-upper">
+
+      <!-- Main Screen: Dual Spectrum Analyzer & Draggable EQ Curve -->
+      <div class="screen-frame">
+        <div class="screen-header">
+          <span>SPECTRUM ANALYZER & MASTERING EQ CURVE</span>
+          <div class="screen-legend">
+            <div class="legend-item"><span class="legend-dot amber"></span> Pre-Master (Dry)</div>
+            <div class="legend-item"><span class="legend-dot cyan"></span> Post-Master (Wet)</div>
+            <div class="legend-item"><span class="legend-dot yellow"></span> Curva EQ</div>
+          </div>
+        </div>
+        <div class="screen-canvas-container">
+          <canvas id="spectrum-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Center Screen: Lissajous Stereo Goniometer -->
+      <div class="screen-frame">
+        <div class="screen-header">
+          <span>STEREO GONIOMETER</span>
+          <span style="font-size: 9px; color: var(--accent-emerald);">PHOSPHOR SCOPE</span>
+        </div>
+        <div class="screen-canvas-container">
+          <canvas id="goniometer-canvas"></canvas>
+        </div>
+        <!-- Phase Correlation Bar -->
+        <div class="phase-correlation-box" style="padding: 6px 12px; background: #06090e;">
+          <div class="phase-labels">
+            <span>-1 (Anti-fase)</span>
+            <span>0</span>
+            <span>+1 (Mono)</span>
+          </div>
+          <div class="phase-track">
+            <div class="phase-center-mark"></div>
+            <div class="phase-cursor" id="phase-correlation-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Screen: Peak & LUFS Segmented Meters -->
+      <div class="screen-frame">
+        <div class="screen-header">
+          <span>METERS</span>
+          <span style="font-size: 9px; color: var(--accent-cyan);">ITU-R BS.1770</span>
+        </div>
+        <div class="meter-rack-unit">
+          <!-- Stereo Peak Bar -->
+          <div class="stereo-bars-container">
+            <div class="meter-channel">
+              <div class="meter-track">
+                <div class="meter-bar" id="meter-peak-l"></div>
+                <div class="meter-hold" id="meter-hold-l"></div>
+              </div>
+              <span class="meter-channel-label">L</span>
+            </div>
+            <div class="meter-channel">
+              <div class="meter-track">
+                <div class="meter-bar" id="meter-peak-r"></div>
+                <div class="meter-hold" id="meter-hold-r"></div>
+              </div>
+              <span class="meter-channel-label">R</span>
+            </div>
+          </div>
+
+          <!-- Peak Values -->
+          <div class="meter-values-row">
+            <span id="val-peak-l">-∞ dB</span>
+            <span id="val-peak-r">-∞ dB</span>
+          </div>
+
+          <!-- LUFS Digital Display -->
+          <div class="loudness-readout-unit">
+            <div class="lufs-metric-card">
+              <span class="lufs-metric-label">MOMENTARY</span>
+              <span class="lufs-metric-val" id="val-lufs-momentary">-14.0</span>
+            </div>
+            <div class="lufs-metric-card">
+              <span class="lufs-metric-label">SHORT-TERM</span>
+              <span class="lufs-metric-val" id="val-lufs-short">-14.0</span>
+            </div>
+            <div class="lufs-metric-card" style="grid-column: span 2;">
+              <span class="lufs-metric-label">CREST FACTOR (DR)</span>
+              <span class="lufs-metric-val" id="val-crest">10.0 dB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Transport & Waveform Scrub Bar -->
+    <section class="transport-strip">
+      <div class="transport-controls">
+        <button class="btn-transport" id="btn-play" title="Reproducir / Pausar">
+          <span class="icon">▶</span>
+        </button>
+        <button class="btn-transport" id="btn-stop" title="Detener">
+          <span>⏹</span>
+        </button>
+        <button class="btn-transport" id="btn-loop" title="Bucle continuo">
+          <span>🔁</span>
+        </button>
+        <div class="time-display">
+          <span id="time-current">00:00.0</span> / <span id="time-total">00:00.0</span>
+        </div>
+      </div>
+
+      <!-- Waveform Box with Drag & Drop -->
+      <div class="waveform-box" id="drop-zone" title="Haz clic o arrastra un archivo WAV/MP3 aquí">
+        <canvas id="waveform-canvas"></canvas>
+        <div class="track-info-overlay" id="track-title">Haz clic o arrastra un archivo WAV / MP3</div>
+        <input type="file" id="audio-file-input" accept="audio/wav,audio/mp3,audio/mpeg" style="display: none;">
+      </div>
+
+      <!-- A/B Comparison Switch -->
+      <div class="transport-ab-section">
+        <div class="ab-group">
+          <button class="btn-ab active" id="btn-ab-wet" title="Escuchar máster procesado">WET (MÁSTER)</button>
+          <button class="btn-ab" id="btn-ab-dry" title="Escuchar mezcla original">DRY (ORIGINAL)</button>
+        </div>
+        <label class="checkbox-label" title="Compensa el volumen para comparar timbre y no solo volumen">
+          <input type="checkbox" id="chk-level-match" checked>
+          <span>Level Match</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Lower Deck: 6 Audio Processing Hardware Modules -->
+    <section class="vst-deck-lower">
+
+      <!-- Module 1: Input & Sub-Tamer -->
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-title">1. INPUT & SUB</span>
+          <button class="btn-bypass" id="btn-bypass-lowcut">ON</button>
+        </div>
+        <div class="module-knobs-grid">
+          <div class="knob-control">
+            <span class="knob-label">IN GAIN</span>
+            <div class="supreme-knob" data-param="inputGain" data-min="-18" data-max="18" data-step="0.5" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">LOW CUT</span>
+            <div class="supreme-knob accent-gold" data-param="lowCutFreq" data-min="20" data-max="80" data-step="1" data-default="30" data-unit="Hz" data-decimals="0">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">30Hz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 2: 5-Band Parametric EQ -->
+      <div class="module-card" style="grid-column: span 2;">
+        <div class="module-header">
+          <span class="module-title">2. PARAMETRIC MASTERING EQ</span>
+          <button class="btn-bypass" id="btn-bypass-eq">ON</button>
+        </div>
+        <div class="module-knobs-grid" style="grid-template-columns: repeat(5, 1fr);">
+          <!-- Band 1: Low Shelf -->
+          <div class="knob-control">
+            <span class="knob-label">SUB BASS</span>
+            <div class="supreme-knob" data-param="eqLowShelfGain" data-min="-12" data-max="12" data-step="0.2" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+
+          <!-- Band 2: Low-Mid Mud -->
+          <div class="knob-control">
+            <span class="knob-label">LOW-MID</span>
+            <div class="supreme-knob" data-param="eqLowMidGain" data-min="-9" data-max="9" data-step="0.2" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+
+          <!-- Band 3: Mid Presence -->
+          <div class="knob-control">
+            <span class="knob-label">PRESENCE</span>
+            <div class="supreme-knob" data-param="eqMidGain" data-min="-9" data-max="9" data-step="0.2" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+
+          <!-- Band 4: High-Mid Bite -->
+          <div class="knob-control">
+            <span class="knob-label">CLARITY</span>
+            <div class="supreme-knob" data-param="eqHighMidGain" data-min="-9" data-max="9" data-step="0.2" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+
+          <!-- Band 5: High Shelf Air -->
+          <div class="knob-control">
+            <span class="knob-label">AIR SHEEN</span>
+            <div class="supreme-knob accent-gold" data-param="eqHighShelfGain" data-min="-12" data-max="12" data-step="0.2" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 3: Analog Tape & Tube Saturation -->
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-title">3. TAPE & TUBE WARMTH</span>
+          <button class="btn-bypass" id="btn-bypass-sat">ON</button>
+        </div>
+        <div style="margin-bottom: 8px; text-align: center;">
+          <select id="sat-mode-select" style="background: #0d131b; color: var(--accent-gold); border: 1px solid #233144; border-radius: 4px; font-size: 10px; font-weight: bold; padding: 2px 6px;">
+            <option value="tape">ANALOG TAPE</option>
+            <option value="tube">TUBE TRIODE</option>
+            <option value="classA">CLASS-A EXCITER</option>
+            <option value="clean">CLEAN SOFT-CLIP</option>
+          </select>
+        </div>
+        <div class="module-knobs-grid">
+          <div class="knob-control">
+            <span class="knob-label">DRIVE</span>
+            <div class="supreme-knob accent-gold" data-param="saturationDrive" data-min="0" data-max="100" data-step="1" data-default="15" data-unit="%" data-decimals="0">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">15%</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">WARMTH</span>
+            <div class="supreme-knob accent-gold" data-param="saturationWarmth" data-min="0" data-max="100" data-step="1" data-default="30" data-unit="%" data-decimals="0">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">30%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 4: 3-Band Multiband Dynamics -->
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-title">4. MULTIBAND COMP</span>
+          <button class="btn-bypass" id="btn-bypass-mb">ON</button>
+        </div>
+        <div class="module-knobs-grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="knob-control">
+            <span class="knob-label">LOW</span>
+            <div class="supreme-knob accent-emerald" data-param="mbLowThreshold" data-min="-35" data-max="-5" data-step="0.5" data-default="-18" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">-18.0dB</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">MID</span>
+            <div class="supreme-knob accent-emerald" data-param="mbMidThreshold" data-min="-35" data-max="-5" data-step="0.5" data-default="-16" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">-16.0dB</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">HIGH</span>
+            <div class="supreme-knob accent-emerald" data-param="mbHighThreshold" data-min="-35" data-max="-5" data-step="0.5" data-default="-14" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">-14.0dB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 5: Stereo Imager & True-Peak Limiter -->
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-title">5. STEREO & LIMITER</span>
+          <button class="btn-bypass" id="btn-bypass-limiter">ON</button>
+        </div>
+        <div class="module-knobs-grid">
+          <div class="knob-control">
+            <span class="knob-label">WIDTH</span>
+            <div class="supreme-knob" data-param="stereoWidth" data-min="50" data-max="200" data-step="1" data-default="125" data-unit="%" data-decimals="0">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">125%</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">LOUDNESS</span>
+            <div class="supreme-knob accent-danger" data-param="loudnessDrive" data-min="0" data-max="14" data-step="0.2" data-default="3.5" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">3.5dB</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">CEILING</span>
+            <div class="supreme-knob accent-danger" data-param="ceiling" data-min="-1.5" data-max="0" data-step="0.05" data-default="-0.2" data-unit="dB" data-decimals="2">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">-0.20dB</span>
+          </div>
+
+          <div class="knob-control">
+            <span class="knob-label">OUT GAIN</span>
+            <div class="supreme-knob" data-param="outputGain" data-min="-12" data-max="12" data-step="0.5" data-default="0" data-unit="dB" data-decimals="1">
+              <div class="knob-bezel"></div>
+              <div class="knob-cap"></div>
+              <div class="knob-pointer"></div>
+            </div>
+            <span class="knob-val">0.0dB</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Multi-Agent Live Terminal & Telemetry Deck -->
+    <section class="vst-agents-console">
+      <div class="agents-console-header">
+        <div class="agents-list-chips">
+          <div class="agent-chip" id="avatar-orchestrator">
+            <span class="dot"></span>
+            <span>🧠 Orquestador</span>
+          </div>
+          <div class="agent-chip" id="avatar-architect">
+            <span class="dot"></span>
+            <span>📐 Arquitecto DSP</span>
+          </div>
+          <div class="agent-chip" id="avatar-reviewer">
+            <span class="dot"></span>
+            <span>🛡️ Revisor Anti-Distorsión</span>
+          </div>
+          <div class="agent-chip" id="avatar-qa">
+            <span class="dot"></span>
+            <span>🧪 Tester / True-Peak QA</span>
+          </div>
+        </div>
+        <span class="brand-badge" id="agents-status-pill">AGENTES LISTOS</span>
+      </div>
+
+      <div class="agents-terminal-window" id="agents-terminal"></div>
+    </section>
+
+  </main>
+
+  <!-- Export Master Modal -->
+  <div class="modal-backdrop" id="export-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">💾 EXPORTAR MÁSTER DE AUDIO</h3>
+        <button class="btn-vst" id="btn-cancel-export">✕</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+        Se procesará la pista completa a través de la cadena DSP 64-bit y se codificará en archivo WAV sin compresión con dither TPDF.
+      </p>
+
+      <div style="background: #090c10; padding: 12px; border-radius: 6px; font-size: 12px; border: 1px solid #1a2330; margin-bottom: 14px;">
+        <div><strong>Formato:</strong> Broadcast WAV (PCM 24-bit / 44.1 - 48 kHz)</div>
+        <div><strong>Dither:</strong> Triangular Probability Density Function (TPDF)</div>
+        <div><strong>Normalización:</strong> True-Peak Ceiling aplicado</div>
+      </div>
+
+      <div class="export-progress-bar-container">
+        <div class="export-progress-bar" id="export-progress-bar"></div>
+      </div>
+      <div id="export-status-text" style="font-size: 12px; font-family: var(--font-mono); color: var(--accent-cyan); text-align: center; margin-bottom: 18px;">
+        Listo para procesar
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn-vst" style="background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); color: #fff; padding: 10px 24px; font-size: 13px;" id="btn-do-export">
+          INICIAR RENDER Y DESCARGA
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

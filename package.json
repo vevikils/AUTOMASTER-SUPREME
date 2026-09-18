@@ -1,0 +1,21 @@
+{
+  "name": "automaster-supreme",
+  "version": "1.0.0",
+  "description": "Estacion de Masterizacion VST con Inteligencia Artificial Multi-Agente para archivos WAV y MP3",
+  "main": "automaster-supreme/js/app.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test_dsp.mjs",
+    "start": "node server.mjs"
+  },
+  "keywords": [
+    "vst",
+    "mastering",
+    "audio-dsp",
+    "ai-mastering",
+    "web-audio",
+    "agents"
+  ],
+  "author": "Antigravity Multi-Agent Suite",
+  "license": "MIT"
+}

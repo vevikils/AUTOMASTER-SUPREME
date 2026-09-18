@@ -1,0 +1,129 @@
+/* AUTOMASTER SUPREME - Tactile 3D Rotary Knobs & Controls */
+
+.knob-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.knob-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Rotary Knob Component */
+.supreme-knob {
+  width: 52px;
+  height: 52px;
+  position: relative;
+  cursor: ns-resize;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.supreme-knob.large {
+  width: 68px;
+  height: 68px;
+}
+
+/* Outer Bezel */
+.knob-bezel {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, #1c2430, #2d3a4d, #141a24, #2d3a4d, #1c2430);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    0 0 0 1px #0e141c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inner Cap with Knurled Texture */
+.knob-cap {
+  width: 78%;
+  height: 78%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2a3545 0%, #171f2b 70%, #0d121a 100%);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+/* Pointer Line / Indicator */
+.knob-pointer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+  transition: transform 0.04s ease-out;
+  pointer-events: none;
+}
+
+.knob-pointer::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 8px;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+  border-radius: 2px;
+}
+
+.supreme-knob.accent-gold .knob-pointer::after {
+  background: var(--accent-gold);
+  box-shadow: 0 0 8px var(--accent-gold);
+}
+
+.supreme-knob.accent-emerald .knob-pointer::after {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+}
+
+.supreme-knob.accent-danger .knob-pointer::after {
+  background: var(--accent-danger);
+  box-shadow: 0 0 8px var(--accent-danger);
+}
+
+/* Value Display Badge */
+.knob-val {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #090c10;
+  border: 1px solid #1c2534;
+  border-radius: 3px;
+  padding: 2px 5px;
+  min-width: 44px;
+  text-align: center;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Hover & Active Feedback */
+.supreme-knob:hover .knob-bezel {
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.9),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    0 0 8px var(--accent-cyan-dim);
+}
+
+.supreme-knob:active .knob-cap {
+  background: radial-gradient(circle at 35% 35%, #344256 0%, #1e2837 70%, #111822 100%);
+}
