@@ -98,6 +98,8 @@ public:
         sideHighPass.prepare(spec);
         *sideHighPass.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, 110.0f, 0.707f);
 
+        resetFilterCaches();
+
         peakL.store(-100.0f);
         peakR.store(-100.0f);
         momentaryLUFS.store(-14.0f);
@@ -116,23 +118,55 @@ public:
         const float inGainLinear = juce::Decibels::decibelsToGain(params.inputGainDb);
         buffer.applyGain(inGainLinear);
 
-        // 2. Low Cut Sub-Tamer
+        // 2. Low Cut Sub-Tamer (Optimized: coefficient caching)
         if (!params.lowCutBypass && params.lowCutFreq > 15.0f)
         {
-            *lowCutFilter.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, params.lowCutFreq, 0.707f);
+            if (params.lowCutFreq != cachedLowCutFreq)
+            {
+                *lowCutFilter.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, params.lowCutFreq, 0.707f);
+                cachedLowCutFreq = params.lowCutFreq;
+            }
             juce::dsp::AudioBlock<float> block(buffer);
             juce::dsp::ProcessContextReplacing<float> context(block);
             lowCutFilter.process(context);
         }
 
-        // 3. 5-Band Parametric Mastering EQ
+        // 3. 5-Band Parametric Mastering EQ (Optimized: coefficient caching)
         if (!params.eqBypass)
         {
-            *eq1.state = *juce::dsp::IIR::Coefficients<float>::makeLowShelf(currentSampleRate, params.eqLowShelfFreq, 0.707f, juce::Decibels::decibelsToGain(params.eqLowShelfGain));
-            *eq2.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(currentSampleRate, params.eqLowMidFreq, params.eqLowMidQ, juce::Decibels::decibelsToGain(params.eqLowMidGain));
-            *eq3.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(currentSampleRate, params.eqMidFreq, params.eqMidQ, juce::Decibels::decibelsToGain(params.eqMidGain));
-            *eq4.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(currentSampleRate, params.eqHighMidFreq, params.eqHighMidQ, juce::Decibels::decibelsToGain(params.eqHighMidGain));
-            *eq5.state = *juce::dsp::IIR::Coefficients<float>::makeHighShelf(currentSampleRate, params.eqHighShelfFreq, 0.707f, juce::Decibels::decibelsToGain(params.eqHighShelfGain));
+            if (params.eqLowShelfFreq != cachedEqLowShelfFreq || params.eqLowShelfGain != cachedEqLowShelfGain)
+            {
+                *eq1.state = *juce::dsp::IIR::Coefficients<float>::makeLowShelf(currentSampleRate, params.eqLowShelfFreq, 0.707f, juce::Decibels::decibelsToGain(params.eqLowShelfGain));
+                cachedEqLowShelfFreq = params.eqLowShelfFreq;
+                cachedEqLowShelfGain = params.eqLowShelfGain;
+            }
+            if (params.eqLowMidFreq != cachedEqLowMidFreq || params.eqLowMidGain != cachedEqLowMidGain || params.eqLowMidQ != cachedEqLowMidQ)
+            {
+                *eq2.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(currentSampleRate, params.eqLowMidFreq, params.eqLowMidQ, juce::Decibels::decibelsToGain(params.eqLowMidGain));
+                cachedEqLowMidFreq = params.eqLowMidFreq;
+                cachedEqLowMidGain = params.eqLowMidGain;
+                cachedEqLowMidQ = params.eqLowMidQ;
+            }
+            if (params.eqMidFreq != cachedEqMidFreq || params.eqMidGain != cachedEqMidGain || params.eqMidQ != cachedEqMidQ)
+            {
+                *eq3.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(currentSampleRate, params.eqMidFreq, params.eqMidQ, juce::Decibels::decibelsToGain(params.eqMidGain));
+                cachedEqMidFreq = params.eqMidFreq;
+                cachedEqMidGain = params.eqMidGain;
+                cachedEqMidQ = params.eqMidQ;
+            }
+            if (params.eqHighMidFreq != cachedEqHighMidFreq || params.eqHighMidGain != cachedEqHighMidGain || params.eqHighMidQ != cachedEqHighMidQ)
+            {
+                *eq4.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(currentSampleRate, params.eqHighMidFreq, params.eqHighMidQ, juce::Decibels::decibelsToGain(params.eqHighMidGain));
+                cachedEqHighMidFreq = params.eqHighMidFreq;
+                cachedEqHighMidGain = params.eqHighMidGain;
+                cachedEqHighMidQ = params.eqHighMidQ;
+            }
+            if (params.eqHighShelfFreq != cachedEqHighShelfFreq || params.eqHighShelfGain != cachedEqHighShelfGain)
+            {
+                *eq5.state = *juce::dsp::IIR::Coefficients<float>::makeHighShelf(currentSampleRate, params.eqHighShelfFreq, 0.707f, juce::Decibels::decibelsToGain(params.eqHighShelfGain));
+                cachedEqHighShelfFreq = params.eqHighShelfFreq;
+                cachedEqHighShelfGain = params.eqHighShelfGain;
+            }
 
             juce::dsp::AudioBlock<float> block(buffer);
             juce::dsp::ProcessContextReplacing<float> context(block);
@@ -160,10 +194,14 @@ public:
             }
         }
 
-        // 5. Stereo Imager & Mono-Maker (Mid/Side processing)
+        // 5. Stereo Imager & Mono-Maker (Mid/Side processing, Optimized caching)
         if (!params.stereoBypass)
         {
-            *sideHighPass.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, params.monoMakerFreq, 0.707f);
+            if (params.monoMakerFreq != cachedMonoMakerFreq)
+            {
+                *sideHighPass.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(currentSampleRate, params.monoMakerFreq, 0.707f);
+                cachedMonoMakerFreq = params.monoMakerFreq;
+            }
             const float width = params.stereoWidth / 100.0f;
 
             float* ch0 = buffer.getWritePointer(0);
@@ -326,6 +364,26 @@ private:
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> eq1, eq2, eq3, eq4, eq5;
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> kFilterHighShelf, kFilterHighPass;
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> sideHighPass;
+
+    // Filter coefficient update caches (prevents audio-thread heap allocations)
+    float cachedLowCutFreq = -1.0f;
+    float cachedEqLowShelfFreq = -1.0f, cachedEqLowShelfGain = -999.0f;
+    float cachedEqLowMidFreq = -1.0f, cachedEqLowMidGain = -999.0f, cachedEqLowMidQ = -1.0f;
+    float cachedEqMidFreq = -1.0f, cachedEqMidGain = -999.0f, cachedEqMidQ = -1.0f;
+    float cachedEqHighMidFreq = -1.0f, cachedEqHighMidGain = -999.0f, cachedEqHighMidQ = -1.0f;
+    float cachedEqHighShelfFreq = -1.0f, cachedEqHighShelfGain = -999.0f;
+    float cachedMonoMakerFreq = -1.0f;
+
+    void resetFilterCaches()
+    {
+        cachedLowCutFreq = -1.0f;
+        cachedEqLowShelfFreq = -1.0f; cachedEqLowShelfGain = -999.0f;
+        cachedEqLowMidFreq = -1.0f; cachedEqLowMidGain = -999.0f; cachedEqLowMidQ = -1.0f;
+        cachedEqMidFreq = -1.0f; cachedEqMidGain = -999.0f; cachedEqMidQ = -1.0f;
+        cachedEqHighMidFreq = -1.0f; cachedEqHighMidGain = -999.0f; cachedEqHighMidQ = -1.0f;
+        cachedEqHighShelfFreq = -1.0f; cachedEqHighShelfGain = -999.0f;
+        cachedMonoMakerFreq = -1.0f;
+    }
 
     // Metering state
     std::atomic<float> peakL { -100.0f };

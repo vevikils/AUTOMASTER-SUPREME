@@ -1,20 +1,22 @@
-# 🎛️ AUTOMASTER SUPREME 3.1: AI Mastering Suite by vevi (v3.1)
+# 🎛️ AUTOMASTER SUPREME 3.2: AI Mastering Suite by vevi (v3.2)
 
-[![Release](https://img.shields.io/badge/Release-v3.1.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
+[![Release](https://img.shields.io/badge/Release-v3.2.0-cyan.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME/releases)
 [![Author](https://img.shields.io/badge/Author-vevi-gold.svg?style=for-the-badge)](https://github.com/vevikils)
 [![Format](https://img.shields.io/badge/Format-VST3%20%7C%20Standalone%20%7C%20WebAudio-orange.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
-[![UI](https://img.shields.io/badge/Interactive-Live%20Control%20Legend%20%26%20Guide-yellow.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
-[![DSP](https://img.shields.io/badge/DSP-JUCE%208%20%7C%20C%2B%2B17%20%7C%2064--bit-purple.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
+[![Theme](https://img.shields.io/badge/Theme-Dark%20%26%20Light%20Modes-blue.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
+[![DSP](https://img.shields.io/badge/DSP-JUCE%208%20%7C%20C%2B%2B17%20%7C%20Zero--Alloc%20Caching-purple.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![Target](https://img.shields.io/badge/Spotify-14%20LUFS%20%7C%20--1.0%20dBTP-green.svg?style=for-the-badge)](https://github.com/vevikils/AUTOMASTER-SUPREME)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 
-**AUTOMASTER SUPREME 3.1** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
+**AUTOMASTER SUPREME 3.2** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
 
-### 🚀 Novedades de la Versión 3.1 (Sistema de Leyenda Interactiva):
-- **Inspector y Leyenda Interactiva en Tiempo Real**: Al pasar el ratón (*hover*) o arrastrar cualquier perilla o selector, la consola inferior se transforma al instante en un panel HUD con el nombre del control, rango de valores, valor en vivo, explicación clara de su función y la recomendación oficial para Spotify.
-- **Botón y Modal de Guía Rápida (`📖 LEYENDA DE CONTROLES`)**: Acceso con un clic en la barra superior a la matriz completa de los 5 módulos de procesamiento, detallando qué hace cada perilla y cómo interactúan entre sí.
-- **Tooltips Nativos de Precisión**: Cada potenciómetro integra descripción flotante inmediata con guía de uso e interacción (*arrastre vertical, rueda del ratón y doble clic para restablecer*).
-- **Ventana +20% (1296 x 888 px) y Autoría vevi**: Diseño espacioso estilo FabFilter Pro-Q y Waves, cabeceras limpias y metadatos de plugin actualizados a `AUTOMASTER SUPREME 3.1`.
+### 🚀 Novedades de la Versión 3.2 (Dual Theme & DSP Engine Optimization):
+- **Modo Oscuro y Claro (Dark & Light Mode)**: Botón conmutador instantáneo en la barra superior (`THEME: DARK` / `THEME: LIGHT`). Permite alternar entre el chasis de estudio en grafito oscuro con cristal esmerilado y un elegante chasis diurno en platino satinado, manteniendo pantallas OLED de alto contraste para una lectura nítida de los analizadores de espectro, goniometro y vúmetros.
+- **Optimización Integral de Audio DSP (Audio-Thread Cache)**: Implementación de sistema de caché de coeficientes de filtros IIR paramétricos en `MasteringDSP.h`. Elimina por completo las asignaciones dinámicas en memoria durante el procesamiento de audio en tiempo real (~600 allocs/seg liberadas), maximizando la estabilidad y reduciendo drásticamente la carga de CPU en FL Studio.
+- **Optimización del Hilo de Renderizado GUI**: Optimización en el cálculo continuo de la curva de ecualización analítica en el analizador de espectro, reduciendo las llamadas a funciones matemáticas trascendentales sin pérdida de resolución visual.
+- **Distribución de Barra Superior Anti-Colisiones**: Reorganización milimétrica de botones y selectores en la cabecera (`PRESET`, `THEME`, `CONTROL GUIDE`, `AI AUTO-MASTER`), garantizando cero superposición en cualquier resolución.
+- **Regla de Versionado Progresivo**: Adopción de política estricta de incremento de versión (v3.2, v3.3...) con cada actualización de código.
+- **Compatibilidad 100% Caracteres ASCII**: Textos en inglés puro y caracteres estándar para evitar cualquier problema de glifos en DAWs Windows.
 
 ---
 
@@ -23,11 +25,11 @@
 ¿Quieres usarlo de inmediato en tu DAW o en tu escritorio?
 Descarga el paquete oficial listo para usar en un clic:
 
-👉 **[Descargar AUTOMASTER_SUPREME_v3.1.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
+👉 **[Descargar AUTOMASTER_SUPREME_v3.2.0_Windows.zip](https://github.com/vevikils/AUTOMASTER-SUPREME/releases/latest)**
 
 El paquete incluye:
-- `AUTOMASTER SUPREME 3.1.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
-- `AUTOMASTER SUPREME 3.1.exe` (Ejecutable de escritorio Standalone).
+- `AUTOMASTER SUPREME 3.2.vst3` (Plugin nativo de 64 bits para FL Studio y DAWs).
+- `AUTOMASTER SUPREME 3.2.exe` (Ejecutable de escritorio Standalone).
 - Guías paso a paso de instalación y configuración.
 
 ---

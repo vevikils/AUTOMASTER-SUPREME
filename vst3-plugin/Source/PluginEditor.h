@@ -8,9 +8,13 @@ class SupremeKnobLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     SupremeKnobLookAndFeel();
+    void setDarkMode(bool isDark) { darkMode = isDark; }
+    bool isDarkTheme() const { return darkMode; }
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
                           float sliderPosProportional, float rotaryStartAngle,
                           float rotaryEndAngle, juce::Slider& slider) override;
+private:
+    bool darkMode = true;
 };
 
 // Interactive Legend / Inspector Data Model
@@ -58,8 +62,13 @@ private:
     void registerLegend(juce::Component& comp, const ControlLegendInfo& info);
     void updateHoverFromComponent(juce::Component* comp);
 
+    // Theme & Styling
+    bool isDarkMode = true;
+    void setTheme(bool dark);
+
     // GUI Top Bar
     juce::ComboBox presetBox;
+    juce::TextButton themeButton { "THEME: DARK" };
     juce::TextButton legendButton { "CONTROL GUIDE" };
     juce::TextButton autoMasterButton { "AI AUTO-MASTER" };
     juce::TextButton closeLegendButton { "[X] CLOSE GUIDE" };

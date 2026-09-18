@@ -12,6 +12,7 @@ void SupremeKnobLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, i
                                               float sliderPosProportional, float rotaryStartAngle,
                                               float rotaryEndAngle, juce::Slider& slider)
 {
+    const bool dark = darkMode;
     const float radius = float(std::min(width, height)) * 0.44f;
     const float centreX = float(x) + float(width) * 0.5f;
     const float centreY = float(y) + float(height) * 0.45f;
@@ -19,16 +20,16 @@ void SupremeKnobLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, i
     const juce::Colour accent = slider.findColour(juce::Slider::rotarySliderFillColourId);
 
     // 1. Sleek subtle drop shadow for depth
-    g.setColour(juce::Colour(0x35000000));
+    g.setColour(dark ? juce::Colour(0x35000000) : juce::Colour(0x15000000));
     g.fillEllipse(centreX - radius - 1.0f, centreY - radius, (radius + 1.0f) * 2.0f, (radius + 1.0f) * 2.0f);
 
-    // 2. Outer Base Track Ring (FabFilter clean dark chassis)
+    // 2. Outer Base Track Ring
     const float ringRadius = radius - 3.0f;
     juce::Path trackPath;
     trackPath.addCentredArc(centreX, centreY, ringRadius, ringRadius, 0.0f, rotaryStartAngle, rotaryEndAngle, true);
 
     // Background arc track
-    g.setColour(juce::Colour(0xff141a24));
+    g.setColour(dark ? juce::Colour(0xff141a24) : juce::Colour(0xffcbd5e1));
     g.strokePath(trackPath, juce::PathStrokeType(3.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
     // 3. Glowing Neon Value Arc (FabFilter Bloom + Sharp Core)
@@ -36,24 +37,32 @@ void SupremeKnobLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, i
     valuePath.addCentredArc(centreX, centreY, ringRadius, ringRadius, 0.0f, rotaryStartAngle, angle, true);
 
     // Ambient glow bloom
-    g.setColour(accent.withAlpha(0.28f));
+    g.setColour(accent.withAlpha(dark ? 0.28f : 0.22f));
     g.strokePath(valuePath, juce::PathStrokeType(6.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
     // Sharp neon arc line
     g.setColour(accent);
     g.strokePath(valuePath, juce::PathStrokeType(3.2f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-    // 4. Inner Satin Rotary Cap (Dark Matte Charcoal with subtle bevel)
+    // 4. Inner Satin Rotary Cap (Dark Matte Charcoal in dark, Platinum in light)
     const float capRadius = radius * 0.74f;
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff181f2b), centreX, centreY - capRadius,
-                                           juce::Colour(0xff0d121a), centreX, centreY + capRadius, false));
+    if (dark)
+    {
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xff181f2b), centreX, centreY - capRadius,
+                                               juce::Colour(0xff0d121a), centreX, centreY + capRadius, false));
+    }
+    else
+    {
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xffffffff), centreX, centreY - capRadius,
+                                               juce::Colour(0xffe2e8f0), centreX, centreY + capRadius, false));
+    }
     g.fillEllipse(centreX - capRadius, centreY - capRadius, capRadius * 2.0f, capRadius * 2.0f);
 
     // Bevel rim
-    g.setColour(juce::Colour(0x28ffffff));
+    g.setColour(dark ? juce::Colour(0x28ffffff) : juce::Colour(0xffcbd5e1));
     g.drawEllipse(centreX - capRadius, centreY - capRadius, capRadius * 2.0f, capRadius * 2.0f, 1.0f);
 
-    // 5. Minimalist FabFilter Pointer Needle & Luminous Pip
+    // 5. Minimalist Pointer Needle & Luminous Pip
     const float innerR = capRadius * 0.25f;
     const float outerR = capRadius * 0.88f;
 
@@ -66,10 +75,10 @@ void SupremeKnobLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, i
     const float y2 = centreY + outerR * sinA;
 
     // Glowing needle line
-    g.setColour(accent.withAlpha(0.6f));
+    g.setColour(accent.withAlpha(dark ? 0.6f : 0.75f));
     g.drawLine(x1, y1, x2, y2, 2.0f);
 
-    g.setColour(juce::Colours::white);
+    g.setColour(dark ? juce::Colours::white : juce::Colour(0xff1e293b));
     g.drawLine(x1, y1, x2, y2, 1.2f);
 
     // Luminous pip dot at needle tip
@@ -77,13 +86,13 @@ void SupremeKnobLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, i
     g.fillEllipse(x2 - 3.5f, y2 - 3.5f, 7.0f, 7.0f);
     g.setColour(accent);
     g.fillEllipse(x2 - 2.0f, y2 - 2.0f, 4.0f, 4.0f);
-    g.setColour(juce::Colours::white);
+    g.setColour(dark ? juce::Colours::white : juce::Colour(0xff1e293b));
     g.fillEllipse(x2 - 1.0f, y2 - 1.0f, 2.0f, 2.0f);
 
     // Center micro-hub
-    g.setColour(juce::Colour(0xff121822));
+    g.setColour(dark ? juce::Colour(0xff121822) : juce::Colour(0xffe2e8f0));
     g.fillEllipse(centreX - 2.5f, centreY - 2.5f, 5.0f, 5.0f);
-    g.setColour(juce::Colour(0x30ffffff));
+    g.setColour(dark ? juce::Colour(0x30ffffff) : juce::Colour(0xff94a3b8));
     g.drawEllipse(centreX - 2.5f, centreY - 2.5f, 5.0f, 5.0f, 0.8f);
 }
 
@@ -111,6 +120,15 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
         audioProcessor.applyPreset(presetBox.getSelectedId() - 1);
     };
     addAndMakeVisible(presetBox);
+
+    // Theme Selector Button (Top Bar)
+    themeButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff151f2d));
+    themeButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffe2e8f0));
+    themeButton.onClick = [this]()
+    {
+        setTheme(!isDarkMode);
+    };
+    addAndMakeVisible(themeButton);
 
     // Interactive Legend Button (Top Bar)
     legendButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff151f2d));
@@ -304,6 +322,7 @@ AutomasterSupremeAudioProcessorEditor::AutomasterSupremeAudioProcessorEditor(Aut
     outGainAttach = std::make_unique<SliderAttachment>(audioProcessor.apvts, "outGain", outGainSlider);
     limiterBypassAttach = std::make_unique<ButtonAttachment>(audioProcessor.apvts, "limiterBypass", bypassLimiter);
 
+    setTheme(true);
     startTimerHz(30);
 }
 
@@ -311,6 +330,62 @@ AutomasterSupremeAudioProcessorEditor::~AutomasterSupremeAudioProcessorEditor()
 {
     stopTimer();
     setLookAndFeel(nullptr);
+}
+
+void AutomasterSupremeAudioProcessorEditor::setTheme(bool dark)
+{
+    isDarkMode = dark;
+    customKnobLAF.setDarkMode(dark);
+
+    themeButton.setButtonText(dark ? "THEME: DARK" : "THEME: LIGHT");
+    themeButton.setColour(juce::TextButton::buttonColourId, dark ? juce::Colour(0xff151f2d) : juce::Colour(0xffffffff));
+    themeButton.setColour(juce::TextButton::textColourOffId, dark ? juce::Colour(0xffe2e8f0) : juce::Colour(0xff0f172a));
+
+    legendButton.setColour(juce::TextButton::buttonColourId, dark ? juce::Colour(0xff151f2d) : juce::Colour(0xffffffff));
+    legendButton.setColour(juce::TextButton::textColourOffId, dark ? juce::Colour(0xffffb92d) : juce::Colour(0xffb45309));
+
+    presetBox.setColour(juce::ComboBox::backgroundColourId, dark ? juce::Colour(0xff0d131b) : juce::Colour(0xffffffff));
+    presetBox.setColour(juce::ComboBox::outlineColourId, dark ? juce::Colour(0xff233144) : juce::Colour(0xff94a3b8));
+    presetBox.setColour(juce::ComboBox::textColourId, dark ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
+
+    satModeBox.setColour(juce::ComboBox::backgroundColourId, dark ? juce::Colour(0xff0a0d13) : juce::Colour(0xffffffff));
+    satModeBox.setColour(juce::ComboBox::outlineColourId, dark ? juce::Colour(0xff2a3648) : juce::Colour(0xff94a3b8));
+    satModeBox.setColour(juce::ComboBox::textColourId, dark ? juce::Colour(0xffffb92d) : juce::Colour(0xffb45309));
+
+    const juce::Colour tbBg = dark ? juce::Colour(0xff080b11) : juce::Colour(0xffffffff);
+    const juce::Colour tbOutline = dark ? juce::Colour(0xff1a2434) : juce::Colour(0xffcbd5e1);
+    const juce::Colour tbText = dark ? juce::Colours::white : juce::Colour(0xff0f172a);
+    const juce::Colour lblCol = dark ? juce::Colour(0xff94a3b8) : juce::Colour(0xff475569);
+
+    juce::Slider* allSliders[] = {
+        &inGainSlider, &lowCutSlider,
+        &eqSubSlider, &eqLowMidSlider, &eqMidSlider, &eqClaritySlider, &eqAirSlider,
+        &satDriveSlider, &satWarmthSlider,
+        &mbLowSlider, &mbMidSlider, &mbHighSlider,
+        &stereoWidthSlider, &monoMakerSlider,
+        &loudnessSlider, &ceilingSlider, &outGainSlider
+    };
+    for (auto* s : allSliders)
+    {
+        s->setColour(juce::Slider::textBoxBackgroundColourId, tbBg);
+        s->setColour(juce::Slider::textBoxOutlineColourId, tbOutline);
+        s->setColour(juce::Slider::textBoxTextColourId, tbText);
+    }
+
+    juce::Label* allLabels[] = {
+        &inGainLabel, &lowCutLabel,
+        &eqSubLabel, &eqLowMidLabel, &eqMidLabel, &eqClarityLabel, &eqAirLabel,
+        &satDriveLabel, &satWarmthLabel,
+        &mbLowLabel, &mbMidLabel, &mbHighLabel,
+        &stereoWidthLabel, &monoMakerLabel,
+        &loudnessLabel, &ceilingLabel, &outGainLabel
+    };
+    for (auto* l : allLabels)
+    {
+        l->setColour(juce::Label::textColourId, lblCol);
+    }
+
+    repaint();
 }
 
 void AutomasterSupremeAudioProcessorEditor::registerLegend(juce::Component& comp, const ControlLegendInfo& info)
@@ -514,13 +589,17 @@ void AutomasterSupremeAudioProcessorEditor::timerCallback()
 
 void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    // 1. Sleek Studio Dark Graphite Chassis (FabFilter / Waves Aesthetic)
-    g.fillAll(juce::Colour(0xff0a0d14));
+    // 1. Sleek Studio Chassis (Dark Obsidian or Light Platinum)
+    g.fillAll(isDarkMode ? juce::Colour(0xff0a0d14) : juce::Colour(0xffeef2f7));
 
     // 2. Header Top Bar (Height 68px)
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff141a24), 0, 0, juce::Colour(0xff0c1017), 0, 68, false));
+    if (isDarkMode)
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xff141a24), 0, 0, juce::Colour(0xff0c1017), 0, 68, false));
+    else
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xffffffff), 0, 0, juce::Colour(0xfff1f5f9), 0, 68, false));
+
     g.fillRect(0, 0, getWidth(), 68);
-    g.setColour(juce::Colour(0xff222e40));
+    g.setColour(isDarkMode ? juce::Colour(0xff222e40) : juce::Colour(0xffcbd5e1));
     g.drawLine(0.0f, 68.0f, float(getWidth()), 68.0f, 1.5f);
 
     // Brand Logo Icon (Rounded jewel badge with "A3")
@@ -533,38 +612,38 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawText("A3", logoRect, juce::Justification::centred);
 
     // Title
-    g.setColour(juce::Colours::white);
+    g.setColour(isDarkMode ? juce::Colours::white : juce::Colour(0xff0f172a));
     g.setFont(juce::Font(21.0f, juce::Font::bold));
-    g.drawText("AUTOMASTER SUPREME 3.1", 72, 12, 270, 24, juce::Justification::centredLeft);
+    g.drawText("AUTOMASTER SUPREME 3.2", 72, 12, 262, 24, juce::Justification::centredLeft);
 
-    // Version 3.1 Pill Badge
-    auto verBadge = juce::Rectangle<float>(348, 14, 44, 20);
-    g.setColour(juce::Colour(0x3000f0ff));
+    // Version 3.2 Pill Badge
+    auto verBadge = juce::Rectangle<float>(338, 14, 44, 20);
+    g.setColour(isDarkMode ? juce::Colour(0x3000f0ff) : juce::Colour(0x200284c7));
     g.fillRoundedRectangle(verBadge, 4.0f);
-    g.setColour(juce::Colour(0xff00f0ff));
+    g.setColour(isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
     g.drawRoundedRectangle(verBadge, 4.0f, 1.0f);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("v3.1", verBadge, juce::Justification::centred);
+    g.drawText("v3.2", verBadge, juce::Justification::centred);
 
     // Author Badge "BY VEVI"
-    auto authorBadge = juce::Rectangle<float>(398, 14, 72, 20);
-    g.setColour(juce::Colour(0x25ffb92d));
+    auto authorBadge = juce::Rectangle<float>(388, 14, 72, 20);
+    g.setColour(isDarkMode ? juce::Colour(0x25ffb92d) : juce::Colour(0x20b45309));
     g.fillRoundedRectangle(authorBadge, 4.0f);
-    g.setColour(juce::Colour(0xffffb92d));
+    g.setColour(isDarkMode ? juce::Colour(0xffffb92d) : juce::Colour(0xffb45309));
     g.drawRoundedRectangle(authorBadge, 4.0f, 1.0f);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
     g.drawText("BY VEVI", authorBadge, juce::Justification::centred);
 
     // Subtitle (English, no special chars)
-    g.setColour(juce::Colour(0xff7e91ad));
+    g.setColour(isDarkMode ? juce::Colour(0xff7e91ad) : juce::Colour(0xff64748b));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI MASTERING SUITE | BY VEVI", 72, 38, 185, 16, juce::Justification::centredLeft);
+    g.drawText("AI MASTERING SUITE | BY VEVI", 72, 38, 180, 16, juce::Justification::centredLeft);
 
-    // Spotify Reference Tag Pill (Starts at 264, ends at 494 -> Leaves 78px margin before presetBox at 572)
-    auto spotifyTag = juce::Rectangle<float>(264, 38, 230, 18);
-    g.setColour(juce::Colour(0x2000ffaa));
+    // Spotify Reference Tag Pill (Starts at 256, ends at 476 -> 28px clean gap before presetBox at 504)
+    auto spotifyTag = juce::Rectangle<float>(256, 38, 220, 18);
+    g.setColour(isDarkMode ? juce::Colour(0x2000ffaa) : juce::Colour(0x20059669));
     g.fillRoundedRectangle(spotifyTag, 4.0f);
-    g.setColour(juce::Colour(0xff00ffaa));
+    g.setColour(isDarkMode ? juce::Colour(0xff00ffaa) : juce::Colour(0xff059669));
     g.drawRoundedRectangle(spotifyTag, 4.0f, 1.0f);
     g.setFont(juce::Font(9.0f, juce::Font::bold));
     g.drawText("SPOTIFY TARGET (-14.0 LUFS / -1.0 dBTP)", spotifyTag, juce::Justification::centred);
@@ -588,11 +667,11 @@ void AutomasterSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     {
         int bandX = 204 + i * 80;
         auto badge = juce::Rectangle<float>(float(bandX), 548.0f, 68.0f, 15.0f);
-        g.setColour(juce::Colour(0x2000f0ff));
+        g.setColour(isDarkMode ? juce::Colour(0x2000f0ff) : juce::Colour(0x200284c7));
         g.fillRoundedRectangle(badge, 3.0f);
-        g.setColour(juce::Colour(0x5000f0ff));
+        g.setColour(isDarkMode ? juce::Colour(0x5000f0ff) : juce::Colour(0x600284c7));
         g.drawRoundedRectangle(badge, 3.0f, 0.8f);
-        g.setColour(juce::Colour(0xff80eeff));
+        g.setColour(isDarkMode ? juce::Colour(0xff80eeff) : juce::Colour(0xff0369a1));
         g.drawText(eqFreqs[i], badge, juce::Justification::centred);
     }
 
@@ -630,7 +709,7 @@ void AutomasterSupremeAudioProcessorEditor::drawLegendDrawerOverlay(juce::Graphi
     auto header = modal.removeFromTop(56).reduced(16, 8);
     g.setColour(juce::Colours::white);
     g.setFont(juce::Font(18.0f, juce::Font::bold));
-    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.1", header.getX(), header.getY(), 750, 24, juce::Justification::left);
+    g.drawText("MASTERING CONTROL GUIDE & PARAMETER LEGEND | AUTOMASTER SUPREME 3.2", header.getX(), header.getY(), 750, 24, juce::Justification::left);
 
     g.setColour(juce::Colour(0xff00ffaa));
     g.setFont(juce::Font(11.0f, juce::Font::bold));
@@ -1098,29 +1177,37 @@ void AutomasterSupremeAudioProcessorEditor::drawMetersScreen(juce::Graphics& g, 
 }
 
 // ------------------------------------------------------------------------------
-// Draw Hardware Module Cards (Frosted Dark Glass Style)
+// Draw Hardware Module Cards (Frosted Dark Glass or Clean Platinum Style)
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::drawModuleCard(juce::Graphics& g, juce::Rectangle<int> bounds, const juce::String& title, juce::Colour accentCol)
 {
-    // Frosted dark glass chassis
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff101520), float(bounds.getX()), float(bounds.getY()),
-                                           juce::Colour(0xff0a0e16), float(bounds.getX()), float(bounds.getBottom()), false));
+    // Chassis
+    if (isDarkMode)
+    {
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xff101520), float(bounds.getX()), float(bounds.getY()),
+                                               juce::Colour(0xff0a0e16), float(bounds.getX()), float(bounds.getBottom()), false));
+    }
+    else
+    {
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xffffffff), float(bounds.getX()), float(bounds.getY()),
+                                               juce::Colour(0xfff8fafc), float(bounds.getX()), float(bounds.getBottom()), false));
+    }
     g.fillRoundedRectangle(bounds.toFloat(), 8.0f);
 
-    // Subtle 1px border
-    g.setColour(juce::Colour(0xff1c2738));
+    // Subtle border
+    g.setColour(isDarkMode ? juce::Colour(0xff1c2738) : juce::Colour(0xffcbd5e1));
     g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
     // Header strip
     auto header = bounds.removeFromTop(24);
-    g.setColour(juce::Colour(0x10ffffff));
+    g.setColour(isDarkMode ? juce::Colour(0x10ffffff) : juce::Colour(0x08000000));
     g.fillRect(header.reduced(2, 0));
 
     // Accent line on left of header
     g.setColour(accentCol);
     g.fillRoundedRectangle(float(header.getX() + 6), float(header.getY() + 6), 3.0f, 12.0f, 1.5f);
 
-    g.setColour(juce::Colour(0xffcbd5e1));
+    g.setColour(isDarkMode ? juce::Colour(0xffcbd5e1) : juce::Colour(0xff1e293b));
     g.setFont(juce::Font(9.5f, juce::Font::bold));
     g.drawText(title, header.withTrimmedLeft(14), juce::Justification::centredLeft);
 }
@@ -1130,46 +1217,56 @@ void AutomasterSupremeAudioProcessorEditor::drawModuleCard(juce::Graphics& g, ju
 // ------------------------------------------------------------------------------
 void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juce::Rectangle<int> bounds)
 {
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff0d121b), float(bounds.getX()), float(bounds.getY()),
-                                           juce::Colour(0xff070a0f), float(bounds.getX()), float(bounds.getBottom()), false));
+    if (isDarkMode)
+    {
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xff0d121b), float(bounds.getX()), float(bounds.getY()),
+                                               juce::Colour(0xff070a0f), float(bounds.getX()), float(bounds.getBottom()), false));
+    }
+    else
+    {
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xffffffff), float(bounds.getX()), float(bounds.getY()),
+                                               juce::Colour(0xfff1f5f9), float(bounds.getX()), float(bounds.getBottom()), false));
+    }
     g.fillRoundedRectangle(bounds.toFloat(), 8.0f);
-    g.setColour(juce::Colour(0xff1c2738));
+    g.setColour(isDarkMode ? juce::Colour(0xff1c2738) : juce::Colour(0xffcbd5e1));
     g.drawRoundedRectangle(bounds.toFloat(), 8.0f, 1.0f);
 
     // Header with Agent Chips
     auto chipArea = bounds.removeFromTop(32).reduced(10, 4);
 
-    const char* agentNames[] = { "Orchestrator v3.1", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
+    const char* agentNames[] = { "Orchestrator v3.2", "DSP Architect", "True-Peak Guard", "Spotify QA Engine" };
     const juce::Colour agentColors[] = { juce::Colour(0xff00f0ff), juce::Colour(0xff5bc0de), juce::Colour(0xffffb92d), juce::Colour(0xff00ffaa) };
 
     int chipX = chipArea.getX();
     for (int i = 0; i < 4; ++i)
     {
         auto chipRect = juce::Rectangle<int>(chipX, chipArea.getY(), 190, 24);
-        g.setColour(juce::Colour(0xff111722));
+        g.setColour(isDarkMode ? juce::Colour(0xff111722) : juce::Colour(0xfff8fafc));
         g.fillRoundedRectangle(chipRect.toFloat(), 12.0f);
-        g.setColour(juce::Colour(0xff222e40));
+        g.setColour(isDarkMode ? juce::Colour(0xff222e40) : juce::Colour(0xffcbd5e1));
         g.drawRoundedRectangle(chipRect.toFloat(), 12.0f, 1.0f);
 
         // Glowing dot
         g.setColour(agentColors[i]);
         g.fillEllipse(float(chipRect.getX() + 10), float(chipRect.getY() + 8), 8.0f, 8.0f);
 
-        g.setColour(juce::Colours::white);
+        g.setColour(isDarkMode ? juce::Colours::white : juce::Colour(0xff0f172a));
         g.setFont(juce::Font(10.0f, juce::Font::bold));
         g.drawText(agentNames[i], chipRect.getX() + 24, chipRect.getY(), 160, 24, juce::Justification::centredLeft);
 
         chipX += 205;
     }
 
-    g.setColour(juce::Colour(0xff00ffaa));
+    g.setColour(isDarkMode ? juce::Colour(0xff00ffaa) : juce::Colour(0xff059669));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("AI COOPERATIVE CORE v3.1 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
+    g.drawText("AI COOPERATIVE CORE v3.2 | BY VEVI", chipArea.getRight() - 260, chipArea.getY(), 250, 24, juce::Justification::right);
 
     // Terminal Window / Interactive Legend HUD
     auto termArea = bounds.reduced(10, 8);
-    g.setColour(juce::Colour(0xff040609));
+    g.setColour(isDarkMode ? juce::Colour(0xff040609) : juce::Colour(0xff0f172a));
     g.fillRoundedRectangle(termArea.toFloat(), 5.0f);
+    g.setColour(isDarkMode ? juce::Colour(0xff1c2738) : juce::Colour(0xff334155));
+    g.drawRoundedRectangle(termArea.toFloat(), 5.0f, 1.0f);
 
     if (isControlActive)
     {
@@ -1210,7 +1307,7 @@ void AutomasterSupremeAudioProcessorEditor::drawAgentDeck(juce::Graphics& g, juc
         // Idle Mode: Legend Prompt + AI Telemetry
         g.setFont(juce::Font("monospace", 10.5f, juce::Font::plain));
         g.setColour(juce::Colour(0xff00f0ff));
-        g.drawText("[INTERACTIVE LEGEND v3.1] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
+        g.drawText("[INTERACTIVE LEGEND v3.2] Hover or tweak any control to inspect function, Spotify target, and mastering tips.", termArea.getX() + 10, termArea.getY() + 6, termArea.getWidth() - 20, 16, juce::Justification::left);
 
         g.setColour(juce::Colour(0xff5bc0de));
         g.drawText("[DSP Architect] 5-band dynamic curves calibrated to Spotify (-14.0 LUFS Integrated / -1.0 dBTP Ceiling)", termArea.getX() + 10, termArea.getY() + 24, termArea.getWidth() - 20, 16, juce::Justification::left);
@@ -1233,20 +1330,25 @@ void AutomasterSupremeAudioProcessorEditor::resized()
     const int topBarH = 34;
 
     // AI Auto Master on far right
-    const int ambW = 150;
-    const int ambX = getWidth() - 20 - ambW; // 1296 - 20 - 150 = 1126
+    const int ambW = 145;
+    const int ambX = getWidth() - 20 - ambW; // 1296 - 20 - 145 = 1131
     autoMasterButton.setBounds(ambX, topBarY, ambW, topBarH);
 
     // Control Guide Button
-    const int legW = 150;
-    const int legX = ambX - 12 - legW; // 1126 - 12 - 150 = 964
+    const int legW = 140;
+    const int legX = ambX - 10 - legW; // 1131 - 10 - 140 = 981
     legendButton.setBounds(legX, topBarY, legW, topBarH);
 
+    // Theme Mode Toggle Button
+    const int thmW = 125;
+    const int thmX = legX - 10 - thmW; // 981 - 10 - 125 = 846
+    themeButton.setBounds(thmX, topBarY, thmW, topBarH);
+
     // Preset ComboBox (Fits full name comfortably)
-    const int pbW = 380;
-    const int pbX = legX - 14 - pbW; // 964 - 14 - 380 = 570
+    const int pbW = 330;
+    const int pbX = thmX - 12 - pbW; // 846 - 12 - 330 = 504
     presetBox.setBounds(pbX, topBarY, pbW, topBarH);
-    // Note: Left side spotifyTag ends at 494 -> 76px clean gap before presetBox!
+    // Note: Left side spotifyTag ends at 476 -> 28px clean gap before presetBox!
 
     // Close button inside full legend drawer overlay
     closeLegendButton.setBounds(getWidth() - 230, 48, 160, 30);
