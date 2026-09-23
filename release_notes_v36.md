@@ -1,15 +1,16 @@
-# 🎤 SUPREME TUNER Real Time v3.6: Fruity Limiter & Console Hybrid Edition
+# 🎤 SUPREME TUNER Real Time v3.6: Ultra-Premium 19" Hardware Rack Edition
 
 ![Supreme Tuner Cover](supreme_tuner_cover.jpg)
 
-### 🌟 Novedades de la Versión 3.6:
-- 🎛️ **Roscas Rotatorias Estilo Fruity Limiter**: Perillas con tapas en pizarra/carbón oscuro (`#13171d` a `#262c36`), bisel exterior slate (`#4b5563`), arcos activos en ámbar dorado brillante (`#f59e0b` / `#fbbf24`), y aguja de precisión ámbar con núcleo blanco nítido y joya central.
-- 🎚️ **Faders Verticales de Consola Metálica de Estudio**:
-  - **Unidad de Dinámica (Unit 1)**: Faders deslizantes dedicados para `TRANSIENTS` y `COMPRESSION`.
-  - **Unidad Master (Unit 4)**: Faders deslizantes para `INPUT` y `OUTPUT` con vúmetros de pico live peak metering tricolor (-60 dB a +6 dB).
-- 🤖 **Subagente Especializado en GUIs Complejas Registrado**: Integrado el agente `experto-gui-vision` (`gemini-3`) en `.agents/agents/experto-gui-vision.md` para ingeniería inversa visual y diseño sin solapamientos.
-- 🎯 **Cero Solapamientos (100% Zero-Overlap)**: Margen e intervalo milimétrico garantizado en Noise Gate & Dynamics (badges, vúmetros y faders perfectamente aislados).
-- 🌐 **Control de Imagen Estéreo Mid/Side**: De 0% Mono puro a 200% Super-Wide.
+### 🌟 Novedades de la Versión 3.6 (Ultra-Premium Hardware Edition):
+- 🎛️ **Chasis Físico de Rack 19" Anodizado**: Panel frontal de metal cepillado profundo en obsidiana con orejetas de fijación de rack 19", orificios de fijación ovalados y barras de iluminación LED neon violeta fluorescente a lo largo de las orejetas.
+- 🔌 **Conector Jack 1/4" Dorado (Headphone/Aux)**: En la esquina inferior izquierda del chasis con tuerca hexagonal pulida en oro y zócalo oscuro.
+- 📻 **Vúmetros Analógicos Dobles de Estudio**: Ventana de cristal acrílico oscuro rehundida con diales curvados retroiluminados en ámbar cálido, agujas dinámicas rojas con balística analógica VU auténtica (300 ms de integración) y display interactivo inferior `AUTO-TUNE: [KEY] [SCALE]`.
+- 🎡 **Rueda Cromática con Anillo de LEDs Cian Segmentado**: 12 nodos de notas musicales iluminados en cian/violeta según la escala activa, anillo concéntrico de segmentos LED cian reactivos a la afinación en tiempo real y dial central mecanizado en titanio oscuro con muesca magenta.
+- 📊 **Escalera LED Digital Vertical Dual**: Columnas de barras LED en tiempo real (`VU` y `Pkts`) para monitoreo estéreo instantáneo de nivel de entrada y salida.
+- 🟣 **4 Perillas de Estudio con Halo Violeta Fluorescente**: Controles de gran formato con tapas moleteadas y halo circular brillante en la base (`SPEED`, `AMOUNT`, `SENS`, `MIX`).
+- 🏆 **Placa del Fader Master en Oro Cepillado 24K**: Placa vertical rehundida de oro macizo con 4 tornillos hexagonales en las esquinas, escala serigrafiada de decibelios (+5 a -60 dB), deslizador táctil de consola y rótulo `3.6 MASTER LEVEL`.
+- 🤖 **Diseñado con Subagente `experto-gui-vision` (`gemini-3`)**: Especializado en réplica gráfica visual pixel-perfect y geometría cero-colisiones.
 - 🎨 **52 Presets de Artistas**: T-Pain, Travis Scott, Drake, Bad Bunny, Rosalía, Feid, Mora, Yeat, Peso Pluma y más.
 - ⚡ **Latencia Ultra-Baja**: < 2.9 ms con motor de audio a 64 bits.
 - 🛡️ **12/12 Severe Stress Tests Pasados**: Inmunidad total a fallos, NaN/Inf y ráfagas DC.

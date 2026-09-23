@@ -156,12 +156,23 @@ private:
     int currentRootIndex = 0;
     int currentScaleIndex = 0;
     float smoothedPitchAngle = 0.0f;
+    float smoothedLeftVU = 0.0f;
+    float smoothedRightVU = 0.0f;
 
     void configureKnob(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix = "");
     void configureVerticalFader(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix = "");
     void drawAntaresPitchWheel(juce::Graphics& g, juce::Rectangle<float> area);
     void drawWavesRackUnit(juce::Graphics& g, juce::Rectangle<float> bounds, const juce::String& title, const juce::Colour& headerGlow);
     void drawLivePeakMeter(juce::Graphics& g, juce::Rectangle<float> meterArea, float levelDb, const juce::String& title);
+
+    // Ultra-Premium 19" Hardware Rack Drawers
+    void drawHardwareRackEars(juce::Graphics& g, int w, int h);
+    void drawDualAnalogVUMeters(juce::Graphics& g, juce::Rectangle<float> area);
+    void drawAnalogVUMeter(juce::Graphics& g, juce::Rectangle<float> meterBox, float needleNorm, const juce::String& title);
+    void drawSegmentedPitchWheel(juce::Graphics& g, juce::Rectangle<float> area);
+    void drawVerticalDigitalBarMeters(juce::Graphics& g, juce::Rectangle<float> area);
+    void draw24KGoldMasterPlate(juce::Graphics& g, juce::Rectangle<float> area);
+    void drawQuarterInchJack(juce::Graphics& g, float x, float y, float diameter);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TPainSupremeAudioProcessorEditor)
 };

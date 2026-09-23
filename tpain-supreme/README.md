@@ -19,45 +19,41 @@
 
 **SUPREME TUNER Real Time v3.6** es un plugin VST3 y aplicación Standalone de corrección de tono y cuantización vocal en tiempo real de ultra-baja latencia (< 2.9 ms), diseñado tanto para directos sobre el escenario como para producción intensiva en estudio (Trap, Drill, Reggaetón, Hyperpop, R&B y Pop moderno).
 
-Esta versión v3.6 incorpora el rediseño gráfico exacto supervisado por el subagente de IA especializada **`experto-gui-vision`** (basado en el modelo de visión avanzada `gemini-3`):
-- **Roscas exactas de Fruity Limiter**: Perillas rotatorias con casquetes de pizarra/carbón oscuro (`#13171d` a `#262c36`), bisel exterior slate (`#4b5563`), arcos activos en ámbar dorado brillante (`#f59e0b` / `#fbbf24`), y aguja de precisión con núcleo blanco y joya central.
-- **Faders Verticales de Consola Metálica**: Deslizadores analógicos con tapas de fader de aluminio cepillado, estrías táctiles y muesca central iluminada en oro/blanco.
-- **Arquitectura Híbrida Balanceada**: Faders verticales para dinámica (`TRANSIENTS`, `COMPRESSION`) y para ganancia master (`INPUT`, `OUTPUT`), alternados armoniosamente con perillas circulares.
-- **Cero Solapamientos (100% Zero-Overlap)**: Aislamiento milimétrico entre badges de estado, vúmetros y faders.
+Esta edición **Ultra-Premium 19" Hardware Rack** incorpora la réplica física de estudio analógico supervisada por el subagente de IA especializada **`experto-gui-vision`** (basado en el modelo de visión avanzada `gemini-3`):
+- **Chasis Físico 19" en Aluminio Negro Anodizado**: Textura de metal cepillado profundo con orejetas de fijación de rack 19", orificios de tornillos mecanizados y barras de iluminación LED neon violeta fluorescente a lo largo de cada orejeta.
+- **Conector Jack 1/4" Dorado**: En la esquina inferior izquierda con tuerca hexagonal dorada y zócalo oscuro para auriculares/línea.
+- **Vúmetros Analógicos Dobles de Estudio**: Ventana de cristal acrílico oscuro rehundida con diales curvados retroiluminados en ámbar cálido, agujas dinámicas rojas con balística analógica VU (300 ms) y display digital inferior interactivo (`AUTO-TUNE: [KEY] [SCALE]`).
+- **Rueda Cromática con Anillo de LEDs Cian Segmentado**: 12 nodos de notas musicales iluminados en cian/violeta según la escala activa, anillo concéntrico de segmentos LED cian reactivos a la cuantización en tiempo real y dial central mecanizado en titanio oscuro con muesca magenta.
+- **Escalera LED Digital Vertical Dual**: Columnas de barras LED en tiempo real (`VU` y `Pkts`) para monitoreo estéreo instantáneo de nivel de entrada y salida.
+- **4 Perillas de Estudio con Halo Violeta Fluorescente**: Controles ergonómicos de gran formato con tapas moleteadas y halo circular brillante en la base (`SPEED`, `AMOUNT`, `SENS`, `MIX`).
+- **Placa del Fader Master en Oro Cepillado 24K**: Placa vertical rehundida de oro macizo con 4 tornillos hexagonales en las esquinas, escala serigrafiada de decibelios (+5 a -60 dB), deslizador táctil de consola y rótulo `3.6 MASTER LEVEL`.
 
 ---
 
 ## 🎛️ Principales Características de la v3.6
 
-### 1. 🎛️ Roscas Rotatorias Estilo Fruity Limiter
-Inspiradas en los codiciados potenciómetros de dinámica de FL Studio Fruity Limiter:
-- **Tapa Dark Slate / Carbón de Estudio**: Acabado mate no reflectante con cuerpo texturizado en grafito profundo.
-- **Bisel Exterior Slate & Sombras de Profundidad**: Relieve tridimensional moldeado con iluminación cenital.
-- **Arco Activo Ámbar Dorado Radiante**: Barra de valor curva en gradiente ámbar/dorado (`#f59e0b` a `#fbbf24`) de máxima visibilidad.
-- **Aguja Notch con Núcleo Blanco y Joya Central**: Puntero ámbar con núcleo blanco nítido y joya luminosa en el eje.
+### 1. 📻 Vúmetros Analógicos Dobles (Dual Vintage VU Meters)
+- Diales curvados con retroiluminación ámbar incandescente y escala serigrafiada de -20 a +3 dB.
+- Balística mecánica analógica de respuesta rápida con tiempo de integración estándar VU de 300 ms.
+- Display digital interior sincronizado en tiempo real con la tonalidad y escala seleccionadas (`AUTO-TUNE: G Major / E Minor`).
 
-### 2. 🎚️ Faders Verticales de Consola de Estudio
-- **Controles de Dinámica (Unit 1)**: `TRANSIENTS` y `COMPRESSION` en deslizadores verticales de alta resolución para un control táctil milimétrico del pegada y compresión vocal.
-- **Controles de Ganancia Master (Unit 4)**: `INPUT` y `OUTPUT` faders verticales dedicados con vúmetros de pico live peak LED de -60 dB a +6 dB integrados al costado de cada fader.
+### 2. 🎡 Rueda Cromática de LEDs Cian Segmentada
+- **Nodos de Notas de la Escala**: Iluminados en cian brillante (`#00f5ff`) y violeta (`#a855f7`).
+- **Detección Vocal en Tiempo Real**: Destello estelar de neón en la nota que está cantando el artista.
+- **Anillo Segmentado en Cian**: Escala radial de 30 segmentos LED en cian eléctrico que reacciona a la velocidad de retune y corrección.
+- **Dial Central en Titanio Mecanizado**: Acabado concéntrico con muesca indicadora en magenta neón.
 
-### 3. 🎯 Cero Solapamientos y Geometría Milimétrica
-- **NOISE GATE & DYNAMICS**:
-  - **Fila 1**: 3 Perillas rotatorias Fruity Limiter (`UMBRAL`, `ATAQUE`, `LIBERACION`).
-  - **Fila 2**: Badge rectangular con LED de estado (`[GATE: OPEN]` / `[GATE: ATTENUATING -XX dB]`) completamente aislado con 10px de margen libre.
-  - **Fila 3**: 2 Faders verticales de consola para dinámica (`TRANSIENTS` y `COMPRESSION`).
-  - **Fila 4**: Vúmetro LED horizontal de reducción de ganancia (`COMP GAIN REDUCTION` y `--XX.X dB`).
-- **GAIN STAGING & MASTER**:
-  - **Izquierda**: Fader vertical de `INPUT` + Vúmetro Peak live LED tricolor (`IN`).
-  - **Centro**: 2 Perillas rotatorias Fruity Limiter (`STEREO WIDTH` y `DRY / WET`).
-  - **Derecha**: Fader vertical de `OUTPUT` + Vúmetro Peak live LED tricolor (`OUT`).
-  - **Base**: Insignia de saturación analógica de cinta (`[ANALOG SATURATION: ACTIVE]`).
+### 3. 🟣 4 Perillas de Hardware con Halo Neón Violeta
+- **`SPEED`**: Velocidad de cuantización (0.0 ms Hard Snap clásico a 200 ms afinación natural).
+- **`AMOUNT`**: Intensidad de corrección y centrado tonal (0% a 100%).
+- **`SENS`**: Sensibilidad de tracking y puerta de ruido (-60 dB a 0 dB).
+- **`MIX`**: Mezcla vocal dry/wet pura (0% a 100%).
 
-### 4. 🌐 Control de Imagen Estéreo Mid/Side (`STEREO WIDTH`)
-- **`0 %` (Mono)**: Colapsa la señal a mono puro, garantizando compatibilidad total en altavoces de móvil y sistemas de club.
-- **`100 %` (Normal)**: Estéreo natural y balanceado.
-- **`200 %` (Super-Wide)**: Abre los canales laterales (*Side*), creando un campo estéreo envolvente para coros, doblajes y ad-libs.
-
-### 5. 🎚️ Gain Staging y Vúmetros Peak en Vivo
+### 4. 🏆 Placa del Fader Master en Oro Cepillado 24K
+- Placa maciza de oro con acabado cepillado vertical y 4 tornillos dorados de fijación.
+- Ranura central empotrada con escala serigrafiada de decibelios.
+- Deslizador de consola en oro 24K con estrías táctiles y muesca iluminada en oro/blanco.
+- Rótulo grabado en bronce: `3.6 MASTER LEVEL`.
 - Monitoreo continuo de entrada y salida de **-60 dB a +6 dB**.
 - Indicadores LED con escala de 3 segmentos (Verde para rango nominal, Ámbar para presencia, Rojo para advertencia de recorte).
 

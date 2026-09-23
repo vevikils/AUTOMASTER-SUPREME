@@ -14,7 +14,7 @@
 
 ---
 
-## 🎤 NEW: SUPREME TUNER Real Time v3.6 (Fruity Limiter & Console Hybrid)
+## 🎤 NEW: SUPREME TUNER Real Time v3.6 (Ultra-Premium 19" Hardware Rack)
 
 <p align="center">
   <a href="tpain-supreme/"><img src="assets/supreme_tuner_cover.jpg" alt="Supreme Tuner Real Time v3.6" width="100%"></a>
@@ -24,17 +24,18 @@
   <a href="tpain-supreme/"><img src="https://img.shields.io/badge/Supreme%20Tuner-v3.6.0-purple.svg?style=for-the-badge&logo=github" alt="Supreme Tuner v3.6"></a>
   <img src="https://img.shields.io/badge/Format-VST3%20%7C%20Standalone-blueviolet.svg?style=for-the-badge" alt="Formats">
   <img src="https://img.shields.io/badge/Latency-%3C%202.9%20ms-brightgreen.svg?style=for-the-badge" alt="Latency">
-  <img src="https://img.shields.io/badge/UI-Fruity%20Limiter%20Amber%20Knobs%20%2B%20Console%20Faders-f59e0b.svg?style=for-the-badge" alt="UI Style">
+  <img src="https://img.shields.io/badge/UI-Ultra--Premium%2019''%20Hardware%20Rack-00f5ff.svg?style=for-the-badge" alt="UI Style">
 </p>
 
 > **[Explora la documentación completa, presets y guía de instalación de Supreme Tuner v3.6 en tpain-supreme/ →](tpain-supreme/)**
 
 - **Latencia Ultra-Baja**: < 2.9 ms con motor de 64 bits para directos y estudio.
-- **Rueda Cromática Antares**: Detección tonal continua en tiempo real con nodos de notas iluminados.
-- **Roscas Exactas de Fruity Limiter**: Perillas rotatorias con casquetes dark slate, arcos activos en ámbar dorado brillante (`#f59e0b` / `#fbbf24`), y aguja con núcleo blanco y joya central.
-- **Faders Verticales de Consola de Estudio**: Deslizadores táctiles para `TRANSIENTS`, `COMPRESSION`, `INPUT` y `OUTPUT`.
-- **Monitoreo Peak Live Metering Dual**: Vúmetros de pico tricolor en tiempo real (-60 a +6 dB) para entrada y salida.
-- **Cero Solapamientos (100% Zero-Overlap)**: Aislamiento milimétrico entre badges de estado, vúmetros y faders.
+- **Chasis Físico 19" en Aluminio Negro Anodizado**: Orejetas de montaje con orificios mecanizados y barras de iluminación LED neón violeta.
+- **Vúmetros Analógicos Dobles de Estudio**: Diales curvados retroiluminados en ámbar incandescente con agujas dinámicas rojas y balística VU real (300 ms).
+- **Rueda Cromática con Anillo de LEDs Cian Segmentado**: 12 nodos de notas de escala y anillo radial de 30 segmentos en cian eléctrico reactivo a la voz.
+- **4 Perillas de Hardware con Halo Neón Violeta**: Controles táctiles ergonómicos de gran formato para `SPEED`, `AMOUNT`, `SENS` y `MIX`.
+- **Placa del Fader Master en Oro Cepillado 24K**: Placa de oro macizo con 4 tornillos hexagonales en las esquinas, escala de decibelios y deslizador táctil de consola (`3.6 MASTER LEVEL`).
+- **Escalera LED Digital Vertical Dual**: Columnas de barras LED en tiempo real (`VU` y `Pkts`) para monitoreo estéreo instantáneo de entrada y salida.
 - **Subagente Especializado Integrado**: `experto-gui-vision` (`gemini-3`) en `.agents/agents/experto-gui-vision.md`.
 - **Apertura Estéreo Mid/Side**: De 0% Mono a 200% Super-Wide.
 - **52 Presets de Artistas**: T-Pain, Travis Scott, Drake, Bad Bunny, Rosalía, Feid, Mora, etc.
