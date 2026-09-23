@@ -174,5 +174,7 @@ private:
     void draw24KGoldMasterPlate(juce::Graphics& g, juce::Rectangle<float> area);
     void drawQuarterInchJack(juce::Graphics& g, float x, float y, float diameter);
 
+    juce::Image bgTextureImage;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TPainSupremeAudioProcessorEditor)
 };

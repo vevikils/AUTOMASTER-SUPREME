@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "BgTextureData.h"
 
 //==============================================================================
 // Supreme Waves Look & Feel: Hybrid Edition (Fruity Limiter Knobs + 24K Gold Fader)
@@ -24,12 +25,19 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
     auto currentAngle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
 
     bool isHero = slider.getName() == "RetuneSpeed";
+    bool isMaster = slider.getProperties().contains("isMasterZone") && (bool)slider.getProperties()["isMasterZone"];
 
-    // 1. Ambient warm amber / golden glow halo (FL Studio style)
+    // Palette: Master zone preserves amber/gold (#f59e0b, #fbbf24).
+    // All other circular knobs across the plugin are vibrant neon violet (#a855f7, #d8b4fe).
+    juce::Colour haloColor    = isMaster ? juce::Colour(0xfff59e0b) : juce::Colour(0xffa855f7);
+    juce::Colour primaryColor = isMaster ? juce::Colour(0xfff59e0b) : juce::Colour(0xffa855f7);
+    juce::Colour brightColor  = isMaster ? juce::Colour(0xfffbbf24) : juce::Colour(0xffd8b4fe);
+    juce::Colour rimHighlight = isMaster ? juce::Colour(0xff4b5563) : juce::Colour(0xff6b46c1);
+
+    // 1. Ambient glow halo
     float haloR = radius + (isHero ? 12.0f : 8.0f);
-    juce::Colour haloColor = juce::Colour(0xfff59e0b); // FL Amber
     juce::ColourGradient halo(
-        haloColor.withAlpha(isHero ? 0.28f : 0.16f),
+        haloColor.withAlpha(isHero ? 0.32f : 0.18f),
         centre.x, centre.y,
         juce::Colours::transparentBlack,
         centre.x + haloR, centre.y + haloR, true);
@@ -47,20 +55,17 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
     g.setColour(juce::Colour(0xff090b0e));
     g.strokePath(bgArc, juce::PathStrokeType(trackWidth - 1.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-    // 3. Active Vibrant FL Studio Amber / Golden Value Arc
+    // 3. Active Vibrant Value Arc (FL Amber for Master, Neon Violet for all other units)
     juce::Path valueArc;
     valueArc.addCentredArc(centre.x, centre.y, arcR, arcR, 0.0f, rotaryStartAngle, currentAngle, true);
 
-    juce::Colour amberColor = juce::Colour(0xfff59e0b);
-    juce::Colour amberBright = juce::Colour(0xfffbbf24);
-
     // Soft neon glow pass
-    g.setColour(amberBright.withAlpha(0.40f));
+    g.setColour(brightColor.withAlpha(0.40f));
     g.strokePath(valueArc, juce::PathStrokeType(trackWidth + 2.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-    // Sharp amber gradient arc
-    juce::ColourGradient arcGrad(amberBright, centre.x - radius, centre.y + radius,
-                                 amberColor, centre.x + radius, centre.y - radius, false);
+    // Sharp gradient arc
+    juce::ColourGradient arcGrad(brightColor, centre.x - radius, centre.y + radius,
+                                 primaryColor, centre.x + radius, centre.y - radius, false);
     g.setGradientFill(arcGrad);
     g.strokePath(valueArc, juce::PathStrokeType(trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
@@ -72,10 +77,12 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         auto capY = centre.y - capRadius;
         auto capD = capRadius * 2.0f;
 
-        // Base gradient: dark carbon slate disc
+        // Base gradient: dark carbon disc
+        juce::Colour capTop = isMaster ? juce::Colour(0xff262c36) : juce::Colour(0xff281c3a);
+        juce::Colour capBot = isMaster ? juce::Colour(0xff13171d) : juce::Colour(0xff120a1f);
         juce::ColourGradient capBase(
-            juce::Colour(0xff262c36), centre.x - capRadius * 0.45f, centre.y - capRadius * 0.55f,
-            juce::Colour(0xff13171d), centre.x + capRadius * 0.55f, centre.y + capRadius * 0.65f, true);
+            capTop, centre.x - capRadius * 0.45f, centre.y - capRadius * 0.55f,
+            capBot, centre.x + capRadius * 0.55f, centre.y + capRadius * 0.65f, true);
         g.setGradientFill(capBase);
         g.fillEllipse(capX, capY, capD, capD);
 
@@ -88,28 +95,29 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         g.setGradientFill(capSheen);
         g.fillEllipse(capX, capY, capD, capD);
 
-        // Outer beveled rim: metallic slate highlight
+        // Outer beveled rim
+        juce::Colour rimBot = isMaster ? juce::Colour(0xff1b2027) : juce::Colour(0xff1f1230);
         juce::ColourGradient rimGrad(
-            juce::Colour(0xff4b5563), centre.x - capRadius, centre.y - capRadius,
-            juce::Colour(0xff1b2027), centre.x + capRadius, centre.y + capRadius, false);
+            rimHighlight, centre.x - capRadius, centre.y - capRadius,
+            rimBot, centre.x + capRadius, centre.y + capRadius, false);
         g.setGradientFill(rimGrad);
         g.drawEllipse(capX, capY, capD, capD, 1.2f);
 
         // Inner ridge
-        g.setColour(juce::Colour(0xff1f252e).withAlpha(0.8f));
+        g.setColour(isMaster ? juce::Colour(0xff1f252e).withAlpha(0.8f) : juce::Colour(0xff2a1842).withAlpha(0.8f));
         g.drawEllipse(capX + 1.2f, capY + 1.2f, capD - 2.4f, capD - 2.4f, 0.8f);
 
-        // 5. Glowing Amber Pointer Needle with White Core
+        // 5. Glowing Pointer Needle with White Core
         float r1 = capRadius * 0.32f;
         float r2 = capRadius * 0.86f;
         float sinA = std::sin(currentAngle);
         float cosA = -std::cos(currentAngle); // 0 at 12 o'clock
 
         juce::Line<float> needle(centre.x + r1 * sinA, centre.y + r1 * cosA,
-                                centre.x + r2 * sinA, centre.y + r2 * cosA);
+                                 centre.x + r2 * sinA, centre.y + r2 * cosA);
 
-        // Amber glow pass
-        g.setColour(amberBright.withAlpha(0.65f));
+        // Glow pass
+        g.setColour(brightColor.withAlpha(0.65f));
         g.drawLine(needle, isHero ? 4.0f : 3.2f);
 
         // Sharp core needle
@@ -117,7 +125,7 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         g.drawLine(needle, isHero ? 2.0f : 1.6f);
 
         // Center jewel orb
-        g.setColour(amberColor);
+        g.setColour(primaryColor);
         g.fillEllipse(centre.x - 2.5f, centre.y - 2.5f, 5.0f, 5.0f);
         g.setColour(juce::Colours::white.withAlpha(0.9f));
         g.fillEllipse(centre.x - 1.0f, centre.y - 1.0f, 2.0f, 2.0f);
@@ -211,6 +219,7 @@ TPainSupremeAudioProcessorEditor::TPainSupremeAudioProcessorEditor(TPainSupremeA
     : AudioProcessorEditor(&p), audioProcessor(p)
 {
     setLookAndFeel(&wavesLookAndFeel);
+    bgTextureImage = juce::ImageFileFormat::loadFrom(BgTexture::data, BgTexture::dataSize);
 
     // ---- Artist Preset Selector ----
     const auto& presets = TPainSupremeAudioProcessor::getPresets();
@@ -278,7 +287,11 @@ TPainSupremeAudioProcessorEditor::TPainSupremeAudioProcessorEditor(TPainSupremeA
     // Configure Gain Staging & Master (Stereo Width, Mix Knobs + 24K Gold Master Fader)
     configureKnob(stereoWidthSlider, stereoWidthLabel, "STEREO WIDTH", " %");
     configureKnob(mixSlider, mixLabel, "DRY / WET", " %");
+    stereoWidthSlider.getProperties().set("isMasterZone", true);
+    mixSlider.getProperties().set("isMasterZone", true);
+
     configureVerticalFader(outputSlider, outLabel, "MASTER LEVEL", " dB");
+    outputSlider.setRange(-24.0, 6.0, 0.1);
 
     // Configure Noise Gate Knobs
     configureKnob(gateThreshSlider, gateThrLabel, "UMBRAL", " dB");
@@ -611,15 +624,16 @@ void TPainSupremeAudioProcessorEditor::draw24KGoldMasterPlate(juce::Graphics& g,
     g.setColour(juce::Colour(0xff573a06));
     g.drawRoundedRectangle(slotRect, 2.5f, 1.0f);
 
-    // Precision etched dB markings
+    // Precision etched dB markings (+6 dB to -24 dB)
     struct DBMark { float relY; const char* txt; };
     DBMark marks[] = {
-        { 0.05f, "0" },
-        { 0.20f, "-5" },
-        { 0.38f, "-10" },
-        { 0.58f, "-20" },
-        { 0.78f, "-40" },
-        { 0.95f, "-60" }
+        { 0.06f, "+6" },
+        { 0.18f, "+3" },
+        { 0.32f, "0" },
+        { 0.48f, "-6" },
+        { 0.65f, "-12" },
+        { 0.80f, "-18" },
+        { 0.94f, "-24" }
     };
 
     g.setFont(juce::Font(8.0f, juce::Font::bold));
@@ -655,6 +669,14 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
         juce::Colour(0xff03050c), (float)getWidth() * 0.5f, (float)getHeight(), false);
     g.setGradientFill(bgGrad);
     g.fillAll();
+
+    // 2. High-Tech Cybernetic Texture at 20% Opacity (Hardware Texture Layer)
+    if (bgTextureImage.isValid())
+    {
+        g.setOpacity(0.20f);
+        g.drawImage(bgTextureImage, getLocalBounds().toFloat(), juce::RectanglePlacement::fillDestination);
+        g.setOpacity(1.0f);
+    }
 
     // Violet ambient orb (top-left)
     juce::ColourGradient violetOrb(
@@ -788,12 +810,12 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     auto gateBadgeArea = juce::Rectangle<int>(38, rackY + 120, 262, 22);
     g.setColour(juce::Colour(0xff120924));
     g.fillRoundedRectangle(gateBadgeArea.toFloat(), 4.0f);
-    g.setColour(isGateOpen ? juce::Colour(0xff00f5ff).withAlpha(0.35f) : juce::Colour(0xffff9900).withAlpha(0.35f));
+    g.setColour(isGateOpen ? juce::Colour(0xff00f5ff).withAlpha(0.35f) : juce::Colour(0xffa855f7).withAlpha(0.35f));
     g.drawRoundedRectangle(gateBadgeArea.toFloat(), 4.0f, 1.0f);
 
     float ledX = static_cast<float>(gateBadgeArea.getX() + 12);
     float ledY = static_cast<float>(gateBadgeArea.getCentreY());
-    juce::Colour ledColor = isGateOpen ? juce::Colour(0xff00f5ff) : juce::Colour(0xffff9900);
+    juce::Colour ledColor = isGateOpen ? juce::Colour(0xff00f5ff) : juce::Colour(0xffa855f7);
     g.setColour(ledColor);
     g.fillEllipse(ledX - 3.5f, ledY - 3.5f, 7.0f, 7.0f);
     g.setColour(juce::Colours::white.withAlpha(0.85f));
@@ -807,7 +829,7 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     }
     else
     {
-        g.setColour(juce::Colour(0xffffd599));
+        g.setColour(juce::Colour(0xffe9d5ff));
         g.drawText("GATE: ATTENUATING -" + juce::String(currentGateGR, 1) + " dB", gateBadgeArea.getX() + 24, gateBadgeArea.getY(), gateBadgeArea.getWidth() - 28, gateBadgeArea.getHeight(), juce::Justification::centredLeft);
     }
 

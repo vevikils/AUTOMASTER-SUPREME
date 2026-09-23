@@ -153,10 +153,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout TPainSupremeAudioProcessor::
         juce::NormalisableRange<float>(-24.0f, 24.0f, 0.1f, 1.0f), 0.0f,
         juce::AudioParameterFloatAttributes().withLabel("dB")));
 
-    // Output Gain: -24 dB to +24 dB
+    // Output Gain: -24 dB to +6 dB (pro mastering console range)
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID(ID_OUTPUT, 1), "Output Gain",
-        juce::NormalisableRange<float>(-24.0f, 24.0f, 0.1f, 1.0f), 0.0f,
+        juce::NormalisableRange<float>(-24.0f, 6.0f, 0.1f, 1.0f), 0.0f,
         juce::AudioParameterFloatAttributes().withLabel("dB")));
 
     // Stereo Width: 0% (Mono) to 200% (Super-Wide), default 100%

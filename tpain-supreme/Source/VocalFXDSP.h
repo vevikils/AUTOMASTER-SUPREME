@@ -158,7 +158,7 @@ public:
     void setOutputGainDb(float gainDb) noexcept
     {
         if (std::isfinite(gainDb))
-            outputGain = juce::Decibels::decibelsToGain(juce::jlimit(-24.0f, 24.0f, gainDb));
+            outputGain = juce::Decibels::decibelsToGain(juce::jlimit(-24.0f, 6.0f, gainDb));
         else
             outputGain = 1.0f;
     }

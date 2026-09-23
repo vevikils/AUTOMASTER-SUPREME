@@ -30,6 +30,7 @@ target_sources(SupremeTunerRealTimeV3 PRIVATE
     Source/PluginEditor.cpp
     Source/PitchEngine.h
     Source/VocalFXDSP.h
+    Source/BgTextureData.h
 )
 
 target_compile_definitions(SupremeTunerRealTimeV3 PUBLIC
