@@ -12,7 +12,35 @@
 
 **AUTOMASTER SUPREME 3.4** (creado por **vevi**) es una estación de trabajo y plugin de masterización con inteligencia artificial diseñada para procesar mezclas musicales estéreo con precisión quirúrgica, dinámica analógica cálida y volumen comercial competitivo, calibrada estrictamente para los estándares de streaming modernos (**Spotify: -14.0 LUFS / -1.0 dBTP**).
 
-### 🚀 Novedades de la Versión 3.4 (Voxengo SPAN-Style Dual Spectrum & Note Inspector):
+---
+
+## 🎤 NEW: SUPREME TUNER Real Time v3.5 (Vocal Quantization & Autotune)
+
+<p align="center">
+  <a href="tpain-supreme/"><img src="assets/supreme_tuner_cover.jpg" alt="Supreme Tuner Real Time v3.5" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="tpain-supreme/"><img src="https://img.shields.io/badge/Supreme%20Tuner-v3.5.0-purple.svg?style=for-the-badge&logo=github" alt="Supreme Tuner v3.5"></a>
+  <img src="https://img.shields.io/badge/Format-VST3%20%7C%20Standalone-blueviolet.svg?style=for-the-badge" alt="Formats">
+  <img src="https://img.shields.io/badge/Latency-%3C%202.9%20ms-brightgreen.svg?style=for-the-badge" alt="Latency">
+  <img src="https://img.shields.io/badge/UI-Perillas%20Moradas%20%2B%20Fader%20Dorado-ff007f.svg?style=for-the-badge" alt="UI Style">
+</p>
+
+> **[Explora la documentación completa, presets y guía de instalación de Supreme Tuner v3.5 en tpain-supreme/ →](tpain-supreme/)**
+
+- **Latencia Ultra-Baja**: < 2.9 ms con motor de 64 bits para directos y estudio.
+- **Rueda Cromática Antares**: Detección tonal continua en tiempo real con nodos de notas iluminados.
+- **Perillas Moradas de Lujo**: Todo el rack de dinámica y efectos con estética neón violeta de hardware.
+- **Fader Dorado del Máster**: Deslizador vertical de consola analógica en acabado oro 24K cepillado.
+- **Noise Gate y Dinámica Sin Solapamientos**: Puerta de ruido con telemetría en vivo, transientes y compresor con vúmetro de reducción de ganancia.
+- **Gain Staging y Vúmetros Peak**: Monitoreo de entrada y salida de -60 a +6 dB.
+- **Apertura Estéreo Mid/Side**: De 0% Mono a 200% Super-Wide.
+- **52 Presets de Artistas**: T-Pain, Travis Scott, Drake, Bad Bunny, Rosalía, Feid, Mora, etc.
+
+---
+
+### 🚀 Novedades de AUTOMASTER SUPREME 3.4 (Voxengo SPAN-Style Dual Spectrum & Note Inspector):
 - **Espectro Dual Estilo Voxengo SPAN (AVG & MAX)**:
   - **Curva AVG (RMS / Tiempo Real)**: Relleno volumétrico translúcido y trazo en **Cian Eléctrico** (`#00f0ff`) con balística suave de estudio para monitorear la distribución de energía media.
   - **Curva MAX (Peak Hold / Envolvente)**: Trazo nítido de alta visibilidad en **Ámbar / Oro Cálido** (`#ffaa00`) con retención de picos para localizar al instante resonancias y excesos de agudos/graves.
