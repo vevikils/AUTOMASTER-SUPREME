@@ -26,11 +26,11 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
 
     bool isHero = slider.getName() == "RetuneSpeed";
 
-    // 1. Ambient liquid purple glow halo
-    float haloR = radius + (isHero ? 14.0f : 8.0f);
-    juce::Colour haloColor = isHero ? juce::Colour(0xffa855f7) : juce::Colour(0xff8a2be2);
+    // 1. Ambient warm amber / golden glow halo (FL Studio style)
+    float haloR = radius + (isHero ? 12.0f : 8.0f);
+    juce::Colour haloColor = juce::Colour(0xfff59e0b); // FL Amber
     juce::ColourGradient halo(
-        haloColor.withAlpha(isHero ? 0.30f : 0.16f),
+        haloColor.withAlpha(isHero ? 0.28f : 0.16f),
         centre.x, centre.y,
         juce::Colours::transparentBlack,
         centre.x + haloR, centre.y + haloR, true);
@@ -43,29 +43,29 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
 
     juce::Path bgArc;
     bgArc.addCentredArc(centre.x, centre.y, arcR, arcR, 0.0f, rotaryStartAngle, rotaryEndAngle, true);
-    g.setColour(juce::Colour(0xff120924));
+    g.setColour(juce::Colour(0xff12151b));
     g.strokePath(bgArc, juce::PathStrokeType(trackWidth + 1.2f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
-    g.setColour(juce::Colour(0xff090414));
+    g.setColour(juce::Colour(0xff090b0e));
     g.strokePath(bgArc, juce::PathStrokeType(trackWidth - 1.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-    // 3. Active Vibrant Neon Purple / Violet Value Arc
+    // 3. Active Vibrant FL Studio Amber / Golden Value Arc
     juce::Path valueArc;
     valueArc.addCentredArc(centre.x, centre.y, arcR, arcR, 0.0f, rotaryStartAngle, currentAngle, true);
 
-    juce::Colour violetColor = isHero ? juce::Colour(0xffa855f7) : juce::Colour(0xff9d4edd);
-    juce::Colour violetBright = isHero ? juce::Colour(0xffe879f9) : juce::Colour(0xffc77dff);
+    juce::Colour amberColor = juce::Colour(0xfff59e0b);
+    juce::Colour amberBright = juce::Colour(0xfffbbf24);
 
     // Soft neon glow pass
-    g.setColour(violetBright.withAlpha(0.40f));
+    g.setColour(amberBright.withAlpha(0.40f));
     g.strokePath(valueArc, juce::PathStrokeType(trackWidth + 2.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-    // Sharp neon gradient arc
-    juce::ColourGradient arcGrad(violetBright, centre.x - radius, centre.y + radius,
-                                 violetColor, centre.x + radius, centre.y - radius, false);
+    // Sharp amber gradient arc
+    juce::ColourGradient arcGrad(amberBright, centre.x - radius, centre.y + radius,
+                                 amberColor, centre.x + radius, centre.y - radius, false);
     g.setGradientFill(arcGrad);
     g.strokePath(valueArc, juce::PathStrokeType(trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-    // 4. Dark Obsidian-Violet Knob Cap Disc
+    // 4. Dark Carbon / Slate Knob Cap Disc
     float capRadius = arcR - trackWidth * 0.5f - (isHero ? 4.5f : 3.0f);
     if (capRadius > 2.0f)
     {
@@ -73,10 +73,10 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         auto capY = centre.y - capRadius;
         auto capD = capRadius * 2.0f;
 
-        // Base gradient: dark twilight violet to obsidian
+        // Base gradient: dark carbon slate disc
         juce::ColourGradient capBase(
-            juce::Colour(0xff25173c), centre.x - capRadius * 0.45f, centre.y - capRadius * 0.55f,
-            juce::Colour(0xff0d0617), centre.x + capRadius * 0.55f, centre.y + capRadius * 0.65f, true);
+            juce::Colour(0xff262c36), centre.x - capRadius * 0.45f, centre.y - capRadius * 0.55f,
+            juce::Colour(0xff13171d), centre.x + capRadius * 0.55f, centre.y + capRadius * 0.65f, true);
         g.setGradientFill(capBase);
         g.fillEllipse(capX, capY, capD, capD);
 
@@ -89,18 +89,18 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         g.setGradientFill(capSheen);
         g.fillEllipse(capX, capY, capD, capD);
 
-        // Outer beveled rim: metallic violet highlight
+        // Outer beveled rim: metallic slate highlight
         juce::ColourGradient rimGrad(
-            juce::Colour(0xff9333ea), centre.x - capRadius, centre.y - capRadius,
-            juce::Colour(0xff2a1347), centre.x + capRadius, centre.y + capRadius, false);
+            juce::Colour(0xff4b5563), centre.x - capRadius, centre.y - capRadius,
+            juce::Colour(0xff1b2027), centre.x + capRadius, centre.y + capRadius, false);
         g.setGradientFill(rimGrad);
         g.drawEllipse(capX, capY, capD, capD, 1.2f);
 
         // Inner ridge
-        g.setColour(juce::Colour(0xff3b1d66).withAlpha(0.7f));
+        g.setColour(juce::Colour(0xff1f252e).withAlpha(0.8f));
         g.drawEllipse(capX + 1.2f, capY + 1.2f, capD - 2.4f, capD - 2.4f, 0.8f);
 
-        // 5. Glowing Neon Violet Pointer Needle
+        // 5. Glowing Amber Pointer Needle with White Core
         float r1 = capRadius * 0.32f;
         float r2 = capRadius * 0.86f;
         float sinA = std::sin(currentAngle);
@@ -109,8 +109,8 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         juce::Line<float> needle(centre.x + r1 * sinA, centre.y + r1 * cosA,
                                 centre.x + r2 * sinA, centre.y + r2 * cosA);
 
-        // Neon glow pass
-        g.setColour(violetBright.withAlpha(0.65f));
+        // Amber glow pass
+        g.setColour(amberBright.withAlpha(0.65f));
         g.drawLine(needle, isHero ? 4.0f : 3.2f);
 
         // Sharp core needle
@@ -118,14 +118,14 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
         g.drawLine(needle, isHero ? 2.0f : 1.6f);
 
         // Center jewel orb
-        g.setColour(violetColor);
+        g.setColour(amberColor);
         g.fillEllipse(centre.x - 2.5f, centre.y - 2.5f, 5.0f, 5.0f);
         g.setColour(juce::Colours::white.withAlpha(0.9f));
         g.fillEllipse(centre.x - 1.0f, centre.y - 1.0f, 2.0f, 2.0f);
     }
 }
 
-// THE GOLDEN MASTER FADER (Console 24K Gold Finish)
+// THE CONSOLE METALLIC FADER (Matching Screenshot)
 void SupremeWavesLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
                                               float sliderPos, float minSliderPos, float maxSliderPos,
                                               const juce::Slider::SliderStyle /*style*/, juce::Slider& /*slider*/)
@@ -138,80 +138,78 @@ void SupremeWavesLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, 
     if (trackH < 10.0f)
         trackH = static_cast<float>(height) - 24.0f;
 
-    // 1. Deep Recessed Slot with Burnished Bronze/Gold Bevel
-    float slotW = 8.0f;
+    // 1. Slender Deep Recessed Slot
+    float slotW = 6.0f;
     auto slotRect = juce::Rectangle<float>(cx - slotW * 0.5f, trackTop, slotW, trackH);
 
     // Slot interior shadow
-    g.setColour(juce::Colour(0xff0d0904));
-    g.fillRoundedRectangle(slotRect, 4.0f);
+    g.setColour(juce::Colour(0xff0a0d12));
+    g.fillRoundedRectangle(slotRect, 3.0f);
 
-    // Slot burnished gold rim
-    g.setColour(juce::Colour(0xff6e511b));
-    g.drawRoundedRectangle(slotRect, 4.0f, 1.2f);
+    // Slot subtle gold/amber border
+    g.setColour(juce::Colour(0xff473a1e));
+    g.drawRoundedRectangle(slotRect, 3.0f, 1.0f);
 
-    // Scale tick marks along sides (Pure Gold accents)
+    // Scale tick marks along sides (Gold/Amber accents)
     float midY = trackTop + trackH * 0.5f;
 
-    // Center 0 dB Tick (Bright Gold)
+    // Center 0 dB Tick
     g.setColour(juce::Colour(0xffffd700));
-    g.fillRect(cx - 14.0f, midY - 1.0f, 28.0f, 2.0f);
+    g.fillRect(cx - 12.0f, midY - 1.0f, 24.0f, 1.8f);
 
     // Intermediate scale tick marks
-    g.setColour(juce::Colour(0xffb8861e));
-    g.fillRect(cx - 10.0f, trackTop + trackH * 0.15f - 0.5f, 20.0f, 1.2f);
-    g.fillRect(cx - 10.0f, trackTop + trackH * 0.32f - 0.5f, 20.0f, 1.2f);
-    g.fillRect(cx - 10.0f, trackTop + trackH * 0.68f - 0.5f, 20.0f, 1.2f);
-    g.fillRect(cx - 10.0f, trackTop + trackH * 0.85f - 0.5f, 20.0f, 1.2f);
-    g.fillRect(cx - 7.0f, trackTop + 2.0f, 14.0f, 1.0f);
-    g.fillRect(cx - 7.0f, trackBottom - 2.0f, 14.0f, 1.0f);
+    g.setColour(juce::Colour(0xffa17e2c));
+    g.fillRect(cx - 9.0f, trackTop + trackH * 0.15f - 0.5f, 18.0f, 1.0f);
+    g.fillRect(cx - 9.0f, trackTop + trackH * 0.32f - 0.5f, 18.0f, 1.0f);
+    g.fillRect(cx - 9.0f, trackTop + trackH * 0.68f - 0.5f, 18.0f, 1.0f);
+    g.fillRect(cx - 9.0f, trackTop + trackH * 0.85f - 0.5f, 18.0f, 1.0f);
+    g.fillRect(cx - 6.0f, trackTop + 2.0f, 12.0f, 1.0f);
+    g.fillRect(cx - 6.0f, trackBottom - 2.0f, 12.0f, 1.0f);
 
-    // 2. Hardware Console 24K Brushed Gold Fader Cap (Thumb)
-    float thumbW = juce::jmin(38.0f, static_cast<float>(width) - 4.0f);
-    float thumbH = 24.0f;
+    // 2. Hardware Console Horizontal Fader Cap (Thumb)
+    float thumbW = juce::jmin(36.0f, static_cast<float>(width) - 4.0f);
+    float thumbH = 18.0f;
     float thumbY = sliderPos - thumbH * 0.5f;
     auto thumbRect = juce::Rectangle<float>(cx - thumbW * 0.5f, thumbY, thumbW, thumbH);
 
-    // Warm golden drop shadow under fader cap
+    // Soft drop shadow under fader cap
     g.setColour(juce::Colour(0x88000000));
-    g.fillRoundedRectangle(thumbRect.translated(0.0f, 3.0f), 3.0f);
-    g.setColour(juce::Colour(0xffffd700).withAlpha(0.18f));
-    g.fillRoundedRectangle(thumbRect.expanded(2.0f, 1.0f), 4.0f);
+    g.fillRoundedRectangle(thumbRect.translated(0.0f, 2.5f), 3.0f);
+    g.setColour(juce::Colour(0xffffd700).withAlpha(0.15f));
+    g.fillRoundedRectangle(thumbRect.expanded(1.5f, 0.5f), 3.0f);
 
-    // Cap body: 24K Rich Brushed Gold gradient
-    juce::ColourGradient goldCap(
-        juce::Colour(0xfffff099), thumbRect.getX(), thumbRect.getY(),
-        juce::Colour(0xff614407), thumbRect.getX(), thumbRect.getBottom(), false);
-    goldCap.addColour(0.30, juce::Colour(0xffffd700));
-    goldCap.addColour(0.65, juce::Colour(0xffb8861e));
-    g.setGradientFill(goldCap);
-    g.fillRoundedRectangle(thumbRect, 3.0f);
+    // Cap body: 3D Console Metallic Slate/Gold gradient
+    juce::ColourGradient capGrad(
+        juce::Colour(0xff3f4752), thumbRect.getX(), thumbRect.getY(),
+        juce::Colour(0xff181c22), thumbRect.getX(), thumbRect.getBottom(), false);
+    g.setGradientFill(capGrad);
+    g.fillRoundedRectangle(thumbRect, 2.5f);
 
     // Top highlight bevel & bottom shadow bevel
-    g.setColour(juce::Colour(0xfffffbd1));
+    g.setColour(juce::Colour(0xff6e7a8a));
     g.drawHorizontalLine(static_cast<int>(thumbRect.getY()), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
-    g.setColour(juce::Colour(0xff3b2705));
+    g.setColour(juce::Colour(0xff0d0f12));
     g.drawHorizontalLine(static_cast<int>(thumbRect.getBottom() - 1.0f), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
-    g.setColour(juce::Colour(0xffd4af37));
-    g.drawRoundedRectangle(thumbRect, 3.0f, 1.0f);
+    g.setColour(juce::Colour(0xffb89635)); // Gold border
+    g.drawRoundedRectangle(thumbRect, 2.5f, 1.0f);
 
-    // Tactile knurled finger grip ridges (dark bronze)
-    g.setColour(juce::Colour(0xff4a350a));
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 5.0f, thumbRect.getWidth() - 8.0f, 1.5f);
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 17.0f, thumbRect.getWidth() - 8.0f, 1.5f);
-    g.setColour(juce::Colour(0xffffe885));
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 6.5f, thumbRect.getWidth() - 8.0f, 0.7f);
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 18.5f, thumbRect.getWidth() - 8.0f, 0.7f);
+    // Tactile knurled finger grip ridges
+    g.setColour(juce::Colour(0xff101317));
+    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 3.5f, thumbRect.getWidth() - 8.0f, 1.2f);
+    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 13.5f, thumbRect.getWidth() - 8.0f, 1.2f);
+    g.setColour(juce::Colour(0xff626c7a));
+    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 4.7f, thumbRect.getWidth() - 8.0f, 0.6f);
+    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 14.7f, thumbRect.getWidth() - 8.0f, 0.6f);
 
     // Glowing Horizontal Center Notch Line (Bright White Core with Golden Halo)
     g.setColour(juce::Colour(0xffffd700).withAlpha(0.60f));
-    g.fillRect(thumbRect.getX() + 1.0f, thumbY + 10.0f, thumbRect.getWidth() - 2.0f, 4.0f);
+    g.fillRect(thumbRect.getX() + 1.0f, thumbY + 8.0f, thumbRect.getWidth() - 2.0f, 3.0f);
 
     g.setColour(juce::Colour(0xfffff4cc));
-    g.fillRect(thumbRect.getX() + 3.0f, thumbY + 11.0f, thumbRect.getWidth() - 6.0f, 2.0f);
+    g.fillRect(thumbRect.getX() + 3.0f, thumbY + 8.5f, thumbRect.getWidth() - 6.0f, 1.5f);
 
     g.setColour(juce::Colours::white);
-    g.fillRect(thumbRect.getX() + 6.0f, thumbY + 11.5f, thumbRect.getWidth() - 12.0f, 1.0f);
+    g.fillRect(thumbRect.getX() + 5.0f, thumbY + 9.0f, thumbRect.getWidth() - 10.0f, 1.0f);
 }
 
 void SupremeWavesLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, bool isButtonDown,
@@ -310,33 +308,32 @@ TPainSupremeAudioProcessorEditor::TPainSupremeAudioProcessorEditor(TPainSupremeA
     configureKnob(variationSlider, varLabel, "VARIATION", " %");
     configureKnob(centeringSlider, centerLabel, "CENTERING", " %");
 
-    // Configure Dynamics: ROTARY PURPLE KNOBS
-    configureKnob(transientsSlider, transLabel, "TRANSIENTS", " %");
-    configureKnob(compressionSlider, compLabel, "COMPRESSION", " %");
+    // Configure Dynamics: VERTICAL CONSOLE FADERS (Matching Screenshot)
+    configureVerticalFader(transientsSlider, transLabel, "TRANSIENTS", " %");
+    configureVerticalFader(compressionSlider, compLabel, "COMPRESSION", " %");
 
-    // Configure Vocal Tone Knobs (Rotary Purple)
+    // Configure Vocal Tone Knobs (FL Studio Rotary)
     configureKnob(lowCutSlider, lowCutLabel, "LOW CUT", " Hz");
     configureKnob(bodySlider, bodyLabel, "BODY", " dB");
     configureKnob(airSlider, airLabel, "AIR SHEEN", " dB");
 
-    // Configure Space FX Knobs (Rotary Purple)
+    // Configure Space FX Knobs (FL Studio Rotary)
     configureKnob(reverbMixSlider, revMixLabel, "REV MIX", " %");
     configureKnob(reverbSizeSlider, revSizeLabel, "REV SIZE", " %");
     configureKnob(delayMixSlider, dlyMixLabel, "DLY MIX", " %");
     configureKnob(delayTimeSlider, dlyTimeLabel, "DLY TIME", " ms");
     configureKnob(delayFeedbackSlider, dlyFbLabel, "FEEDBACK", " %");
 
-    // Configure Gain Staging & Master:
-    configureKnob(inputGainSlider, inputGainLabel, "INPUT GAIN", " dB");
+    // Configure Gain Staging & Master (Input & Output Faders + Stereo Width Rotary)
+    configureVerticalFader(inputGainSlider, inputGainLabel, "INPUT", " dB");
     configureKnob(stereoWidthSlider, stereoWidthLabel, "STEREO WIDTH", " %");
     configureKnob(mixSlider, mixLabel, "DRY / WET", " %");
-    // MASTER VOLUME: THE ONLY FADER, PURE GOLD!
-    configureGoldenMasterFader(outputSlider, outLabel, "MASTER VOL", " dB");
+    configureVerticalFader(outputSlider, outLabel, "OUTPUT", " dB");
 
-    // Configure Noise Gate Knobs (Rotary Purple)
+    // Configure Noise Gate Knobs (FL Studio Rotary)
     configureKnob(gateThreshSlider, gateThrLabel, "UMBRAL", " dB");
     configureKnob(gateAttackSlider, gateAtkLabel, "ATAQUE", " ms");
-    configureKnob(gateReleaseSlider, gateRelLabel, "RELEASE", " ms");
+    configureKnob(gateReleaseSlider, gateRelLabel, "LIBERACION", " ms");
 
     // Parameter Attachments
     retuneSpeedAttachment = std::make_unique<SliderAttachment>(audioProcessor.apvts, TPainSupremeAudioProcessor::ID_RETUNE_SPEED, retuneSpeedSlider);
@@ -419,20 +416,20 @@ void TPainSupremeAudioProcessorEditor::configureKnob(juce::Slider& slider, juce:
     addAndMakeVisible(label);
 }
 
-void TPainSupremeAudioProcessorEditor::configureGoldenMasterFader(juce::Slider& slider, juce::Label& label,
-                                                                 const juce::String& text, const juce::String& suffix)
+void TPainSupremeAudioProcessorEditor::configureVerticalFader(juce::Slider& slider, juce::Label& label,
+                                                             const juce::String& text, const juce::String& suffix)
 {
     slider.setSliderStyle(juce::Slider::LinearVertical);
-    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 64, 18);
+    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 64, 16);
     slider.setTextValueSuffix(suffix);
-    slider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xffffd700)); // Pure Gold
+    slider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xffffd700)); // Gold/amber readout
     slider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(slider);
 
     label.setText(text, juce::dontSendNotification);
-    label.setFont(juce::Font(11.0f, juce::Font::bold));
+    label.setFont(juce::Font(10.5f, juce::Font::bold));
     label.setJustificationType(juce::Justification::centred);
-    label.setColour(juce::Label::textColourId, juce::Colour(0xffffd700)); // Pure Gold
+    label.setColour(juce::Label::textColourId, juce::Colour(0xffc77dff));
     addAndMakeVisible(label);
 }
 
@@ -610,7 +607,7 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawRoundedRectangle(vBadge, 6.0f, 1.0f);
     g.setFont(juce::Font(11.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xffffccee));
-    g.drawText("REAL TIME v3.5", vBadge.toNearestInt(), juce::Justification::centred);
+    g.drawText("REAL TIME v3.6", vBadge.toNearestInt(), juce::Justification::centred);
 
     // Subtitle
     g.setFont(juce::Font(11.0f, juce::Font::plain));
@@ -697,8 +694,8 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     auto dynBox = juce::Rectangle<float>(24.0f, static_cast<float>(rackY), 290.0f, static_cast<float>(rackH));
     drawWavesRackUnit(g, dynBox, "NOISE GATE & DYNAMICS", juce::Colour(0xffff007f));
 
-    // Gate Status Badge & LED (Y: rackY + 124 = 562 to 584) - Completely isolated, zero overlap!
-    auto gateBadgeArea = juce::Rectangle<int>(38, rackY + 124, 262, 22);
+    // Gate Status Badge & LED (Y: rackY + 120 = 558 to 580) - Perfectly placed, ZERO overlap!
+    auto gateBadgeArea = juce::Rectangle<int>(38, rackY + 120, 262, 22);
     g.setColour(juce::Colour(0xff120924));
     g.fillRoundedRectangle(gateBadgeArea.toFloat(), 4.0f);
     g.setColour(isGateOpen ? juce::Colour(0xff00f5ff).withAlpha(0.35f) : juce::Colour(0xffff9900).withAlpha(0.35f));
@@ -730,7 +727,7 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     }
 
     // Dynamic Compression Gain Reduction VU Meter (Hot Pink / Magenta)
-    auto grMeterArea = juce::Rectangle<int>(42, rackY + 258, 254, 16);
+    auto grMeterArea = juce::Rectangle<int>(42, rackY + 296, 254, 16);
     g.setColour(juce::Colour(0xff130b22));
     g.fillRoundedRectangle(grMeterArea.toFloat(), 4.0f);
     g.setColour(juce::Colour(0xff472b73));
@@ -747,8 +744,8 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     }
     g.setFont(juce::Font(10.5f, juce::Font::bold));
     g.setColour(juce::Colour(0xffe6c2ff));
-    g.drawText("COMP GAIN REDUCTION", 42, rackY + 278, 140, 16, juce::Justification::left);
-    g.drawText("-" + juce::String(currentGR, 1) + " dB", 196, rackY + 278, 100, 16, juce::Justification::right);
+    g.drawText("COMP GAIN REDUCTION", 42, rackY + 316, 140, 16, juce::Justification::left);
+    g.drawText("--" + juce::String(currentGR, 1) + " dB", 196, rackY + 316, 100, 16, juce::Justification::right);
 
     // Unit 2: VOCAL TONE (X: 328, W: 290)
     auto toneBox = juce::Rectangle<float>(328.0f, static_cast<float>(rackY), 290.0f, static_cast<float>(rackH));
@@ -758,21 +755,20 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     auto spaceBox = juce::Rectangle<float>(632.0f, static_cast<float>(rackY), 310.0f, static_cast<float>(rackH));
     drawWavesRackUnit(g, spaceBox, "SPACE & AMBIENCE", juce::Colour(0xffff00aa));
 
-    // Unit 4: MASTER & STEREO (X: 956, W: 270)
+    // Unit 4: GAIN STAGING & MASTER (X: 956, W: 270)
     auto masterBox = juce::Rectangle<float>(956.0f, static_cast<float>(rackY), 270.0f, static_cast<float>(rackH));
-    drawWavesRackUnit(g, masterBox, "MASTER & STEREO", juce::Colour(0xffffd700));
+    drawWavesRackUnit(g, masterBox, "GAIN STAGING & MASTER", juce::Colour(0xff8a2be2));
 
-    // Live Peak Meter for Output (Right beside the Golden Master Fader)
-    auto outMeterArea = juce::Rectangle<float>(1178.0f, static_cast<float>(rackY + 62), 20.0f, 214.0f);
+    // Live Peak Meter for Input (Next to Input Fader)
+    auto inMeterArea = juce::Rectangle<float>(1018.0f, static_cast<float>(rackY + 58), 12.0f, 196.0f);
+    drawLivePeakMeter(g, inMeterArea, currentInputMeterDb, "IN");
+
+    // Live Peak Meter for Output (Next to Output Fader)
+    auto outMeterArea = juce::Rectangle<float>(1206.0f, static_cast<float>(rackY + 58), 12.0f, 196.0f);
     drawLivePeakMeter(g, outMeterArea, currentOutputMeterDb, "OUT");
 
-    // Live Peak Meter Header Label (Gold)
-    g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.setColour(juce::Colour(0xffffd700));
-    g.drawText("OUT", 1172, rackY + 44, 32, 14, juce::Justification::centred);
-
     // Analog Tape Saturation Active Badge
-    auto satBadge = juce::Rectangle<int>(972, rackY + 332, 238, 24);
+    auto satBadge = juce::Rectangle<int>(972, rackY + 314, 238, 24);
     g.setColour(juce::Colour(0xffff007f).withAlpha(0.20f));
     g.fillRoundedRectangle(satBadge.toFloat(), 5.0f);
     g.setColour(juce::Colour(0xffff007f));
@@ -1149,12 +1145,12 @@ void TPainSupremeAudioProcessorEditor::resized()
     int rackY = 438;
 
     // Unit 1: NOISE GATE & DYNAMICS (X: 24, W: 290)
-    // Row 1: Noise Gate (3 Rotary Purple Knobs: Thresh, Attack, Release)
-    int gateKnobY = rackY + 38;
+    // Row 1: Noise Gate (3 Fruity Limiter Rotary Knobs: Thresh, Attack, Release)
+    int gateKnobY = rackY + 38; // 476
     int gateKnobW = 76;
-    int gateKnobH = 64;
+    int gateKnobH = 58;
     gateThreshSlider.setBounds(33, gateKnobY, gateKnobW, gateKnobH);
-    gateThrLabel.setBounds(27, gateKnobY + gateKnobH + 2, 88, 14);
+    gateThrLabel.setBounds(27, gateKnobY + gateKnobH + 2, 88, 14); // 536 to 550
 
     gateAttackSlider.setBounds(121, gateKnobY, gateKnobW, gateKnobH);
     gateAtkLabel.setBounds(115, gateKnobY + gateKnobH + 2, 88, 14);
@@ -1162,15 +1158,18 @@ void TPainSupremeAudioProcessorEditor::resized()
     gateReleaseSlider.setBounds(209, gateKnobY, gateKnobW, gateKnobH);
     gateRelLabel.setBounds(203, gateKnobY + gateKnobH + 2, 88, 14);
 
-    // Row 2: Dynamics (2 Rotary Purple Knobs: Transients & Compression)
-    int dynKnobY = rackY + 154;
-    int dynKnobW = 96;
-    int dynKnobH = 76;
-    transientsSlider.setBounds(48, dynKnobY, dynKnobW, dynKnobH);
-    transLabel.setBounds(44, dynKnobY + dynKnobH + 2, 104, 14);
+    // Gate Status Badge is painted at Y: rackY + 120 (558) to 580 (CLEAR GAP: 550 to 558)
 
-    compressionSlider.setBounds(190, dynKnobY, dynKnobW, dynKnobH);
-    compLabel.setBounds(186, dynKnobY + dynKnobH + 2, 104, 14);
+    // Row 2: Dynamics (Dual Sleek Metallic Vertical Console Faders: Transients & Compression)
+    // Labels placed at top of faders (Y: 586 to 600)
+    transLabel.setBounds(42, rackY + 148, 90, 14);
+    compLabel.setBounds(182, rackY + 148, 90, 14);
+
+    // Vertical Fader Sliders (Y: 602 to 728, H: 126)
+    transientsSlider.setBounds(52, rackY + 164, 70, 126);
+    compressionSlider.setBounds(192, rackY + 164, 70, 126);
+
+    // Gain Reduction Meter is painted at Y: rackY + 296 (734) to 750, text at 754 to 770. ZERO OVERLAP!
 
     // Unit 2: VOCAL TONE (X: 328, W: 290)
     int toneKnobY = rackY + 110;
@@ -1208,17 +1207,20 @@ void TPainSupremeAudioProcessorEditor::resized()
     dlyFbLabel.setBounds(840, r2Y + r2H + 2, 102, 14);
 
     // Unit 4: GAIN STAGING & MASTER (X: 956, W: 270)
-    // Left: 3 Rotary Purple Knobs (Input Gain, Stereo Width, Dry/Wet Mix)
-    inputGainSlider.setBounds(972, rackY + 40, 88, 66);
-    inputGainLabel.setBounds(966, rackY + 108, 100, 14);
+    // Left: INPUT Console Fader + Peak Meter (Meter painted at X: 1018, Y: 496 to 692)
+    inputGainLabel.setBounds(964, rackY + 38, 56, 16);
+    inputGainSlider.setBounds(962, rackY + 56, 58, 236);
 
-    stereoWidthSlider.setBounds(972, rackY + 130, 88, 66);
-    stereoWidthLabel.setBounds(966, rackY + 198, 100, 14);
+    // Center: Rotary Fruity Limiter Knobs (Stereo Width, Dry/Wet Mix)
+    stereoWidthSlider.setBounds(1042, rackY + 44, 86, 86);
+    stereoWidthLabel.setBounds(1032, rackY + 132, 106, 16);
 
-    mixSlider.setBounds(972, rackY + 220, 88, 66);
-    mixLabel.setBounds(966, rackY + 288, 100, 14);
+    mixSlider.setBounds(1042, rackY + 168, 86, 86);
+    mixLabel.setBounds(1032, rackY + 256, 106, 16);
 
-    // Right: THE GOLDEN MASTER FADER (Console 24K Gold)
-    outLabel.setBounds(1084, rackY + 40, 80, 16);
-    outputSlider.setBounds(1084, rackY + 58, 80, 248);
+    // Right: OUTPUT Console Fader + Peak Meter (Meter painted at X: 1206, Y: 496 to 692)
+    outLabel.setBounds(1150, rackY + 38, 56, 16);
+    outputSlider.setBounds(1148, rackY + 56, 58, 236);
+
+    // Analog Tape Saturation Active Badge painted at Y: rackY + 314 (752 to 776). ZERO OVERLAP!
 }

@@ -158,7 +158,7 @@ private:
     float smoothedPitchAngle = 0.0f;
 
     void configureKnob(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix = "");
-    void configureGoldenMasterFader(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix = "");
+    void configureVerticalFader(juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& suffix = "");
     void drawAntaresPitchWheel(juce::Graphics& g, juce::Rectangle<float> area);
     void drawWavesRackUnit(juce::Graphics& g, juce::Rectangle<float> bounds, const juce::String& title, const juce::Colour& headerGlow);
     void drawLivePeakMeter(juce::Graphics& g, juce::Rectangle<float> meterArea, float levelDb, const juce::String& title);

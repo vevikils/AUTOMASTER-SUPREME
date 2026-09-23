@@ -31,7 +31,7 @@ def main():
 
     # 3. Artifact paths
     artefacts_dir = os.path.join(build_dir, "SupremeTunerRealTimeV3_artefacts", "Release")
-    plugin_name = "Supreme Tuner Real Time v3.5"
+    plugin_name = "Supreme Tuner Real Time v3.6"
     vst3_src = os.path.join(artefacts_dir, "VST3", f"{plugin_name}.vst3")
     exe_src = os.path.join(artefacts_dir, "Standalone", f"{plugin_name}.exe")
 

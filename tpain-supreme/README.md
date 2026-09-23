@@ -1,15 +1,15 @@
-# 🎤 SUPREME TUNER Real Time v3.5: Ultra-Low Latency Vocal Quantization Engine
+# 🎤 SUPREME TUNER Real Time v3.6: Ultra-Low Latency Vocal Quantization Engine
 
 <p align="center">
-  <img src="assets/supreme_tuner_cover.jpg" alt="Supreme Tuner Real Time v3.5 Cover" width="100%">
+  <img src="assets/supreme_tuner_cover.jpg" alt="Supreme Tuner Real Time v3.6 Cover" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/vevikils/AUTOMASTER-SUPREME"><img src="https://img.shields.io/badge/Release-v3.5.0-purple.svg?style=for-the-badge&logo=github" alt="Release v3.5.0"></a>
+  <a href="https://github.com/vevikils/AUTOMASTER-SUPREME"><img src="https://img.shields.io/badge/Release-v3.6.0-purple.svg?style=for-the-badge&logo=github" alt="Release v3.6.0"></a>
   <a href="https://github.com/vevikils"><img src="https://img.shields.io/badge/Author-vevi-gold.svg?style=for-the-badge" alt="Author vevi"></a>
   <img src="https://img.shields.io/badge/Format-VST3%20%7C%20Standalone%2064--bit-blueviolet.svg?style=for-the-badge" alt="Formats">
   <img src="https://img.shields.io/badge/Latency-%3C%202.9%20ms%20%7C%20Live%20Engine-brightgreen.svg?style=for-the-badge" alt="Latency">
-  <img src="https://img.shields.io/badge/UI-Perillas%20Moradas%20%2B%20Fader%20Dorado-ff007f.svg?style=for-the-badge" alt="UI Style">
+  <img src="https://img.shields.io/badge/UI-Fruity%20Limiter%20Amber%20Knobs%20%2B%20Console%20Faders-f59e0b.svg?style=for-the-badge" alt="UI Style">
   <img src="https://img.shields.io/badge/Stress%20Tests-12%2F12%20PASSED-success.svg?style=for-the-badge" alt="Stress Tests">
 </p>
 
@@ -17,37 +17,39 @@
 
 ## 🌟 Descripción General
 
-**SUPREME TUNER Real Time v3.5** es un plugin VST3 y aplicación Standalone de corrección de tono y cuantización vocal en tiempo real de ultra-baja latencia (< 2.9 ms), diseñado tanto para directos sobre el escenario como para producción intensiva en estudio (Trap, Drill, Reggaetón, Hyperpop, R&B y Pop moderno).
+**SUPREME TUNER Real Time v3.6** es un plugin VST3 y aplicación Standalone de corrección de tono y cuantización vocal en tiempo real de ultra-baja latencia (< 2.9 ms), diseñado tanto para directos sobre el escenario como para producción intensiva en estudio (Trap, Drill, Reggaetón, Hyperpop, R&B y Pop moderno).
 
-Combina la velocidad de cuantización dura clásica (*T-Pain Hard Snap*) y afinación natural de Antares con una bahía completa de racks analógicos inspirados en Waves y Neve, presentando un rediseño de interfaz de vanguardia con **perillas moradas de lujo**, un **único fader master de consola en oro 24K**, monitoreo de ganancia con vúmetros peak y control de apertura estéreo Mid/Side.
+Esta versión v3.6 incorpora el rediseño gráfico exacto supervisado por el subagente de IA especializada **`experto-gui-vision`** (basado en el modelo de visión avanzada `gemini-3`):
+- **Roscas exactas de Fruity Limiter**: Perillas rotatorias con casquetes de pizarra/carbón oscuro (`#13171d` a `#262c36`), bisel exterior slate (`#4b5563`), arcos activos en ámbar dorado brillante (`#f59e0b` / `#fbbf24`), y aguja de precisión con núcleo blanco y joya central.
+- **Faders Verticales de Consola Metálica**: Deslizadores analógicos con tapas de fader de aluminio cepillado, estrías táctiles y muesca central iluminada en oro/blanco.
+- **Arquitectura Híbrida Balanceada**: Faders verticales para dinámica (`TRANSIENTS`, `COMPRESSION`) y para ganancia master (`INPUT`, `OUTPUT`), alternados armoniosamente con perillas circulares.
+- **Cero Solapamientos (100% Zero-Overlap)**: Aislamiento milimétrico entre badges de estado, vúmetros y faders.
 
 ---
 
-## 🎛️ Principales Características de la v3.5
+## 🎛️ Principales Características de la v3.6
 
-### 1. 🟣 Perillas Moradas de Lujo ("Perillas Moradas para Todo")
-Todos los controles dinámicos, de ecualización y de efectos espaciales utilizan perillas rotatorias de hardware con estética violeta/púrpura neón de lujo:
-- **Tapa de Obsidiana Violeta**: Gradiente circular medianoche (`#25173c` a `#0d0617`) con bisel metálico violeta (`#9333ea` a `#2a1347`).
-- **Halo y Resplandor Neón**: Difusión ambiental violeta fluorescente en torno a cada perilla.
-- **Arco Activo Púrpura Eléctrico**: Trazo fluido con gradiente neón vibrante (`#8b5cf6` a `#d946ef`).
-- **Agujas con Núcleo Blanco y Joya Iluminada**: Indicador de alta visibilidad para cabina oscura y directos.
+### 1. 🎛️ Roscas Rotatorias Estilo Fruity Limiter
+Inspiradas en los codiciados potenciómetros de dinámica de FL Studio Fruity Limiter:
+- **Tapa Dark Slate / Carbón de Estudio**: Acabado mate no reflectante con cuerpo texturizado en grafito profundo.
+- **Bisel Exterior Slate & Sombras de Profundidad**: Relieve tridimensional moldeado con iluminación cenital.
+- **Arco Activo Ámbar Dorado Radiante**: Barra de valor curva en gradiente ámbar/dorado (`#f59e0b` a `#fbbf24`) de máxima visibilidad.
+- **Aguja Notch con Núcleo Blanco y Joya Central**: Puntero ámbar con núcleo blanco nítido y joya luminosa en el eje.
 
-### 2. 🏆 El Fader Dorado del Máster (24K Gold Console Fader)
-El control de volumen de salida (`MASTER VOL`) es el **único control en formato slider vertical**, destacando como pieza central de la sección de masterización:
-- **Tapa de Fader en Oro Cepillado 24K**: Gradiente multicapa de oro real (`#fff099` -> `#ffd700` -> `#b8861e` -> `#614407`).
-- **Ergonomía de Consola**: Ranuras estriadas de agarre táctil y línea central de muesca iluminada en blanco con halo dorado.
-- **Ranura Empotrada con Bisel de Bronce y Oro**: Escala de decibelios grabada y punto cero dB resaltado.
-- **Lecturas en Oro Puro**: Etiqueta `MASTER VOL` y caja numérica inferior en oro (`#ffd700`).
+### 2. 🎚️ Faders Verticales de Consola de Estudio
+- **Controles de Dinámica (Unit 1)**: `TRANSIENTS` y `COMPRESSION` en deslizadores verticales de alta resolución para un control táctil milimétrico del pegada y compresión vocal.
+- **Controles de Ganancia Master (Unit 4)**: `INPUT` y `OUTPUT` faders verticales dedicados con vúmetros de pico live peak LED de -60 dB a +6 dB integrados al costado de cada fader.
 
 ### 3. 🎯 Cero Solapamientos y Geometría Milimétrica
 - **NOISE GATE & DYNAMICS**:
-  - **Fila 1**: 3 Perillas circulares moradas (`UMBRAL`, `ATAQUE`, `RELEASE`).
-  - **Fila 2**: Badge rectangular con LED de estado (`[GATE: OPEN]` / `[GATE: ATTENUATING -XX dB]`) completamente aislado.
-  - **Fila 3**: 2 Perillas circulares moradas para dinámica (`TRANSIENTS` y `COMPRESSION`).
-  - **Fila 4**: Vúmetro LED horizontal de reducción de ganancia (`COMP GAIN REDUCTION` y `-XX.X dB`).
+  - **Fila 1**: 3 Perillas rotatorias Fruity Limiter (`UMBRAL`, `ATAQUE`, `LIBERACION`).
+  - **Fila 2**: Badge rectangular con LED de estado (`[GATE: OPEN]` / `[GATE: ATTENUATING -XX dB]`) completamente aislado con 10px de margen libre.
+  - **Fila 3**: 2 Faders verticales de consola para dinámica (`TRANSIENTS` y `COMPRESSION`).
+  - **Fila 4**: Vúmetro LED horizontal de reducción de ganancia (`COMP GAIN REDUCTION` y `--XX.X dB`).
 - **GAIN STAGING & MASTER**:
-  - **Columna Izquierda**: 3 perillas moradas (`INPUT GAIN`, `STEREO WIDTH`, `DRY / WET`).
-  - **Columna Derecha**: El **Fader Dorado del Máster** junto a su vúmetro Peak de LED en tiempo real (`OUT`).
+  - **Izquierda**: Fader vertical de `INPUT` + Vúmetro Peak live LED tricolor (`IN`).
+  - **Centro**: 2 Perillas rotatorias Fruity Limiter (`STEREO WIDTH` y `DRY / WET`).
+  - **Derecha**: Fader vertical de `OUTPUT` + Vúmetro Peak live LED tricolor (`OUT`).
   - **Base**: Insignia de saturación analógica de cinta (`[ANALOG SATURATION: ACTIVE]`).
 
 ### 4. 🌐 Control de Imagen Estéreo Mid/Side (`STEREO WIDTH`)
@@ -76,15 +78,15 @@ El control de volumen de salida (`MASTER VOL`) es el **único control en formato
 ## 💻 Instalación Rápida
 
 ### VST3 (DAWs: FL Studio, Ableton, Reaper, Cubase, Studio One)
-Copia la carpeta `Supreme Tuner Real Time v3.5.vst3` en tu directorio estándar VST3 de Windows:
+Copia la carpeta `Supreme Tuner Real Time v3.6.vst3` en tu directorio estándar VST3 de Windows:
 ```
-C:\Program Files\Common Files\VST3\Supreme Tuner Real Time v3.5.vst3
+C:\Program Files\Common Files\VST3\Supreme Tuner Real Time v3.6.vst3
 ```
 
 ### Standalone (Ejecutable de Escritorio)
 Ejecuta directamente:
 ```
-Supreme Tuner Real Time v3.5.exe
+Supreme Tuner Real Time v3.6.exe
 ```
 Ideal para ensayos, directos con tarjeta de sonido USB/Thunderbolt y pruebas con latencia mínima sin necesidad de abrir un DAW.
 

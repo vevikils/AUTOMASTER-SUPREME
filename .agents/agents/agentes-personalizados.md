@@ -24,6 +24,7 @@ Eres el agente principal y punto de entrada para este proyecto. Tu objetivo es c
 1. **Comprensión de Requerimientos**: Analizar las necesidades del usuario y definir una hoja de ruta técnica clara.
 2. **Coordinación y Orquestación**: Resolver problemas directamente o delegar tareas específicas a los subagentes disponibles:
    - `disenador-ui-ux`: Diseño visual, experiencia de usuario (UI/UX Pro Max), maquetación y estilos CSS.
+   - `experto-gui-vision`: Ingeniería inversa visual, arquitectura de interfaces gráficas complejas para plugins VST3/Standalone (JUCE, C++), réplica pixel-perfect desde imágenes y maquetación matemática sin colisiones.
    - `revisor-codigo`: Auditoría, seguridad y refactorización.
    - `generador-pruebas`: Pruebas unitarias, de integración y análisis de cobertura.
    - `arquitecto-documentador`: Diseño de componentes, esquemas de bases de datos, diagramas Mermaid y documentación técnica.
