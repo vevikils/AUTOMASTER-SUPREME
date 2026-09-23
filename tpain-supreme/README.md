@@ -1,15 +1,16 @@
-# 🎤 SUPREME TUNER Real Time v3.6: Ultra-Low Latency Vocal Quantization Engine
+# 🎤 SUPREME TUNER Real Time v3.9: Hybrid Hardware Master Edition
+### 👑 Autor: **vevi** (@vevikils)
 
 <p align="center">
-  <img src="assets/supreme_tuner_cover.jpg" alt="Supreme Tuner Real Time v3.6 Cover" width="100%">
+  <img src="assets/supreme_tuner_cover.jpg" alt="Supreme Tuner Real Time v3.9 Cover" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/vevikils/AUTOMASTER-SUPREME"><img src="https://img.shields.io/badge/Release-v3.6.0-purple.svg?style=for-the-badge&logo=github" alt="Release v3.6.0"></a>
+  <a href="https://github.com/vevikils/AUTOMASTER-SUPREME"><img src="https://img.shields.io/badge/Release-v3.9.0-purple.svg?style=for-the-badge&logo=github" alt="Release v3.9.0"></a>
   <a href="https://github.com/vevikils"><img src="https://img.shields.io/badge/Author-vevi-gold.svg?style=for-the-badge" alt="Author vevi"></a>
   <img src="https://img.shields.io/badge/Format-VST3%20%7C%20Standalone%2064--bit-blueviolet.svg?style=for-the-badge" alt="Formats">
   <img src="https://img.shields.io/badge/Latency-%3C%202.9%20ms%20%7C%20Live%20Engine-brightgreen.svg?style=for-the-badge" alt="Latency">
-  <img src="https://img.shields.io/badge/UI-Fruity%20Limiter%20Amber%20Knobs%20%2B%20Console%20Faders-f59e0b.svg?style=for-the-badge" alt="UI Style">
+  <img src="https://img.shields.io/badge/UI-Electric%20Violet%20Knobs%20%2B%20Console%20Faders-a855f7.svg?style=for-the-badge" alt="UI Style">
   <img src="https://img.shields.io/badge/Stress%20Tests-12%2F12%20PASSED-success.svg?style=for-the-badge" alt="Stress Tests">
 </p>
 
@@ -17,29 +18,30 @@
 
 ## 🌟 Descripción General
 
-**SUPREME TUNER Real Time v3.6 (Hybrid Edition)** es la cúspide de la suite vocal: una fusión de la galardonada arquitectura modular de 4 racks de estudio de la versión 3.5 con las dos joyas analógicas de la versión 3.6: los **Vúmetros Analógicos Dobles** y el **Fader Master de Consola en Oro Macizo 24K**.
+**SUPREME TUNER Real Time v3.9**, creado por **vevi**, es la edición definitiva del afinador vocal en tiempo real de ultra-baja latencia (< 2.9 ms). Integra un diseño de consola analógica de alta fidelidad, paleta de color dual con acentos violeta neón y oro 24K, fondo con textura de titanio y fibra de carbono al 20% de opacidad, placas de hardware dedicadas para los faders de dinámica, y un fader master profesional calibrado de -24 dB a +6 dB.
 
-Supervisada en geometría y acabado por el subagente especializado de visión **`experto-gui-vision`** (`gemini-3`), esta versión combina:
-- **Todo el poder modular de la v3.5**: Noise Gate & Dynamics (Fruity Limiter knobs, Transient shaper, Vocal compressor), Vocal Tone Engine (Air 12kHz, Body 250Hz, Warmth, Drive), Space & Ambience (Reverb Space y Stereo Echo Delay) y la legendaria Rueda Cromática Antares con orbe de vidrio líquido, aguja láser y `[T-PAIN HARD SNAP: ACTIVE]`.
-- **Los Búmetros Analógicos Dobles (de la v3.6)**: Integrados en la cabecera del módulo Master con escala curvada (-20 a +3 dB), retroiluminación ámbar incandescente y agujas dinámicas rojas con balística analógica de 300 ms.
-- **El Fader Dorado de Consola 24K (de la v3.6)**: Placa rehundida en oro cepillado 24K con 4 tornillos hexagonales en las esquinas, ranura calibrada de decibelios y tirador moleteado en oro macizo.
-- **52 Presets de Artistas & Cero Colisiones**: Interfaz de 1250x840 px donde cada control y etiqueta tiene su espacio asignado milimétricamente sin superposición alguna.
+Supervisada en geometría y acabado por el subagente de IA especializada **`experto-gui-vision`** (`gemini-3`):
+- **Fondos de Consola Dedicados para Faders de Dinámica**: Placas fresadas de titanio y obsidiana con 4 micro tornillos hexagonales, ranura vertical iluminada con línea láser violeta, y escala serigrafiada de +12 a -12 dB (Transientes) y 100% a 0% (Compresión).
+- **Fader Master en Oro Macizo 24K Calibrado (-24 dB a +6 dB)**: Rango analógico profesional con unidad a 0 dB, placa rehundida de oro macizo y rótulo oficial `3.9 MASTER LEVEL • BY VEVI`.
+- **Círculos en Violeta Neón**: Todos los mandos rotatorios, arcos iluminados, halos ambientales y joyas centrales en violeta eléctrico (`#a855f7` / `#d8b4fe`), conservando el tono dorado/ámbar en la sección Master.
+- **Fondo con Textura Cyberpunk al 20% de Opacidad**: Chasis de titanio cepillado, fibra de carbono y ondas de audio sutilmente integradas en el lienzo de 1250x840 px.
+- **52 Presets de Artistas & Cero Colisiones**: T-Pain, Travis Scott, Bad Bunny, Drake, Feid, Rosalia, Mora, etc.
 
 ---
 
-## 🎛️ Arquitectura de la Edición Híbrida
+## 🎛️ Arquitectura de la Versión 3.9
 
-### 1. 📻 Búmetros Analógicos Dobles de Estudio (v3.6)
+### 1. 📻 Búmetros Analógicos Dobles de Estudio
 - Integrados en el módulo Master (Unit 4) con ventana de cristal acrílico rehundida.
 - Diales curvados con retroiluminación ámbar incandescente (`#301807` a `#140903`) y escala serigrafiada de -20 a +3 dB.
 - Balística mecánica analógica de respuesta rápida con tiempo de integración estándar VU de 300 ms.
 - Display digital interior sincronizado en tiempo real con la tonalidad y escala seleccionadas (`AUTO-TUNE: [KEY] [SCALE]`).
 
-### 2. 🏆 Fader Master de Consola en Oro Cepillado 24K (v3.6)
+### 2. 🏆 Fader Master de Consola en Oro Cepillado 24K
 - Placa maciza de oro con acabado cepillado vertical y 4 tornillos dorados de fijación.
-- Ranura central empotrada con escala serigrafiada de decibelios (+5 a -60 dB).
+- Ranura central empotrada con escala serigrafiada de decibelios (+6 a -24 dB).
 - Tirador de consola en oro 24K con estrías táctiles y muesca iluminada en blanco brillante.
-- Rótulo grabado en bronce: `3.6 MASTER LEVEL`.
+- Rótulo grabado en bronce: `3.9 MASTER LEVEL • BY VEVI`.
 
 ### 3. 🎚️ 4 Racks Modulares de Estudio Analógico (v3.5)
 - **Unit 1: NOISE GATE & DYNAMICS**:

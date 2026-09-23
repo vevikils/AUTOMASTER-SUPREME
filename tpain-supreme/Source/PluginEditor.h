@@ -172,6 +172,7 @@ private:
     void drawSegmentedPitchWheel(juce::Graphics& g, juce::Rectangle<float> area);
     void drawVerticalDigitalBarMeters(juce::Graphics& g, juce::Rectangle<float> area);
     void draw24KGoldMasterPlate(juce::Graphics& g, juce::Rectangle<float> area);
+    void drawDynamicsFaderPlate(juce::Graphics& g, juce::Rectangle<float> area, const juce::StringArray& scaleMarks, bool marksOnLeft);
     void drawQuarterInchJack(juce::Graphics& g, float x, float y, float diameter);
 
     juce::Image bgTextureImage;

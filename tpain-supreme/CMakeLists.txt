@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(SupremeTunerRealTimeV3 VERSION 3.6.0 LANGUAGES C CXX)
+project(SupremeTunerRealTimeV3 VERSION 3.9.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,17 +10,17 @@ add_subdirectory("C:/Users/alfaswz/VeviDynamicEQ1/Build/_deps/juce-src" juce EXC
 
 juce_add_plugin(SupremeTunerRealTimeV3
     COMPANY_NAME "vevi"
-    BUNDLE_ID "com.vevi.supremetunerrealtimev36"
+    BUNDLE_ID "com.vevi.supremetunerrealtimev39"
     PLUGIN_MANUFACTURER_CODE Vevi
-    PLUGIN_CODE St36
+    PLUGIN_CODE St39
     FORMATS VST3 Standalone
-    PRODUCT_NAME "Supreme Tuner Real Time v3.6"
+    PRODUCT_NAME "Supreme Tuner Real Time v3.9"
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     IS_SYNTH FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-    DESCRIPTION "Supreme Tuner Real Time v3.6 - Ultra-Low Latency Vocal Auto-Tune + Hybrid Studio Console GUI"
+    DESCRIPTION "Supreme Tuner Real Time v3.9 - By vevi - Ultra-Low Latency Vocal Auto-Tune + Hybrid Studio Console GUI"
 )
 
 target_sources(SupremeTunerRealTimeV3 PRIVATE

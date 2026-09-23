@@ -133,50 +133,86 @@ void SupremeWavesLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, 
 }
 
 void SupremeWavesLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
-                                              float sliderPos, float minSliderPos, float maxSliderPos,
-                                              const juce::Slider::SliderStyle /*style*/, juce::Slider& /*slider*/)
+                                              float sliderPos, float /*minSliderPos*/, float /*maxSliderPos*/,
+                                              const juce::Slider::SliderStyle /*style*/, juce::Slider& slider)
 {
     float cx = static_cast<float>(x) + static_cast<float>(width) * 0.5f;
+    bool isMaster = slider.getProperties().contains("isMasterZone") && (bool)slider.getProperties()["isMasterZone"];
 
-    // Solid Gold Console Fader Handle (Matching Reference Image)
+    // Solid Console Fader Handle
     float thumbW = 42.0f;
     float thumbH = 22.0f;
     float thumbY = sliderPos - thumbH * 0.5f;
     auto thumbRect = juce::Rectangle<float>(cx - thumbW * 0.5f, thumbY, thumbW, thumbH);
 
-    // Soft drop shadow cast on gold plate
+    // Soft drop shadow cast on plate
     g.setColour(juce::Colour(0x66000000));
     g.fillRoundedRectangle(thumbRect.translated(0.0f, 2.5f), 3.0f);
 
-    // Fader cap body: 24K Brushed Gold metallic gradient
-    juce::ColourGradient goldCap(
-        juce::Colour(0xfffff2a3), thumbRect.getX(), thumbRect.getY(),
-        juce::Colour(0xff7a520a), thumbRect.getX(), thumbRect.getBottom(), false);
-    goldCap.addColour(0.35, juce::Colour(0xffffd700));
-    goldCap.addColour(0.70, juce::Colour(0xffb8860b));
-    g.setGradientFill(goldCap);
-    g.fillRoundedRectangle(thumbRect, 2.5f);
+    if (isMaster)
+    {
+        // 24K Brushed Gold metallic gradient
+        juce::ColourGradient goldCap(
+            juce::Colour(0xfffff2a3), thumbRect.getX(), thumbRect.getY(),
+            juce::Colour(0xff7a520a), thumbRect.getX(), thumbRect.getBottom(), false);
+        goldCap.addColour(0.35, juce::Colour(0xffffd700));
+        goldCap.addColour(0.70, juce::Colour(0xffb8860b));
+        g.setGradientFill(goldCap);
+        g.fillRoundedRectangle(thumbRect, 2.5f);
 
-    // Top specular highlight & dark bevel
-    g.setColour(juce::Colour(0xfffffbd4));
-    g.drawHorizontalLine(static_cast<int>(thumbRect.getY()), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
-    g.setColour(juce::Colour(0xff573a06));
-    g.drawHorizontalLine(static_cast<int>(thumbRect.getBottom() - 1.0f), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
-    g.drawRoundedRectangle(thumbRect, 2.5f, 1.0f);
+        // Top specular highlight & dark bevel
+        g.setColour(juce::Colour(0xfffffbd4));
+        g.drawHorizontalLine(static_cast<int>(thumbRect.getY()), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
+        g.setColour(juce::Colour(0xff573a06));
+        g.drawHorizontalLine(static_cast<int>(thumbRect.getBottom() - 1.0f), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
+        g.drawRoundedRectangle(thumbRect, 2.5f, 1.0f);
 
-    // Tactile knurled finger ridges
-    g.setColour(juce::Colour(0xff5c3e06));
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 4.0f, thumbRect.getWidth() - 8.0f, 1.0f);
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 16.0f, thumbRect.getWidth() - 8.0f, 1.0f);
-    g.setColour(juce::Colour(0xffffe680));
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 5.0f, thumbRect.getWidth() - 8.0f, 0.5f);
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 17.0f, thumbRect.getWidth() - 8.0f, 0.5f);
+        // Tactile knurled finger ridges
+        g.setColour(juce::Colour(0xff5c3e06));
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 4.0f, thumbRect.getWidth() - 8.0f, 1.0f);
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 16.0f, thumbRect.getWidth() - 8.0f, 1.0f);
+        g.setColour(juce::Colour(0xffffe680));
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 5.0f, thumbRect.getWidth() - 8.0f, 0.5f);
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 17.0f, thumbRect.getWidth() - 8.0f, 0.5f);
 
-    // Illuminated Horizontal Center Notch Line (Bright White Core with Gold Halo)
-    g.setColour(juce::Colour(0xffffd700).withAlpha(0.65f));
-    g.fillRect(thumbRect.getX() + 2.0f, thumbY + 9.5f, thumbRect.getWidth() - 4.0f, 2.5f);
-    g.setColour(juce::Colours::white);
-    g.fillRect(thumbRect.getX() + 4.0f, thumbY + 10.2f, thumbRect.getWidth() - 8.0f, 1.2f);
+        // Illuminated Horizontal Center Notch Line (Bright White Core with Gold Halo)
+        g.setColour(juce::Colour(0xffffd700).withAlpha(0.65f));
+        g.fillRect(thumbRect.getX() + 2.0f, thumbY + 9.5f, thumbRect.getWidth() - 4.0f, 2.5f);
+        g.setColour(juce::Colours::white);
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 10.2f, thumbRect.getWidth() - 8.0f, 1.2f);
+    }
+    else
+    {
+        // Dynamics Fader Cap: Two-Tone Brushed Obsidian & Gold with Neon Violet Center Notch
+        juce::ColourGradient dynCap(
+            juce::Colour(0xfffff099), thumbRect.getX(), thumbRect.getY(),
+            juce::Colour(0xff573a06), thumbRect.getX(), thumbRect.getBottom(), false);
+        dynCap.addColour(0.35, juce::Colour(0xffd4af37));
+        dynCap.addColour(0.70, juce::Colour(0xff8c6214));
+        g.setGradientFill(dynCap);
+        g.fillRoundedRectangle(thumbRect, 2.5f);
+
+        // Top specular highlight & dark bevel
+        g.setColour(juce::Colour(0xfffffbd4));
+        g.drawHorizontalLine(static_cast<int>(thumbRect.getY()), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
+        g.setColour(juce::Colour(0xff2d1748));
+        g.drawHorizontalLine(static_cast<int>(thumbRect.getBottom() - 1.0f), thumbRect.getX() + 1.0f, thumbRect.getRight() - 1.0f);
+        g.drawRoundedRectangle(thumbRect, 2.5f, 1.0f);
+
+        // Tactile knurled finger ridges with subtle violet accent
+        g.setColour(juce::Colour(0xff3b1f5c));
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 4.0f, thumbRect.getWidth() - 8.0f, 1.0f);
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 16.0f, thumbRect.getWidth() - 8.0f, 1.0f);
+        g.setColour(juce::Colour(0xffffe680));
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 5.0f, thumbRect.getWidth() - 8.0f, 0.5f);
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 17.0f, thumbRect.getWidth() - 8.0f, 0.5f);
+
+        // Illuminated Horizontal Center Notch Line (Bright White Core with Neon Violet Halo)
+        g.setColour(juce::Colour(0xffa855f7).withAlpha(0.75f));
+        g.fillRect(thumbRect.getX() + 2.0f, thumbY + 9.5f, thumbRect.getWidth() - 4.0f, 2.5f);
+        g.setColour(juce::Colours::white);
+        g.fillRect(thumbRect.getX() + 4.0f, thumbY + 10.2f, thumbRect.getWidth() - 8.0f, 1.2f);
+    }
 }
 
 void SupremeWavesLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, bool isButtonDown,
@@ -384,7 +420,8 @@ void TPainSupremeAudioProcessorEditor::configureVerticalFader(juce::Slider& slid
     slider.setSliderStyle(juce::Slider::LinearVertical);
     slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 64, 16);
     slider.setTextValueSuffix(suffix);
-    slider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xffffd700));
+    bool isMaster = slider.getProperties().contains("isMasterZone") && (bool)slider.getProperties()["isMasterZone"];
+    slider.setColour(juce::Slider::textBoxTextColourId, isMaster ? juce::Colour(0xffffd700) : juce::Colour(0xffe9d5ff));
     slider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(slider);
 
@@ -570,6 +607,96 @@ void TPainSupremeAudioProcessorEditor::drawDualAnalogVUMeters(juce::Graphics& g,
 }
 
 //==============================================================================
+// Dedicated Hardware Backplate for Dynamics Vertical Faders
+//==============================================================================
+void TPainSupremeAudioProcessorEditor::drawDynamicsFaderPlate(juce::Graphics& g, juce::Rectangle<float> area,
+                                                             const juce::StringArray& scaleMarks, bool marksOnLeft)
+{
+    // 1. Drop shadow
+    g.setColour(juce::Colour(0x66000000));
+    g.fillRoundedRectangle(area.translated(0.0f, 3.0f), 5.0f);
+
+    // 2. Base plate: Dark Brushed Obsidian / Titanium
+    juce::ColourGradient plateGrad(
+        juce::Colour(0xff181228), area.getX(), area.getY(),
+        juce::Colour(0xff090614), area.getRight(), area.getBottom(), false);
+    plateGrad.addColour(0.30, juce::Colour(0xff231938));
+    plateGrad.addColour(0.70, juce::Colour(0xff120c1e));
+    g.setGradientFill(plateGrad);
+    g.fillRoundedRectangle(area, 5.0f);
+
+    // Subtle vertical brushed lines
+    g.setColour(juce::Colour(0xffffffff).withAlpha(0.035f));
+    for (float xLine = area.getX() + 3.0f; xLine < area.getRight() - 3.0f; xLine += 3.0f)
+        g.drawVerticalLine((int)xLine, area.getY() + 3.0f, area.getBottom() - 3.0f);
+
+    // Metallic beveled border with subtle neon violet rim
+    juce::ColourGradient borderGrad(
+        juce::Colour(0xff8a2be2).withAlpha(0.70f), area.getX(), area.getY(),
+        juce::Colour(0xff3b1a64), area.getRight(), area.getBottom(), false);
+    g.setGradientFill(borderGrad);
+    g.drawRoundedRectangle(area, 5.0f, 1.2f);
+
+    // 3. 4 Micro Hex Screws on corners
+    float screwOffset = 7.0f;
+    juce::Point<float> corners[] = {
+        { area.getX() + screwOffset, area.getY() + screwOffset },
+        { area.getRight() - screwOffset, area.getY() + screwOffset },
+        { area.getX() + screwOffset, area.getBottom() - screwOffset },
+        { area.getRight() - screwOffset, area.getBottom() - screwOffset }
+    };
+    for (const auto& pt : corners)
+    {
+        g.setColour(juce::Colour(0xff0c0818));
+        g.fillEllipse(pt.x - 3.0f, pt.y - 3.0f, 6.0f, 6.0f);
+        g.setColour(juce::Colour(0xffa855f7).withAlpha(0.6f));
+        g.fillEllipse(pt.x - 2.0f, pt.y - 2.0f, 4.0f, 4.0f);
+        g.setColour(juce::Colours::white.withAlpha(0.85f));
+        g.drawLine(pt.x - 1.5f, pt.y, pt.x + 1.5f, pt.y, 0.7f);
+    }
+
+    // 4. Vertical Recessed Slot
+    float slotW = 5.0f;
+    float slotX = area.getCentreX() - slotW * 0.5f;
+    float slotY = area.getY() + 10.0f;
+    float slotH = area.getHeight() - 20.0f;
+
+    auto slotRect = juce::Rectangle<float>(slotX, slotY, slotW, slotH);
+    g.setColour(juce::Colour(0xff06030c));
+    g.fillRoundedRectangle(slotRect, 2.5f);
+    g.setColour(juce::Colour(0xff2d1748));
+    g.drawRoundedRectangle(slotRect, 2.5f, 1.0f);
+
+    // Center illuminated laser guide line
+    g.setColour(juce::Colour(0xffa855f7).withAlpha(0.40f));
+    g.drawVerticalLine((int)(slotX + slotW * 0.5f), slotY + 2.0f, slotY + slotH - 2.0f);
+
+    // 5. Etched Calibration Markings & Scale Numbers
+    int numMarks = scaleMarks.size();
+    if (numMarks > 1)
+    {
+        g.setFont(juce::Font(8.0f, juce::Font::bold));
+        for (int i = 0; i < numMarks; ++i)
+        {
+            float relY = (float)i / (float)(numMarks - 1);
+            float my = slotY + 4.0f + relY * (slotH - 8.0f);
+
+            // Tick lines
+            g.setColour(juce::Colour(0xffc084fc).withAlpha(0.70f));
+            g.drawLine(slotX - 6.0f, my, slotX - 2.0f, my, 1.0f);
+            g.drawLine(slotX + slotW + 2.0f, my, slotX + slotW + 6.0f, my, 1.0f);
+
+            // Text
+            g.setColour(juce::Colour(0xffe9d5ff));
+            if (marksOnLeft)
+                g.drawText(scaleMarks[i], (int)(slotX - 28.0f), (int)(my - 5.0f), 22, 10, juce::Justification::right);
+            else
+                g.drawText(scaleMarks[i], (int)(slotX + slotW + 8.0f), (int)(my - 5.0f), 22, 10, juce::Justification::left);
+        }
+    }
+}
+
+//==============================================================================
 // 24K Brushed Gold Master Plate (El Fader Dorado)
 //==============================================================================
 void TPainSupremeAudioProcessorEditor::draw24KGoldMasterPlate(juce::Graphics& g, juce::Rectangle<float> area)
@@ -646,10 +773,12 @@ void TPainSupremeAudioProcessorEditor::draw24KGoldMasterPlate(juce::Graphics& g,
         g.drawText(m.txt, (int)(slotX - 28.0f), (int)(my - 5.0f), 20, 10, juce::Justification::right);
     }
 
-    // Serigraphy at bottom: "3.6 MASTER LEVEL"
+    // Serigraphy at bottom: "3.9 MASTER LEVEL • BY VEVI"
     g.setFont(juce::Font(9.5f, juce::Font::bold));
     g.setColour(juce::Colour(0xff4a3106));
-    g.drawText("3.6 MASTER LEVEL", (int)area.getX(), (int)(area.getBottom() - 20.0f), (int)area.getWidth(), 14, juce::Justification::centred);
+    g.drawText("3.9 MASTER LEVEL", (int)area.getX(), (int)(area.getBottom() - 22.0f), (int)area.getWidth(), 12, juce::Justification::centred);
+    g.setFont(juce::Font(8.5f, juce::Font::bold));
+    g.drawText("BY VEVI", (int)area.getX(), (int)(area.getBottom() - 11.0f), (int)area.getWidth(), 10, juce::Justification::centred);
 }
 
 // Unused rack stubs
@@ -719,20 +848,23 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.setGradientFill(titleGrad);
     g.drawText("SUPREME TUNER", 28, 16, 250, 30, juce::Justification::left);
 
-    // Version Badge: Real Time v3.6 (Hybrid Edition)
-    auto vBadge = juce::Rectangle<float>(286.0f, 20.0f, 128.0f, 22.0f);
+    // Version Badge: Real Time v3.9
+    auto vBadge = juce::Rectangle<float>(286.0f, 20.0f, 116.0f, 22.0f);
     g.setColour(juce::Colour(0xffff007f).withAlpha(0.18f));
     g.fillRoundedRectangle(vBadge, 6.0f);
     g.setColour(juce::Colour(0xffffffff).withAlpha(0.22f));
     g.drawRoundedRectangle(vBadge, 6.0f, 1.0f);
     g.setFont(juce::Font(11.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xffffccee));
-    g.drawText("REAL TIME v3.6", vBadge.toNearestInt(), juce::Justification::centred);
+    g.drawText("REAL TIME v3.9", vBadge.toNearestInt(), juce::Justification::centred);
 
-    // Subtitle
+    // Subtitle with Author: vevi
+    g.setFont(juce::Font(11.0f, juce::Font::bold));
+    g.setColour(juce::Colour(0xffd8b4fe));
+    g.drawText("BY VEVI", 28, 48, 60, 18, juce::Justification::left);
     g.setFont(juce::Font(11.0f, juce::Font::plain));
     g.setColour(juce::Colour(0xff9080b8));
-    g.drawText("ULTRA-LOW LATENCY VOCAL QUANTIZATION ENGINE", 28, 48, 380, 18, juce::Justification::left);
+    g.drawText("|  ULTRA-LOW LATENCY VOCAL QUANTIZATION ENGINE", 82, 48, 340, 18, juce::Justification::left);
 
     // Header selector labels
     g.setFont(juce::Font(11.5f, juce::Font::bold));
@@ -832,6 +964,13 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
         g.setColour(juce::Colour(0xffe9d5ff));
         g.drawText("GATE: ATTENUATING -" + juce::String(currentGateGR, 1) + " dB", gateBadgeArea.getX() + 24, gateBadgeArea.getY(), gateBadgeArea.getWidth() - 28, gateBadgeArea.getHeight(), juce::Justification::centredLeft);
     }
+
+    // Dedicated Hardware Backplates for TRANSIENTS and COMPRESSION Faders
+    auto transPlate = juce::Rectangle<float>(48.0f, static_cast<float>(rackY + 164), 78.0f, 102.0f);
+    drawDynamicsFaderPlate(g, transPlate, { "+12", "+6", "0", "-6", "-12" }, true);
+
+    auto compPlate = juce::Rectangle<float>(188.0f, static_cast<float>(rackY + 164), 78.0f, 102.0f);
+    drawDynamicsFaderPlate(g, compPlate, { "100", "75", "50", "25", "0" }, false);
 
     // Dynamic Compression Gain Reduction VU Meter
     auto grMeterArea = juce::Rectangle<int>(42, rackY + 296, 254, 16);
@@ -959,7 +1098,7 @@ void TPainSupremeAudioProcessorEditor::drawAntaresPitchWheel(juce::Graphics& g, 
 
     g.setFont(juce::Font(12.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xffff007f).withAlpha(0.80f));
-    g.drawText("REAL-TIME CHROMATIC PITCH WHEEL", (int)area.getX() + 18, (int)area.getY() + 10, 360, 20, juce::Justification::left);
+    g.drawText("REAL-TIME CHROMATIC PITCH WHEEL  •  BY VEVI", (int)area.getX() + 18, (int)area.getY() + 10, 360, 20, juce::Justification::left);
 
     float cx = area.getCentreX();
     float cy = area.getY() + 144.0f;
