@@ -3,6 +3,8 @@ vst3-plugin/build/
 vst3-plugin/*.log
 tpain-supreme/build/
 tpain-supreme/*.log
+supreme-vocal-compressor/build/
+supreme-vocal-compressor/*.log
 reverb-supreme/build/
 reverb-supreme/*.log
 tuner-bpm/build/

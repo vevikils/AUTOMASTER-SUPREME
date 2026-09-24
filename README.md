@@ -9,15 +9,33 @@
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 
 ¡Bienvenidos a la **primera versión Beta Pública oficial** de **AUTOMASTER SUPREME SUITE**!
-Una suite completa de producción, afinación vocal en tiempo real, espacialidad y masterización profesional asistida por IA para Windows (64-bit VST3 y Standalone).
+Una suite completa de producción, procesamiento dinámico opto-analógico, afinación vocal en tiempo real, espacialidad y masterización profesional asistida por IA para Windows (64-bit VST3 y Standalone).
 
 ---
 
-## 📦 ¿Qué incluye la Suite Oficial Beta v1.0.0?
+## 📦 Plugins Incluidos en la Suite Oficial Beta:
 
-La suite integra 4 plugins de nivel profesional listos para FL Studio, Ableton Live, Cubase, Studio One, Reaper y modo Standalone:
+La suite integra plugins de nivel profesional listos para FL Studio, Ableton Live, Cubase, Studio One, Reaper y modo Standalone:
 
-### 1. 🎤 **Supreme Tune Real Time v4.2**
+### 1. 🎚️ **Supreme Vocal Bus Compressor v1.0** (NUEVO · Edición CLA-2A Hybrid)
+- **Compresor Óptico T4B para Glue Vocal de Bus**: Diseñado específicamente para colocarse en el bus principal de voces antes del pre-master / master, pegando todas las capas vocales (leads, dobles, armonías y adlibs) en un bloque coherente, compacto y denso.
+- **Estética Vintage CLA-2A / Teletronix**: Chasis de 19" en aluminio cepillado pesado, tornillería de rack, diales dobles de baquelita estriada con centro metálico giratorio para `GAIN (OUTPUT)` y `PEAK REDUCTION`.
+- **Vúmetro Analógico de Precisión VU**: Dial retroiluminado en luz ámbar incandescente con balística analógica de 300 ms, escala serigrafiada con selector de modos (`GR`, `+4 IN`, `+10 OUT`) y zona de picos rojos (+3 dB).
+- **Conmutador `COMPRESS` / `LIMIT`**: Pasa de compresión óptica suave y musical (~3:1 soft knee) a limitación óptica dura (~12:1) para fijar voces potentes.
+- **Módulo Excitador `Harmonic Sheen & Tube Exciter`**:
+  - `HARMONIC SHEEN`: Excita armónicos pares en frecuencias ultra-altas para brillo sedoso sin aspereza (*Air Sheen*).
+  - `SHEEN FREQ`: Frecuencia de corte ajustable de 8 kHz a 16 kHz.
+  - `TUBE WARMTH`: Saturación a válvulas triodo 12AX7 con distorsión asimétrica y grosor armónico.
+  - `HF EMPHASIS`: Ajuste de filtro sidechain vintage para evitar que las frecuencias agudas o esdrújulas sibilantes sobrecarguen el detector.
+  - `MIX (DRY/WET)`: Permite compresión paralela "in-your-face" directamente en el canal de bus.
+- **5 Presets Especializados para Vocal Bus**:
+  1. `01. Vocal Glue Master (Universal Bus)`: El pegamento transparente por excelencia para todo tipo de voces.
+  2. `02. Modern Silk & Air (Pop / Trapsoul)`: Brillo contemporáneo y aire sedoso en los agudos.
+  3. `03. Heavy Opto Lock (Rap Lead & Adlibs)`: Fija y doma dinámicas salvajes de trap y hip-hop.
+  4. `04. Warm Tube Console (Vintage / Acoustic)`: Calidez analógica densa de mesa a válvulas.
+  5. `05. In-Your-Face Parallel (100% Glue / 50% Mix)`: Compresión extrema paralela sin perder dinámica natural.
+
+### 2. 🎤 **Supreme Tune Real Time v4.2**
 - **Afinación Vocal Ultra-Rápida**: Latencia inferior a 2.9 ms, optimizada para directo y grabación sin retardo perceptible.
 - **Interfaz de Rack Analógico Híbrido 19"**: Chasis de titanio y aluminio anodizado, diales circulares en violeta neón y controles retroiluminados.
 - **Búmetros Analógicos Dobles**: Con balística VU de respuesta clásica (300 ms) y display digital interior de nota en tiempo real.
@@ -25,7 +43,7 @@ La suite integra 4 plugins de nivel profesional listos para FL Studio, Ableton L
 - **Racks Integrados**: Noise Gate, Compresor con control de transientes, Modelado de Tono Vocal (Air 12kHz, Body 250Hz, Warmth/Drive), Stereo Width y Reverb/Echo.
 - **52 Presets de Artistas**: Configuraciones instantáneas para estilos como Travis Scott, T-Pain, Drake, Bad Bunny, Rosalia, Feid, Mora, etc.
 
-### 2. 🎛️ **AUTOMASTER SUPREME 3.4**
+### 3. 🎛️ **AUTOMASTER SUPREME 3.4**
 - **Masterización Asistida por IA**: Calibración estricta a los estándares de streaming (**Spotify: -14.0 LUFS / -1.0 dBTP**).
 - **Espectro Dual Voxengo SPAN-Style**:
   - Trazo **AVG (RMS)** en cian eléctrico y curva **MAX (Peak Hold)** en oro/ámbar con retención de picos.
@@ -34,11 +52,11 @@ La suite integra 4 plugins de nivel profesional listos para FL Studio, Ableton L
 - **Saturador WaveShaper 4x Oversampled** y limitador analógico anti-clipping inter-sample.
 - **Medidores True-Peak a 60 FPS** con balística relajada.
 
-### 3. 🌌 **REVERB SUPREME PRO**
+### 4. 🌌 **REVERB SUPREME PRO**
 - **Motor Algorítmico de Espacio Tridimensional**: Salas, cámaras, placas y reverberaciones infinitas cristalinas sin acumulación de frecuencias graves ni resonancias metálicas.
 - **Filtros Damping y Pre-Delay Sincronizable**: Modela colas suaves y naturales para voces e instrumentos.
 
-### 4. ⏱️ **Supreme Tuner BPM V.2.4**
+### 5. ⏱️ **Supreme Tuner BPM V.2.4**
 - **Sincronización Métrica y Detección**: Afinación y timing coordinado con el tempo del proyecto en milisegundos y subdivisiones rítmicas de compás.
 
 ---
@@ -53,11 +71,13 @@ Descarga el paquete oficial completo listo para usar en un clic:
 ```text
 AUTOMASTER_SUPREME_SUITE_v1.0.0_BETA_Windows.zip
 ├── VST3/
+│   ├── Supreme Vocal Bus Compressor v1.0.vst3
 │   ├── Supreme Tune Real Time v4.2.vst3
 │   ├── AUTOMASTER SUPREME.vst3
 │   ├── REVERB SUPREME PRO.vst3
 │   └── Supreme Tuner BPM V.2.4.vst3
 └── Standalone/
+    ├── Supreme Vocal Bus Compressor v1.0.exe
     ├── Supreme Tune Real Time v4.2.exe
     ├── AUTOMASTER SUPREME.exe
     ├── REVERB SUPREME PRO.exe
@@ -75,25 +95,6 @@ AUTOMASTER_SUPREME_SUITE_v1.0.0_BETA_Windows.zip
    ```
 3. Abre FL Studio (o tu DAW favorito) y realiza un escaneo rápido en el **Plugin Manager** (*Options -> Manage plugins -> Find installed plugins*).
 4. ¡Listo! Los plugins aparecerán inmediatamente en tu lista de efectos.
-
----
-
-## 📚 Recursos y Kits Incluidos en el Repositorio
-
-- **`SUPREME-PRODUCER-DRUM-KIT/`**: Más de 400 elementos profesionales (One-shots afinados en C, 32 loops de melodías complejas con metadatos ACID para auto-tempo, 62 loops de batería por géneros: Trap, Drill, Reggaeton, BoomBap, Afro).
-- **`SUPREME-VOCAL-CHAINS-FL-STUDIO/`**: 52 cadenas de mezcla vocal profesionales para el mezclador de FL Studio.
-- **`companion-desktop-studio/`**: Asistente de producción con interfaz de escritorio.
-- **`wan-desktop-studio/`**: Estudio de generación de contenido visual para productores.
-
----
-
-## 🛠️ Compilación desde Código Fuente
-
-### Requisitos:
-- **Windows 10/11 (64-bit)**
-- **CMake 3.22+**
-- **Visual Studio 2022** con soporte C++ (MSVC v143+)
-- **JUCE 8**
 
 ---
 
