@@ -1,0 +1,16 @@
+{
+  "persona_id": "sofia_default",
+  "filename": "selfie_1790208277.jpg",
+  "filepath": "C:\\Users\\alfaswz\\.gemini\\antigravity-ide\\scratch\\agentes-personalizados\\companion-desktop-studio\\outputs\\sofia_default\\selfie_1790208277.jpg",
+  "url": "/outputs/sofia_default/selfie_1790208277.jpg",
+  "prompt": "cinematic 35mm film photograph of Sofía Rossi, beautiful young woman, sleek dark raven hair styled in elegant soft waves, deep emerald green eyes, captivating and expressive, poised posture, enigmatic smile, moody warm candlelight illumination, wearing sophisticated black velvet evening dress with subtle pearls, relaxing at home, warm natural ambient daylight, casual setting, shallow depth of field, natural skin texture, bokeh, dramatic lighting, shot on 85mm lens, masterpiece",
+  "negative_prompt": "oversaturated, flat lighting, amateur, deformed, bad anatomy, blurry, cartoon, grainy, low resolution",
+  "width": 512,
+  "height": 768,
+  "steps": 22,
+  "guidance_scale": 6.5,
+  "seed": 3864611829,
+  "model_id": "Lykon/dreamshaper-8",
+  "render_time_s": 321.94,
+  "created_at": "2026-09-24 02:04:37"
+}

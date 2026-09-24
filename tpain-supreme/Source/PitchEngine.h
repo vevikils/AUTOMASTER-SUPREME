@@ -174,6 +174,29 @@ public:
         return maxDelaySamples / 2;
     }
 
+    void setTargetBufferSize(int targetSamples) noexcept
+    {
+        if (targetSamples <= 0) return;
+        targetBufferSizeSamples = targetSamples;
+
+        if (targetSamples <= 64)
+            hopSize = 32;
+        else if (targetSamples <= 128)
+            hopSize = 64;
+        else if (targetSamples <= 256)
+            hopSize = 64;
+        else if (targetSamples <= 512)
+            hopSize = 128;
+        else
+            hopSize = 256;
+
+        int minDelay = static_cast<int>(sampleRate * 0.003); // ~3ms
+        int maxDelay = static_cast<int>(sampleRate * 0.015); // ~15ms
+        maxDelaySamples = juce::jlimit(minDelay, maxDelay, std::max(128, targetSamples * 2));
+    }
+
+    int getTargetBufferSize() const noexcept { return targetBufferSizeSamples; }
+
     static uint16_t getScaleMask(ScaleType scale) noexcept
     {
         switch (scale)
@@ -203,8 +226,6 @@ public:
     {
         if (numSamples <= 0 || inL == nullptr || outL == nullptr)
             return;
-
-        const int hopSize = 64;
 
         for (int i = 0; i < numSamples; ++i)
         {
@@ -329,6 +350,8 @@ private:
     double sampleRate = 44100.0;
     int analysisWindowSize = 512;
     int maxDelaySamples = 256;
+    int hopSize = 64;
+    int targetBufferSizeSamples = 128;
 
     // Fixed pre-allocated buffers (Zero Heap Allocations on Audio Thread)
     std::array<float, BUFFER_SIZE> pitchBuffer;

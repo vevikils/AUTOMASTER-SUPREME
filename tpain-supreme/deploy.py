@@ -15,7 +15,7 @@ def main():
     build_dir = os.path.join(root_dir, "build")
 
     print("==========================================================")
-    print(" BUILDING Supreme Tuner Real Time v3 (VST3 + Standalone)  ")
+    print(" BUILDING Supreme Tune Real Time v4.2 (VST3 + Standalone) ")
     print("==========================================================")
 
     if not os.path.exists(build_dir):
@@ -30,8 +30,8 @@ def main():
     run_cmd(cmake_build, cwd=root_dir)
 
     # 3. Artifact paths
-    artefacts_dir = os.path.join(build_dir, "SupremeTunerRealTimeV3_artefacts", "Release")
-    plugin_name = "Supreme Tuner Real Time v3.9"
+    artefacts_dir = os.path.join(build_dir, "SupremeTuneRealTimeV42_artefacts", "Release")
+    plugin_name = "Supreme Tune Real Time v4.2"
     vst3_src = os.path.join(artefacts_dir, "VST3", f"{plugin_name}.vst3")
     exe_src = os.path.join(artefacts_dir, "Standalone", f"{plugin_name}.exe")
 
@@ -39,6 +39,25 @@ def main():
     common_vst3_dir = r"C:\Program Files\Common Files\VST3"
     vst3_dst = os.path.join(common_vst3_dir, f"{plugin_name}.vst3")
     desktop_dst = os.path.expanduser(rf"~\Desktop\{plugin_name}.exe")
+
+    # Clean old versions per golden rule
+    print("\n---------------- CLEANING OLD VERSIONS ----------------")
+    for item in os.listdir(common_vst3_dir):
+        if item.endswith(".obsolete") or item.startswith("Supreme Tuner Real Time") or (item.startswith("Supreme Tune Real Time") and item != f"{plugin_name}.vst3"):
+            old_item_path = os.path.join(common_vst3_dir, item)
+            print(f"Removing old version: {old_item_path}")
+            try:
+                if os.path.isdir(old_item_path):
+                    shutil.rmtree(old_item_path, ignore_errors=True)
+                else:
+                    os.remove(old_item_path)
+            except Exception as e:
+                if not item.endswith(".obsolete"):
+                    try:
+                        os.rename(old_item_path, old_item_path + ".obsolete")
+                        print(f"Renamed locked version to {item}.obsolete")
+                    except Exception:
+                        pass
 
     print("\n---------------- DEPLOYING ----------------")
     if os.path.exists(vst3_src):
@@ -77,7 +96,7 @@ def main():
         print(f"[WARNING] Standalone executable not found at {exe_src}")
 
     print("\n==========================================================")
-    print(" DEPLOYMENT COMPLETE: Supreme Tuner Real Time v3          ")
+    print(" DEPLOYMENT COMPLETE: Supreme Tune Real Time v4.2         ")
     print("==========================================================")
 
 if __name__ == "__main__":

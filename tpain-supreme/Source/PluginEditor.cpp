@@ -292,9 +292,20 @@ TPainSupremeAudioProcessorEditor::TPainSupremeAudioProcessorEditor(TPainSupremeA
     addAndMakeVisible(rootSelector);
     addAndMakeVisible(scaleSelector);
 
+    // Populate Buffer Size choices
+    bufferSelector.addItem("AUTO (DAW SYNC)", 1);
+    bufferSelector.addItem("64 Samples (1.5 ms)", 2);
+    bufferSelector.addItem("128 Samples (2.9 ms)", 3);
+    bufferSelector.addItem("256 Samples (5.8 ms)", 4);
+    bufferSelector.addItem("512 Samples (11.6 ms)", 5);
+    bufferSelector.addItem("1024 Samples (23.2 ms)", 6);
+    bufferSelector.addItem("2048 Samples (46.4 ms)", 7);
+    addAndMakeVisible(bufferSelector);
+
     // Attachments for Selectors
     rootAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.apvts, TPainSupremeAudioProcessor::ID_ROOT, rootSelector);
     scaleAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.apvts, TPainSupremeAudioProcessor::ID_SCALE, scaleSelector);
+    bufferAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.apvts, TPainSupremeAudioProcessor::ID_BUFFER_SIZE, bufferSelector);
 
     // Configure Tuning Knobs
     configureKnob(retuneSpeedSlider, speedLabel, "RETUNE SPEED", " ms");
@@ -313,8 +324,8 @@ TPainSupremeAudioProcessorEditor::TPainSupremeAudioProcessorEditor(TPainSupremeA
     configureKnob(bodySlider, bodyLabel, "BODY", " dB");
     configureKnob(airSlider, airLabel, "AIR SHEEN", " dB");
 
-    // Configure Space FX Knobs
-    configureKnob(reverbMixSlider, revMixLabel, "REV MIX", " %");
+    // Configure Space FX: Reverb Fader & Delay Knobs
+    configureVerticalFader(reverbMixSlider, revMixLabel, "REVERB", "");
     configureKnob(reverbSizeSlider, revSizeLabel, "REV SIZE", " %");
     configureKnob(delayMixSlider, dlyMixLabel, "DLY MIX", " %");
     configureKnob(delayTimeSlider, dlyTimeLabel, "DLY TIME", " ms");
@@ -372,6 +383,7 @@ TPainSupremeAudioProcessorEditor::~TPainSupremeAudioProcessorEditor()
 
     rootAttachment.reset();
     scaleAttachment.reset();
+    bufferAttachment.reset();
     retuneSpeedAttachment.reset();
     transitionAttachment.reset();
     variationAttachment.reset();
@@ -773,10 +785,10 @@ void TPainSupremeAudioProcessorEditor::draw24KGoldMasterPlate(juce::Graphics& g,
         g.drawText(m.txt, (int)(slotX - 28.0f), (int)(my - 5.0f), 20, 10, juce::Justification::right);
     }
 
-    // Serigraphy at bottom: "3.9 MASTER LEVEL • BY VEVI"
+    // Serigraphy at bottom: "4.1 MASTER LEVEL • BY VEVI"
     g.setFont(juce::Font(9.5f, juce::Font::bold));
     g.setColour(juce::Colour(0xff4a3106));
-    g.drawText("3.9 MASTER LEVEL", (int)area.getX(), (int)(area.getBottom() - 22.0f), (int)area.getWidth(), 12, juce::Justification::centred);
+    g.drawText("4.1 MASTER LEVEL", (int)area.getX(), (int)(area.getBottom() - 22.0f), (int)area.getWidth(), 12, juce::Justification::centred);
     g.setFont(juce::Font(8.5f, juce::Font::bold));
     g.drawText("BY VEVI", (int)area.getX(), (int)(area.getBottom() - 11.0f), (int)area.getWidth(), 10, juce::Justification::centred);
 }
@@ -846,17 +858,17 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
         juce::Colour(0xffe6c2ff), 26.0f, 16.0f,
         juce::Colour(0xffff2a85), 260.0f, 40.0f, false);
     g.setGradientFill(titleGrad);
-    g.drawText("SUPREME TUNER", 28, 16, 250, 30, juce::Justification::left);
+    g.drawText("SUPREME TUNE", 28, 16, 230, 30, juce::Justification::left);
 
-    // Version Badge: Real Time v3.9
-    auto vBadge = juce::Rectangle<float>(286.0f, 20.0f, 116.0f, 22.0f);
+    // Version Badge: Real Time v4.2
+    auto vBadge = juce::Rectangle<float>(264.0f, 20.0f, 116.0f, 22.0f);
     g.setColour(juce::Colour(0xffff007f).withAlpha(0.18f));
     g.fillRoundedRectangle(vBadge, 6.0f);
     g.setColour(juce::Colour(0xffffffff).withAlpha(0.22f));
     g.drawRoundedRectangle(vBadge, 6.0f, 1.0f);
     g.setFont(juce::Font(11.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xffffccee));
-    g.drawText("REAL TIME v3.9", vBadge.toNearestInt(), juce::Justification::centred);
+    g.drawText("REAL TIME v4.2", vBadge.toNearestInt(), juce::Justification::centred);
 
     // Subtitle with Author: vevi
     g.setFont(juce::Font(11.0f, juce::Font::bold));
@@ -867,25 +879,44 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawText("|  ULTRA-LOW LATENCY VOCAL QUANTIZATION ENGINE", 82, 48, 340, 18, juce::Justification::left);
 
     // Header selector labels
-    g.setFont(juce::Font(11.5f, juce::Font::bold));
+    g.setFont(juce::Font(11.0f, juce::Font::bold));
     g.setColour(juce::Colour(0xffc77dff));
-    g.drawText("ARTIST PRESET", 430, 20, 130, 16, juce::Justification::left);
-    g.drawText("KEY / ROOT",    690, 20, 100, 16, juce::Justification::left);
-    g.drawText("SCALE TYPE",    820, 20, 130, 16, juce::Justification::left);
+    g.drawText("ARTIST PRESET", 370, 20, 130, 16, juce::Justification::left);
+    g.drawText("KEY / ROOT",    590, 20, 95,  16, juce::Justification::left);
+    g.drawText("SCALE TYPE",    695, 20, 135, 16, juce::Justification::left);
+    g.setColour(juce::Colour(0xff00ffff));
+    g.drawText("BUFFER (SAMPLES)", 840, 20, 175, 16, juce::Justification::left);
 
-    // Latency badge: Liquid Glass
-    auto latBadge = juce::Rectangle<float>((float)getWidth() - 240.0f, 18.0f, 214.0f, 44.0f);
-    g.setColour(juce::Colour(0xff1a1035).withAlpha(0.85f));
+    // Latency & DAW Buffer Sync badge: Liquid Glass
+    auto latBadge = juce::Rectangle<float>(1025.0f, 18.0f, 200.0f, 46.0f);
+    g.setColour(juce::Colour(0xff120b24).withAlpha(0.92f));
     g.fillRoundedRectangle(latBadge, 8.0f);
-    g.setColour(juce::Colour(0xffffffff).withAlpha(0.16f));
-    g.drawRoundedRectangle(latBadge, 8.0f, 1.0f);
+    g.setColour(juce::Colour(0xff00ffff).withAlpha(0.28f));
+    g.drawRoundedRectangle(latBadge, 8.0f, 1.2f);
+
+    int hostBlock = audioProcessor.getLastHostBlockSize();
+    int effSamples = audioProcessor.getEffectiveBufferSizeSamples();
+    int bufChoice = audioProcessor.getSelectedBufferSizeIndex();
+    bool isAuto = (bufChoice == 0);
+    bool isMatched = (effSamples == hostBlock);
+
+    g.setFont(juce::Font(9.5f, juce::Font::bold));
+    g.setColour(isMatched ? juce::Colour(0xff00ffcc) : juce::Colour(0xffff007f));
+    juce::String syncStr = isAuto ? "[DAW SYNC: LOCKED]" : (isMatched ? "[SYNC: MATCHED]" : "[CUSTOM BUFFER]");
+    g.drawText(syncStr, (int)latBadge.getX() + 8, (int)latBadge.getY() + 4, 184, 12, juce::Justification::left);
 
     g.setFont(juce::Font(10.5f, juce::Font::bold));
-    g.setColour(juce::Colour(0xffff007f));
-    g.drawText("[LIVE AUDIO ENGINE]", (int)latBadge.getX() + 10, (int)latBadge.getY() + 5, 194, 14, juce::Justification::left);
-    g.setFont(juce::Font(11.5f, juce::Font::bold));
     g.setColour(juce::Colour(0xfff0eaff));
-    g.drawText("LATENCY: < 2.9 ms | 64-BIT", (int)latBadge.getX() + 10, (int)latBadge.getY() + 21, 194, 18, juce::Justification::left);
+    double sr = audioProcessor.getSampleRate();
+    if (sr <= 0) sr = 44100.0;
+    float latMs = static_cast<float>((effSamples * 1000.0) / sr);
+    juce::String infoStr = juce::String(effSamples) + " spls | " + juce::String(latMs, 1) + " ms";
+    g.drawText(infoStr, (int)latBadge.getX() + 8, (int)latBadge.getY() + 18, 184, 14, juce::Justification::left);
+
+    g.setFont(juce::Font(9.0f, juce::Font::plain));
+    g.setColour(juce::Colour(0xffa899c7));
+    juce::String hostInfo = "HOST: " + juce::String(hostBlock) + " spls (64-BIT)";
+    g.drawText(hostInfo, (int)latBadge.getX() + 8, (int)latBadge.getY() + 32, 184, 11, juce::Justification::left);
 
     // 3. Middle Stage: Tuning Rack Left, Antares Pitch Wheel Center, Tuning Rack Right
     float midY = 96.0f;
@@ -1000,6 +1031,20 @@ void TPainSupremeAudioProcessorEditor::paint(juce::Graphics& g)
     // Unit 3: SPACE FX (X: 632, W: 310)
     auto spaceBox = juce::Rectangle<float>(632.0f, static_cast<float>(rackY), 310.0f, static_cast<float>(rackH));
     drawWavesRackUnit(g, spaceBox, "SPACE & AMBIENCE", juce::Colour(0xffff00aa));
+
+    // Reverb Vertical Fader Plate with Precision 0-100 Calibration (30% Wet Cap)
+    auto revPlate = juce::Rectangle<float>(644.0f, static_cast<float>(rackY + 54), 74.0f, 186.0f);
+    drawDynamicsFaderPlate(g, revPlate, { "100", "75", "50", "25", "0" }, false);
+
+    // Reverb Range Calibration / Status Badge
+    auto spaceBadge = juce::Rectangle<int>(644, rackY + 288, 286, 24);
+    g.setColour(juce::Colour(0xffff00aa).withAlpha(0.18f));
+    g.fillRoundedRectangle(spaceBadge.toFloat(), 5.0f);
+    g.setColour(juce::Colour(0xffff00aa).withAlpha(0.70f));
+    g.drawRoundedRectangle(spaceBadge.toFloat(), 5.0f, 1.2f);
+    g.setFont(juce::Font(9.5f, juce::Font::bold));
+    g.setColour(juce::Colour(0xffffd0f0));
+    g.drawText("REVERB FADER: 0-100 (CALIBRATED 30% WET CAP)", spaceBadge, juce::Justification::centred);
 
     // Unit 4: GAIN STAGING & MASTER (X: 956, W: 270)
     auto masterBox = juce::Rectangle<float>(956.0f, static_cast<float>(rackY), 270.0f, static_cast<float>(rackH));
@@ -1254,10 +1299,11 @@ void TPainSupremeAudioProcessorEditor::drawAntaresPitchWheel(juce::Graphics& g, 
 //==============================================================================
 void TPainSupremeAudioProcessorEditor::resized()
 {
-    // Top Selectors
-    presetSelector.setBounds(430, 42, 240, 28);
-    rootSelector.setBounds(690, 42, 115, 28);
-    scaleSelector.setBounds(820, 42, 145, 28);
+    // Top Selectors (Preset, Root, Scale, Buffer Size)
+    presetSelector.setBounds(370, 42, 210, 28);
+    rootSelector.setBounds(590, 42, 95, 28);
+    scaleSelector.setBounds(695, 42, 135, 28);
+    bufferSelector.setBounds(840, 42, 175, 28);
 
     // Middle Stage Y: 96, Height: 328
     retuneSpeedSlider.setBounds(38, 130, 130, 134);
@@ -1308,24 +1354,31 @@ void TPainSupremeAudioProcessorEditor::resized()
     airLabel.setBounds(518, toneKnobY + toneKnobH + 4, 100, 16);
 
     // Unit 3: SPACE FX (X: 632, W: 310)
-    int r1Y = rackY + 46;
-    int r1H = 80;
-    reverbMixSlider.setBounds(672, r1Y, 82, r1H);
-    revMixLabel.setBounds(662, r1Y + r1H + 2, 102, 14);
+    // Left: Precision Vertical Reverb Fader (0-100, Calibrated 30% Wet Cap)
+    revMixLabel.setBounds(640, rackY + 36, 82, 16);
+    reverbMixSlider.setBounds(646, rackY + 54, 70, 214);
 
-    reverbSizeSlider.setBounds(788, r1Y, 82, r1H);
-    revSizeLabel.setBounds(778, r1Y + r1H + 2, 102, 14);
+    // Right: 2x2 Matrix of Brushed Aluminum Space Knobs
+    int spkW = 84;
+    int spkH = 72;
+    int spCol1 = 736;
+    int spCol2 = 838;
 
-    int r2Y = rackY + 160;
-    int r2H = 80;
-    delayMixSlider.setBounds(642, r2Y, 82, r2H);
-    dlyMixLabel.setBounds(632, r2Y + r2H + 2, 102, 14);
+    // Row 1: REV SIZE & DLY MIX
+    int spRow1 = rackY + 46;
+    reverbSizeSlider.setBounds(spCol1, spRow1, spkW, spkH);
+    revSizeLabel.setBounds(spCol1 - 6, spRow1 + spkH + 2, spkW + 12, 14);
 
-    delayTimeSlider.setBounds(746, r2Y, 82, r2H);
-    dlyTimeLabel.setBounds(736, r2Y + r2H + 2, 102, 14);
+    delayMixSlider.setBounds(spCol2, spRow1, spkW, spkH);
+    dlyMixLabel.setBounds(spCol2 - 6, spRow1 + spkH + 2, spkW + 12, 14);
 
-    delayFeedbackSlider.setBounds(850, r2Y, 82, r2H);
-    dlyFbLabel.setBounds(840, r2Y + r2H + 2, 102, 14);
+    // Row 2: DLY TIME & FEEDBACK
+    int spRow2 = rackY + 144;
+    delayTimeSlider.setBounds(spCol1, spRow2, spkW, spkH);
+    dlyTimeLabel.setBounds(spCol1 - 6, spRow2 + spkH + 2, spkW + 12, 14);
+
+    delayFeedbackSlider.setBounds(spCol2, spRow2, spkW, spkH);
+    dlyFbLabel.setBounds(spCol2 - 6, spRow2 + spkH + 2, spkW + 12, 14);
 
     // Unit 4: GAIN STAGING & MASTER (X: 956, W: 270)
     // Left side: STEREO WIDTH & DRY / WET Knobs

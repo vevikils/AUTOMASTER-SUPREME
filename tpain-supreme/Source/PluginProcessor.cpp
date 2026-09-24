@@ -30,6 +30,7 @@ TPainSupremeAudioProcessor::TPainSupremeAudioProcessor()
     paramGateThresh  = apvts.getRawParameterValue(ID_GATE_THRESH);
     paramGateAttack  = apvts.getRawParameterValue(ID_GATE_ATTACK);
     paramGateRelease = apvts.getRawParameterValue(ID_GATE_RELEASE);
+    paramBufferSize  = apvts.getRawParameterValue(ID_BUFFER_SIZE);
     gateEnv[0] = 1.0f;
     gateEnv[1] = 1.0f;
 }
@@ -117,11 +118,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout TPainSupremeAudioProcessor::
         juce::NormalisableRange<float>(0.0f, 10.0f, 0.1f, 1.0f), 3.0f,
         juce::AudioParameterFloatAttributes().withLabel("dB")));
 
-    // Space FX: Reverb Mix (0% to 100%)
+    // Space FX: Reverb Level (0 to 100 integer scale, where 100 = 30% wet mix)
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID(ID_REVERB_MIX, 1), "Reverb Mix",
-        juce::NormalisableRange<float>(0.0f, 100.0f, 0.5f, 1.0f), 15.0f,
-        juce::AudioParameterFloatAttributes().withLabel("%")));
+        juce::ParameterID(ID_REVERB_MIX, 1), "Reverb Level",
+        juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f, 1.0f), 35.0f,
+        juce::AudioParameterFloatAttributes()));
 
     // Space FX: Reverb Size (0% to 100%)
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
@@ -190,12 +191,25 @@ juce::AudioProcessorValueTreeState::ParameterLayout TPainSupremeAudioProcessor::
         juce::NormalisableRange<float>(10.0f, 2000.0f, 1.0f, 0.4f), 200.0f,
         juce::AudioParameterFloatAttributes().withLabel("ms")));
 
+    // Buffer Size / DAW Sync Choice
+    juce::StringArray bufferChoices = {
+        "Auto (DAW Sync)",
+        "64 Samples (1.5 ms)",
+        "128 Samples (2.9 ms)",
+        "256 Samples (5.8 ms)",
+        "512 Samples (11.6 ms)",
+        "1024 Samples (23.2 ms)",
+        "2048 Samples (46.4 ms)"
+    };
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID(ID_BUFFER_SIZE, 1), "Buffer Size (Samples)", bufferChoices, 0));
+
     return { params.begin(), params.end() };
 }
 
 const juce::String TPainSupremeAudioProcessor::getName() const
 {
-    return "Supreme Tuner Real Time v3.5";
+    return "Supreme Tune Real Time v4.2";
 }
 
 bool TPainSupremeAudioProcessor::acceptsMidi() const { return false; }
@@ -205,63 +219,69 @@ double TPainSupremeAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
 const std::vector<TPainSupremeAudioProcessor::ArtistPreset>& TPainSupremeAudioProcessor::getPresets()
 {
-    // Columnas: name, retuneSpeed, transition, variation, centering, transients, compression, lowCut, body, air, reverbMix, reverbSize, delayMix, delayTime, delayFeedback, output, mix, inputGain, gateThresh, gateAttack, gateRelease, stereoWidth
+    // Columnas: name, retuneSpeed, transition, variation, centering, transients, compression, lowCut, body, air, reverbMix (0-100), reverbSize, delayMix, delayTime, delayFeedback, output, mix, inputGain, gateThresh, gateAttack, gateRelease, stereoWidth
     static const std::vector<ArtistPreset> presets = {
         // === ICONIC AUTO-TUNE CLASSICS ===
-        { "T-Pain - Buy U a Drank",              0.0f,  0.0f,  0.0f, 100.0f, 35.0f, 65.0f,  95.0f,  2.0f, 4.5f, 15.0f, 45.0f, 10.0f, 250.0f, 25.0f, 0.0f, 100.0f, 0.0f, -50.0f, 1.5f, 180.0f, 100.0f },
-        { "Travis Scott - Astroworld Sauce",     0.5f,  5.0f, 15.0f,  90.0f, 50.0f, 75.0f, 110.0f, -1.0f, 7.0f, 30.0f, 85.0f, 24.0f, 375.0f, 45.0f, 0.0f, 100.0f, 1.0f, -48.0f, 2.0f, 220.0f, 125.0f },
-        { "Post Malone - Sunflower Smooth",     18.0f, 35.0f, 55.0f,  75.0f, 20.0f, 45.0f,  80.0f,  1.5f, 3.5f, 19.0f, 60.0f, 13.0f, 320.0f, 30.0f, 0.0f, 100.0f, 0.0f, -52.0f, 3.0f, 250.0f, 110.0f },
-        { "The Weeknd - After Hours Shimmer",   12.0f, 20.0f, 40.0f,  85.0f, 25.0f, 60.0f,  85.0f,  0.5f, 6.0f, 34.0f, 80.0f, 17.0f, 420.0f, 35.0f, 0.0f, 100.0f, 0.5f, -50.0f, 2.5f, 300.0f, 130.0f },
-        { "Bad Bunny - Conejo Trap Moderno",     1.0f,  8.0f, 20.0f,  95.0f, 40.0f, 70.0f, 100.0f,  2.5f, 4.0f, 17.0f, 50.0f, 15.0f, 280.0f, 35.0f, 0.0f, 100.0f, 1.5f, -46.0f, 1.8f, 160.0f, 105.0f },
-        { "Rauw Alejandro - Afro & Dancehall",   5.0f, 12.0f, 30.0f,  90.0f, 30.0f, 55.0f,  90.0f,  1.0f, 5.5f, 24.0f, 65.0f, 19.0f, 340.0f, 38.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.0f, 200.0f, 120.0f },
-        { "Billie Eilish - Intimate & Airy",    35.0f, 60.0f, 70.0f,  60.0f,-20.0f, 80.0f,  75.0f,  3.0f, 8.5f, 38.0f, 90.0f, 21.0f, 500.0f, 40.0f, 0.0f, 100.0f,-2.0f, -55.0f, 5.0f, 350.0f, 115.0f },
-        { "Daft Punk - One More Time Vocoder",   0.0f,  0.0f,  0.0f, 100.0f, 45.0f, 85.0f, 120.0f,  3.5f, 5.0f, 21.0f, 55.0f, 26.0f, 180.0f, 50.0f, 0.0f, 100.0f, 2.0f, -44.0f, 1.0f, 140.0f, 100.0f },
-        { "Rosalia - Motomami Flamenco Urban",   8.0f, 15.0f, 45.0f,  85.0f, 35.0f, 50.0f,  85.0f,  1.8f, 5.0f, 20.0f, 55.0f, 14.0f, 300.0f, 28.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 190.0f, 110.0f },
-        { "Kanye West - 808s Heartbreak",        0.0f,  2.0f,  5.0f, 100.0f, 30.0f, 70.0f, 100.0f,  1.0f, 4.0f, 25.0f, 70.0f, 30.0f, 330.0f, 45.0f, 0.0f, 100.0f, 0.0f, -48.0f, 1.5f, 200.0f, 100.0f },
-        { "Future - Pluto Auto-Tune Drip",       0.0f,  0.0f, 10.0f, 100.0f, 45.0f, 75.0f, 105.0f,  2.0f, 6.5f, 27.0f, 65.0f, 21.0f, 260.0f, 40.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.2f, 180.0f, 115.0f },
-        { "Drake - Certified OVO Flow",         14.0f, 25.0f, 50.0f,  80.0f, 20.0f, 50.0f,  80.0f,  1.5f, 3.0f, 17.0f, 50.0f, 13.0f, 320.0f, 25.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 220.0f, 105.0f },
-        { "Cher - Believe 90s Classic",          0.0f,  0.0f,  0.0f, 100.0f, 25.0f, 60.0f,  90.0f,  0.0f, 3.5f, 21.0f, 60.0f,  8.0f, 200.0f, 20.0f, 0.0f, 100.0f, 0.0f, -52.0f, 1.0f, 150.0f, 100.0f },
-        { "Duki - Trap Argentino Fuego",         0.0f,  4.0f, 15.0f,  95.0f, 40.0f, 70.0f,  95.0f,  2.2f, 5.5f, 19.0f, 55.0f, 17.0f, 290.0f, 35.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.5f, 170.0f, 110.0f },
-        { "Ariana Grande - Modern Bright Lead", 22.0f, 40.0f, 65.0f,  70.0f, 15.0f, 40.0f,  80.0f,  0.5f, 7.5f, 30.0f, 75.0f, 15.0f, 360.0f, 30.0f, 0.0f, 100.0f, 0.0f, -52.0f, 3.0f, 240.0f, 125.0f },
+        { "T-Pain - Buy U a Drank",              0.0f,  0.0f,  0.0f, 100.0f, 35.0f, 65.0f,  95.0f,  2.0f, 4.5f, 40.0f, 40.0f, 10.0f, 250.0f, 25.0f, 0.0f, 100.0f, 0.0f, -50.0f, 1.5f, 180.0f, 100.0f },
+        { "Travis Scott - Astroworld Sauce",     0.5f,  5.0f, 15.0f,  90.0f, 50.0f, 75.0f, 110.0f, -1.0f, 7.0f, 60.0f, 65.0f, 24.0f, 375.0f, 45.0f, 0.0f, 100.0f, 1.0f, -48.0f, 2.0f, 220.0f, 125.0f },
+        { "Post Malone - Sunflower Smooth",     18.0f, 35.0f, 55.0f,  75.0f, 20.0f, 45.0f,  80.0f,  1.5f, 3.5f, 47.0f, 50.0f, 13.0f, 320.0f, 30.0f, 0.0f, 100.0f, 0.0f, -52.0f, 3.0f, 250.0f, 110.0f },
+        { "The Weeknd - After Hours Shimmer",   12.0f, 20.0f, 40.0f,  85.0f, 25.0f, 60.0f,  85.0f,  0.5f, 6.0f, 67.0f, 65.0f, 17.0f, 420.0f, 35.0f, 0.0f, 100.0f, 0.5f, -50.0f, 2.5f, 300.0f, 130.0f },
+        { "Bad Bunny - Conejo Trap Moderno",     1.0f,  8.0f, 20.0f,  95.0f, 40.0f, 70.0f, 100.0f,  2.5f, 4.0f, 42.0f, 45.0f, 15.0f, 280.0f, 35.0f, 0.0f, 100.0f, 1.5f, -46.0f, 1.8f, 160.0f, 105.0f },
+        { "Rauw Alejandro - Afro & Dancehall",   5.0f, 12.0f, 30.0f,  90.0f, 30.0f, 55.0f,  90.0f,  1.0f, 5.5f, 52.0f, 55.0f, 19.0f, 340.0f, 38.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.0f, 200.0f, 120.0f },
+        { "Billie Eilish - Intimate & Airy",    35.0f, 60.0f, 70.0f,  60.0f,-20.0f, 80.0f,  75.0f,  3.0f, 8.5f, 75.0f, 68.0f, 21.0f, 500.0f, 40.0f, 0.0f, 100.0f,-2.0f, -55.0f, 5.0f, 350.0f, 115.0f },
+        { "Daft Punk - One More Time Vocoder",   0.0f,  0.0f,  0.0f, 100.0f, 45.0f, 85.0f, 120.0f,  3.5f, 5.0f, 48.0f, 45.0f, 26.0f, 180.0f, 50.0f, 0.0f, 100.0f, 2.0f, -44.0f, 1.0f, 140.0f, 100.0f },
+        { "Rosalia - Motomami Flamenco Urban",   8.0f, 15.0f, 45.0f,  85.0f, 35.0f, 50.0f,  85.0f,  1.8f, 5.0f, 47.0f, 45.0f, 14.0f, 300.0f, 28.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 190.0f, 110.0f },
+        { "Kanye West - 808s Heartbreak",        0.0f,  2.0f,  5.0f, 100.0f, 30.0f, 70.0f, 100.0f,  1.0f, 4.0f, 53.0f, 55.0f, 30.0f, 330.0f, 45.0f, 0.0f, 100.0f, 0.0f, -48.0f, 1.5f, 200.0f, 100.0f },
+        { "Future - Pluto Auto-Tune Drip",       0.0f,  0.0f, 10.0f, 100.0f, 45.0f, 75.0f, 105.0f,  2.0f, 6.5f, 58.0f, 52.0f, 21.0f, 260.0f, 40.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.2f, 180.0f, 115.0f },
+        { "Drake - Certified OVO Flow",         14.0f, 25.0f, 50.0f,  80.0f, 20.0f, 50.0f,  80.0f,  1.5f, 3.0f, 42.0f, 42.0f, 13.0f, 320.0f, 25.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 220.0f, 105.0f },
+        { "Cher - Believe 90s Classic",          0.0f,  0.0f,  0.0f, 100.0f, 25.0f, 60.0f,  90.0f,  0.0f, 3.5f, 48.0f, 50.0f,  8.0f, 200.0f, 20.0f, 0.0f, 100.0f, 0.0f, -52.0f, 1.0f, 150.0f, 100.0f },
+        { "Duki - Trap Argentino Fuego",         0.0f,  4.0f, 15.0f,  95.0f, 40.0f, 70.0f,  95.0f,  2.2f, 5.5f, 47.0f, 45.0f, 17.0f, 290.0f, 35.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.5f, 170.0f, 110.0f },
+        { "Ariana Grande - Modern Bright Lead", 22.0f, 40.0f, 65.0f,  70.0f, 15.0f, 40.0f,  80.0f,  0.5f, 7.5f, 63.0f, 60.0f, 15.0f, 360.0f, 30.0f, 0.0f, 100.0f, 0.0f, -52.0f, 3.0f, 240.0f, 125.0f },
         // === LATAM & ESPANA ===
-        { "J Balvin - Colores Reggaeton",        2.0f,  5.0f, 10.0f,  95.0f, 45.0f, 72.0f, 100.0f,  3.0f, 4.0f, 15.0f, 48.0f,  8.0f, 240.0f, 30.0f, 0.0f, 100.0f, 1.0f, -48.0f, 2.0f, 180.0f, 105.0f },
-        { "Maluma - Hawai Romantic",            20.0f, 40.0f, 55.0f,  80.0f, 15.0f, 42.0f,  85.0f,  2.0f, 3.5f, 24.0f, 65.0f, 15.0f, 350.0f, 28.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 220.0f, 110.0f },
-        { "Ozuna - Caramelo Tropical",          15.0f, 30.0f, 45.0f,  82.0f, 18.0f, 48.0f,  80.0f,  1.5f, 7.0f, 38.0f, 88.0f, 19.0f, 400.0f, 32.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.0f, 260.0f, 135.0f },
-        { "Anuel AA - Real Hasta la Muerte",     0.5f,  3.0f,  8.0f,  97.0f, 55.0f, 78.0f, 110.0f,  2.5f, 5.5f, 13.0f, 42.0f, 17.0f, 260.0f, 38.0f, 0.0f, 100.0f, 2.0f, -44.0f, 1.2f, 150.0f, 105.0f },
-        { "Myke Towers - Easy Street",          10.0f, 18.0f, 38.0f,  88.0f, 28.0f, 55.0f,  90.0f,  1.8f, 4.5f, 19.0f, 55.0f, 14.0f, 300.0f, 30.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 190.0f, 110.0f },
-        { "Jhay Cortez - Tecnologia Future",     1.0f,  2.0f,  5.0f,  98.0f, 38.0f, 68.0f, 105.0f,  2.2f, 6.0f, 24.0f, 60.0f, 21.0f, 220.0f, 42.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.5f, 170.0f, 120.0f },
-        { "Nicky Jam - El Perdon Classic",       8.0f, 15.0f, 35.0f,  88.0f, 32.0f, 58.0f,  92.0f,  1.5f, 3.8f, 17.0f, 52.0f, 12.0f, 270.0f, 26.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.0f, 200.0f, 105.0f },
-        { "Daddy Yankee - Gasolina OG",          3.0f,  8.0f, 20.0f,  93.0f, 48.0f, 74.0f,  98.0f,  2.8f, 3.2f, 13.0f, 44.0f, 10.0f, 230.0f, 32.0f, 0.0f, 100.0f, 1.5f, -46.0f, 1.8f, 160.0f, 100.0f },
-        { "Sech - Otro Trago Groove",           12.0f, 22.0f, 42.0f,  84.0f, 20.0f, 46.0f,  82.0f,  1.2f, 5.8f, 30.0f, 72.0f, 15.0f, 320.0f, 28.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 240.0f, 120.0f },
-        { "Feid - Ferxxo Neon Dark",             1.5f,  6.0f, 18.0f,  96.0f, 50.0f, 80.0f, 115.0f,  3.5f, 7.5f, 32.0f, 78.0f, 26.0f, 290.0f, 48.0f, 0.0f, 100.0f, 1.0f, -47.0f, 1.6f, 180.0f, 130.0f },
-        { "Trueno - Trap Argentino Raw",         0.0f,  2.0f,  8.0f,  99.0f, 60.0f, 82.0f, 120.0f,  4.0f, 4.5f,  9.0f, 38.0f, 13.0f, 200.0f, 30.0f, 0.0f, 100.0f, 2.0f, -44.0f, 1.0f, 140.0f, 100.0f },
-        { "Bizarrap - BZRP Session Edge",        0.0f,  0.0f,  0.0f, 100.0f, 55.0f, 85.0f, 125.0f,  4.5f, 8.0f, 21.0f, 58.0f, 24.0f, 180.0f, 55.0f, 0.0f, 100.0f, 1.5f, -44.0f, 0.8f, 130.0f, 110.0f },
-        { "C. Tangana - Bare RnB Madrid",       28.0f, 55.0f, 70.0f,  65.0f, 12.0f, 38.0f,  75.0f,  0.8f, 6.5f, 36.0f, 82.0f, 17.0f, 450.0f, 35.0f, 0.0f, 100.0f,-0.5f, -52.0f, 3.5f, 280.0f, 115.0f },
-        { "Quevedo - Columbia UK Drill",         1.0f,  4.0f, 12.0f,  96.0f, 48.0f, 76.0f, 118.0f,  3.2f, 5.0f, 15.0f, 45.0f, 19.0f, 210.0f, 40.0f, 0.0f, 100.0f, 1.5f, -46.0f, 1.4f, 160.0f, 110.0f },
-        { "Morad - Barcelona Street",            5.0f, 10.0f, 28.0f,  90.0f, 42.0f, 65.0f,  88.0f,  2.0f, 3.0f, 10.0f, 35.0f,  7.0f, 240.0f, 22.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 170.0f, 100.0f },
-        // === MODERN HIT EXPANSION (22 NUEVOS PRESETS) ===
-        { "Central Cee - Doja UK Drill Snap",    0.0f,  1.0f,  5.0f,  99.0f, 58.0f, 80.0f, 120.0f,  2.5f, 6.0f, 12.0f, 40.0f, 15.0f, 210.0f, 32.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.0f, 140.0f, 110.0f },
-        { "Playboi Carti - Whole Lotta Red Vamp",0.0f,  0.0f,  0.0f, 100.0f, 65.0f, 88.0f, 130.0f,  3.0f, 8.5f, 20.0f, 50.0f, 28.0f, 160.0f, 45.0f, 0.0f, 100.0f, 2.0f, -42.0f, 0.8f, 120.0f, 125.0f },
-        { "Lil Uzi Vert - XO Tour Llif3 Melodic",2.0f,  5.0f, 12.0f,  96.0f, 40.0f, 72.0f, 100.0f,  1.5f, 7.0f, 26.0f, 68.0f, 22.0f, 320.0f, 40.0f, 0.0f, 100.0f, 0.5f, -48.0f, 1.8f, 200.0f, 125.0f },
-        { "Gunna - Drip Season Wun Wave",        1.0f,  3.0f,  8.0f,  98.0f, 35.0f, 68.0f,  95.0f,  2.0f, 5.0f, 22.0f, 60.0f, 18.0f, 270.0f, 36.0f, 0.0f, 100.0f, 0.5f, -47.0f, 2.0f, 190.0f, 115.0f },
-        { "Young Thug - Jeffery High Drip",      0.0f,  0.0f,  4.0f, 100.0f, 48.0f, 78.0f, 110.0f,  1.0f, 8.0f, 24.0f, 62.0f, 25.0f, 240.0f, 42.0f, 0.0f, 100.0f, 1.0f, -45.0f, 1.2f, 160.0f, 120.0f },
-        { "Juice WRLD - Lucid Dreams Emotion",  10.0f, 18.0f, 35.0f,  88.0f, 25.0f, 58.0f,  85.0f,  1.8f, 4.8f, 28.0f, 72.0f, 16.0f, 340.0f, 35.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.2f, 220.0f, 115.0f },
-        { "XXXTENTACION - Moonlight Intimate",   8.0f, 14.0f, 30.0f,  90.0f, 22.0f, 52.0f,  90.0f,  2.2f, 4.0f, 32.0f, 80.0f, 14.0f, 300.0f, 30.0f, 0.0f, 100.0f, 0.0f, -52.0f, 2.5f, 240.0f, 110.0f },
-        { "Mora - Microdosis Perreo Espacial",   1.0f,  4.0f, 10.0f,  97.0f, 42.0f, 72.0f, 105.0f,  2.0f, 6.5f, 30.0f, 75.0f, 20.0f, 260.0f, 42.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.6f, 180.0f, 135.0f },
-        { "Chencho Corleone - Plan B Nostalgia", 0.5f,  2.0f,  6.0f,  98.0f, 52.0f, 82.0f, 115.0f,  3.0f, 5.0f, 16.0f, 45.0f, 14.0f, 220.0f, 32.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.2f, 150.0f, 105.0f },
-        { "Eladio Carrion - Sauce Boy Drill",    1.0f,  3.0f,  8.0f,  98.0f, 48.0f, 75.0f, 112.0f,  2.5f, 5.5f, 14.0f, 42.0f, 16.0f, 230.0f, 35.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.4f, 160.0f, 110.0f },
-        { "Peso Pluma - Ella Baila Sola Corridos",16.0f,30.0f, 45.0f,  82.0f, 30.0f, 50.0f,  85.0f,  1.5f, 6.0f, 20.0f, 55.0f, 12.0f, 280.0f, 25.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 200.0f,  95.0f },
-        { "Young Miko - Trap Kitty Sweet Lead",  2.5f,  6.0f, 15.0f,  95.0f, 36.0f, 65.0f,  95.0f,  1.0f, 7.2f, 28.0f, 70.0f, 18.0f, 310.0f, 38.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 200.0f, 125.0f },
-        { "Karol G - Provenza Sunshine Vocal",   5.0f, 10.0f, 25.0f,  92.0f, 32.0f, 58.0f,  90.0f,  1.5f, 6.5f, 32.0f, 78.0f, 15.0f, 340.0f, 30.0f, 0.0f, 100.0f, 0.5f, -49.0f, 2.2f, 210.0f, 130.0f },
-        { "Dua Lipa - Future Nostalgia Disco",  12.0f, 22.0f, 40.0f,  85.0f, 28.0f, 60.0f,  88.0f,  1.0f, 6.0f, 25.0f, 68.0f, 14.0f, 320.0f, 28.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 220.0f, 120.0f },
-        { "SZA - Snooze R&B Velvet Dream",      22.0f, 42.0f, 60.0f,  75.0f, 15.0f, 45.0f,  80.0f,  2.8f, 5.0f, 35.0f, 85.0f, 18.0f, 420.0f, 35.0f, 0.0f, 100.0f, 0.0f, -52.0f, 3.5f, 280.0f, 120.0f },
-        { "Skrillex - Baby Again Vocal Chop",    0.0f,  0.0f,  0.0f, 100.0f, 60.0f, 85.0f, 135.0f,  2.0f, 9.0f, 18.0f, 52.0f, 28.0f, 180.0f, 50.0f, 0.0f, 100.0f, 2.0f, -40.0f, 0.5f, 110.0f, 150.0f },
-        { "Fred again.. - Rumble Ambient Lo-Fi", 8.0f, 15.0f, 35.0f,  88.0f, 20.0f, 55.0f, 120.0f,  3.0f, 3.5f, 42.0f, 92.0f, 22.0f, 480.0f, 42.0f, 0.0f, 100.0f,-1.0f, -48.0f, 3.0f, 300.0f, 140.0f },
-        { "T-Pain - Extreme 0ms Instant Snap",   0.0f,  0.0f,  0.0f, 100.0f, 40.0f, 75.0f, 100.0f,  2.0f, 5.0f, 12.0f, 40.0f, 10.0f, 240.0f, 25.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.0f, 150.0f, 100.0f },
+        { "J Balvin - Colores Reggaeton",        2.0f,  5.0f, 10.0f,  95.0f, 45.0f, 72.0f, 100.0f,  3.0f, 4.0f, 40.0f, 40.0f,  8.0f, 240.0f, 30.0f, 0.0f, 100.0f, 1.0f, -48.0f, 2.0f, 180.0f, 105.0f },
+        { "Maluma - Hawai Romantic",            20.0f, 40.0f, 55.0f,  80.0f, 15.0f, 42.0f,  85.0f,  2.0f, 3.5f, 52.0f, 52.0f, 15.0f, 350.0f, 28.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 220.0f, 110.0f },
+        { "Ozuna - Caramelo Tropical",          15.0f, 30.0f, 45.0f,  82.0f, 18.0f, 48.0f,  80.0f,  1.5f, 7.0f, 75.0f, 65.0f, 19.0f, 400.0f, 32.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.0f, 260.0f, 135.0f },
+        { "Anuel AA - Real Hasta la Muerte",     0.5f,  3.0f,  8.0f,  97.0f, 55.0f, 78.0f, 110.0f,  2.5f, 5.5f, 33.0f, 35.0f, 17.0f, 260.0f, 38.0f, 0.0f, 100.0f, 2.0f, -44.0f, 1.2f, 150.0f, 105.0f },
+        { "Myke Towers - Easy Street",          10.0f, 18.0f, 38.0f,  88.0f, 28.0f, 55.0f,  90.0f,  1.8f, 4.5f, 47.0f, 45.0f, 14.0f, 300.0f, 30.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 190.0f, 110.0f },
+        { "Jhay Cortez - Tecnologia Future",     1.0f,  2.0f,  5.0f,  98.0f, 38.0f, 68.0f, 105.0f,  2.2f, 6.0f, 52.0f, 50.0f, 21.0f, 220.0f, 42.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.5f, 170.0f, 120.0f },
+        { "Nicky Jam - El Perdon Classic",       8.0f, 15.0f, 35.0f,  88.0f, 32.0f, 58.0f,  92.0f,  1.5f, 3.8f, 42.0f, 42.0f, 12.0f, 270.0f, 26.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.0f, 200.0f, 105.0f },
+        { "Daddy Yankee - Gasolina OG",          3.0f,  8.0f, 20.0f,  93.0f, 48.0f, 74.0f,  98.0f,  2.8f, 3.2f, 33.0f, 36.0f, 10.0f, 230.0f, 32.0f, 0.0f, 100.0f, 1.5f, -46.0f, 1.8f, 160.0f, 100.0f },
+        { "Sech - Otro Trago Groove",           12.0f, 22.0f, 42.0f,  84.0f, 20.0f, 46.0f,  82.0f,  1.2f, 5.8f, 63.0f, 58.0f, 15.0f, 320.0f, 28.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 240.0f, 120.0f },
+        { "Feid - Ferxxo Neon Dark",             1.5f,  6.0f, 18.0f,  96.0f, 50.0f, 80.0f, 115.0f,  3.5f, 7.5f, 63.0f, 60.0f, 26.0f, 290.0f, 48.0f, 0.0f, 100.0f, 1.0f, -47.0f, 1.6f, 180.0f, 130.0f },
+        { "Trueno - Trap Argentino Raw",         0.0f,  2.0f,  8.0f,  99.0f, 60.0f, 82.0f, 120.0f,  4.0f, 4.5f, 23.0f, 30.0f, 13.0f, 200.0f, 30.0f, 0.0f, 100.0f, 2.0f, -44.0f, 1.0f, 140.0f, 100.0f },
+        { "Bizarrap - BZRP Session Edge",        0.0f,  0.0f,  0.0f, 100.0f, 55.0f, 85.0f, 125.0f,  4.5f, 8.0f, 48.0f, 48.0f, 24.0f, 180.0f, 55.0f, 0.0f, 100.0f, 1.5f, -44.0f, 0.8f, 130.0f, 110.0f },
+        { "C. Tangana - Bare RnB Madrid",       28.0f, 55.0f, 70.0f,  65.0f, 12.0f, 38.0f,  75.0f,  0.8f, 6.5f, 72.0f, 62.0f, 17.0f, 450.0f, 35.0f, 0.0f, 100.0f,-0.5f, -52.0f, 3.5f, 280.0f, 115.0f },
+        { "Quevedo - Columbia UK Drill",         1.0f,  4.0f, 12.0f,  96.0f, 48.0f, 76.0f, 118.0f,  3.2f, 5.0f, 40.0f, 38.0f, 19.0f, 210.0f, 40.0f, 0.0f, 100.0f, 1.5f, -46.0f, 1.4f, 160.0f, 110.0f },
+        { "Morad - Barcelona Street",            5.0f, 10.0f, 28.0f,  90.0f, 42.0f, 65.0f,  88.0f,  2.0f, 3.0f, 27.0f, 28.0f,  7.0f, 240.0f, 22.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 170.0f, 100.0f },
+        // === MODERN HIT EXPANSION ===
+        { "Central Cee - Doja UK Drill Snap",    0.0f,  1.0f,  5.0f,  99.0f, 58.0f, 80.0f, 120.0f,  2.5f, 6.0f, 32.0f, 32.0f, 15.0f, 210.0f, 32.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.0f, 140.0f, 110.0f },
+        { "Playboi Carti - Whole Lotta Red Vamp",0.0f,  0.0f,  0.0f, 100.0f, 65.0f, 88.0f, 130.0f,  3.0f, 8.5f, 47.0f, 42.0f, 28.0f, 160.0f, 45.0f, 0.0f, 100.0f, 2.0f, -42.0f, 0.8f, 120.0f, 125.0f },
+        { "Lil Uzi Vert - XO Tour Llif3 Melodic",2.0f,  5.0f, 12.0f,  96.0f, 40.0f, 72.0f, 100.0f,  1.5f, 7.0f, 55.0f, 55.0f, 22.0f, 320.0f, 40.0f, 0.0f, 100.0f, 0.5f, -48.0f, 1.8f, 200.0f, 125.0f },
+        { "Gunna - Drip Season Wun Wave",        1.0f,  3.0f,  8.0f,  98.0f, 35.0f, 68.0f,  95.0f,  2.0f, 5.0f, 50.0f, 48.0f, 18.0f, 270.0f, 36.0f, 0.0f, 100.0f, 0.5f, -47.0f, 2.0f, 190.0f, 115.0f },
+        { "Young Thug - Jeffery High Drip",      0.0f,  0.0f,  4.0f, 100.0f, 48.0f, 78.0f, 110.0f,  1.0f, 8.0f, 52.0f, 50.0f, 25.0f, 240.0f, 42.0f, 0.0f, 100.0f, 1.0f, -45.0f, 1.2f, 160.0f, 120.0f },
+        { "Juice WRLD - Lucid Dreams Emotion",  10.0f, 18.0f, 35.0f,  88.0f, 25.0f, 58.0f,  85.0f,  1.8f, 4.8f, 60.0f, 58.0f, 16.0f, 340.0f, 35.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.2f, 220.0f, 115.0f },
+        { "XXXTENTACION - Moonlight Intimate",   8.0f, 14.0f, 30.0f,  90.0f, 22.0f, 52.0f,  90.0f,  2.2f, 4.0f, 63.0f, 60.0f, 14.0f, 300.0f, 30.0f, 0.0f, 100.0f, 0.0f, -52.0f, 2.5f, 240.0f, 110.0f },
+        { "Mora - Microdosis Perreo Espacial",   1.0f,  4.0f, 10.0f,  97.0f, 42.0f, 72.0f, 105.0f,  2.0f, 6.5f, 63.0f, 58.0f, 20.0f, 260.0f, 42.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.6f, 180.0f, 135.0f },
+        { "Chencho Corleone - Plan B Nostalgia", 0.5f,  2.0f,  6.0f,  98.0f, 52.0f, 82.0f, 115.0f,  3.0f, 5.0f, 40.0f, 38.0f, 14.0f, 220.0f, 32.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.2f, 150.0f, 105.0f },
+        { "Eladio Carrion - Sauce Boy Drill",    1.0f,  3.0f,  8.0f,  98.0f, 48.0f, 75.0f, 112.0f,  2.5f, 5.5f, 37.0f, 35.0f, 16.0f, 230.0f, 35.0f, 0.0f, 100.0f, 1.5f, -45.0f, 1.4f, 160.0f, 110.0f },
+        { "Peso Pluma - Ella Baila Sola Corridos",16.0f,30.0f, 45.0f,  82.0f, 30.0f, 50.0f,  85.0f,  1.5f, 6.0f, 47.0f, 45.0f, 12.0f, 280.0f, 25.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 200.0f,  95.0f },
+        { "Young Miko - Trap Kitty Sweet Lead",  2.5f,  6.0f, 15.0f,  95.0f, 36.0f, 65.0f,  95.0f,  1.0f, 7.2f, 60.0f, 55.0f, 18.0f, 310.0f, 38.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 200.0f, 125.0f },
+        { "Karol G - Provenza Sunshine Vocal",   5.0f, 10.0f, 25.0f,  92.0f, 32.0f, 58.0f,  90.0f,  1.5f, 6.5f, 63.0f, 60.0f, 15.0f, 340.0f, 30.0f, 0.0f, 100.0f, 0.5f, -49.0f, 2.2f, 210.0f, 130.0f },
+        { "Dua Lipa - Future Nostalgia Disco",  12.0f, 22.0f, 40.0f,  85.0f, 28.0f, 60.0f,  88.0f,  1.0f, 6.0f, 53.0f, 54.0f, 14.0f, 320.0f, 28.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.5f, 220.0f, 120.0f },
+        { "SZA - Snooze R&B Velvet Dream",      22.0f, 42.0f, 60.0f,  75.0f, 15.0f, 45.0f,  80.0f,  2.8f, 5.0f, 70.0f, 65.0f, 18.0f, 420.0f, 35.0f, 0.0f, 100.0f, 0.0f, -52.0f, 3.5f, 280.0f, 120.0f },
+        { "Skrillex - Baby Again Vocal Chop",    0.0f,  0.0f,  0.0f, 100.0f, 60.0f, 85.0f, 135.0f,  2.0f, 9.0f, 45.0f, 42.0f, 28.0f, 180.0f, 50.0f, 0.0f, 100.0f, 2.0f, -40.0f, 0.5f, 110.0f, 150.0f },
+        { "Fred again.. - Rumble Ambient Lo-Fi", 8.0f, 15.0f, 35.0f,  88.0f, 20.0f, 55.0f, 120.0f,  3.0f, 3.5f, 83.0f, 70.0f, 22.0f, 480.0f, 42.0f, 0.0f, 100.0f,-1.0f, -48.0f, 3.0f, 300.0f, 140.0f },
+        { "T-Pain - Extreme 0ms Instant Snap",   0.0f,  0.0f,  0.0f, 100.0f, 40.0f, 75.0f, 100.0f,  2.0f, 5.0f, 32.0f, 32.0f, 10.0f, 240.0f, 25.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.0f, 150.0f, 100.0f },
         { "Studio - Clean Podcast & Broadcast", 32.0f, 50.0f, 65.0f,  70.0f, 10.0f, 42.0f,  85.0f,  2.5f, 3.0f,  0.0f,  0.0f,  0.0f, 200.0f,  0.0f, 0.0f, 100.0f, 0.0f, -52.0f, 2.5f, 220.0f, 100.0f },
-        { "Studio - Radio Megaphone Lo-Fi",      0.0f,  0.0f,  0.0f, 100.0f, 45.0f, 85.0f, 220.0f, -4.0f, 8.5f, 15.0f, 45.0f, 20.0f, 200.0f, 35.0f, 0.0f, 100.0f, 1.5f, -42.0f, 1.0f, 120.0f,  40.0f },
-        { "Studio - Acoustic Natural Session",  40.0f, 65.0f, 75.0f,  55.0f,  5.0f, 30.0f,  75.0f,  1.5f, 4.0f, 20.0f, 65.0f, 10.0f, 350.0f, 22.0f, 0.0f, 100.0f, 0.0f, -54.0f, 4.0f, 300.0f, 105.0f },
-        { "Studio - Ultra-Wide Vocal Doubler",   1.0f,  4.0f, 10.0f,  96.0f, 35.0f, 60.0f,  90.0f,  1.0f, 6.5f, 28.0f, 75.0f, 24.0f, 280.0f, 40.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 200.0f, 185.0f }
+        { "Studio - Radio Megaphone Lo-Fi",      0.0f,  0.0f,  0.0f, 100.0f, 45.0f, 85.0f, 220.0f, -4.0f, 8.5f, 40.0f, 36.0f, 20.0f, 200.0f, 35.0f, 0.0f, 100.0f, 1.5f, -42.0f, 1.0f, 120.0f,  40.0f },
+        { "Studio - Acoustic Natural Session",  40.0f, 65.0f, 75.0f,  55.0f,  5.0f, 30.0f,  75.0f,  1.5f, 4.0f, 47.0f, 50.0f, 10.0f, 350.0f, 22.0f, 0.0f, 100.0f, 0.0f, -54.0f, 4.0f, 300.0f, 105.0f },
+        { "Studio - Ultra-Wide Vocal Doubler",   1.0f,  4.0f, 10.0f,  96.0f, 35.0f, 60.0f,  90.0f,  1.0f, 6.5f, 60.0f, 58.0f, 24.0f, 280.0f, 40.0f, 0.0f, 100.0f, 0.5f, -48.0f, 2.0f, 200.0f, 185.0f },
+        // === NUEVOS PRESETS V4.2 (5 ARTISTAS GLOBALES) ===
+        { "Don Toliver - Lovesick Psychedelic Trap", 0.5f, 2.0f, 6.0f, 98.0f, 46.0f, 76.0f, 110.0f, 2.0f, 7.5f, 65.0f, 65.0f, 25.0f, 375.0f, 45.0f, 0.0f, 100.0f, 1.0f, -46.0f, 1.5f, 170.0f, 135.0f },
+        { "Sabrina Carpenter - Espresso Glossy Pop", 6.0f, 14.0f, 30.0f, 92.0f, 28.0f, 55.0f,  95.0f, 1.2f, 8.0f, 55.0f, 52.0f, 14.0f, 280.0f, 25.0f, 0.0f, 100.0f, 0.5f, -49.0f, 2.0f, 200.0f, 120.0f },
+        { "Kendrick Lamar - Euphoria Punch Lead",  18.0f, 30.0f, 50.0f, 78.0f, 55.0f, 72.0f, 105.0f, 3.0f, 4.5f, 25.0f, 30.0f,  6.0f, 180.0f, 15.0f, 0.5f, 100.0f, 1.5f, -45.0f, 1.0f, 140.0f, 100.0f },
+        { "Milo J - Rara Vez Nostalgia Soul",       10.0f, 18.0f, 40.0f, 86.0f, 20.0f, 48.0f,  85.0f, 3.5f, 3.5f, 50.0f, 48.0f, 12.0f, 340.0f, 30.0f, 0.0f, 100.0f, 0.0f, -50.0f, 2.2f, 220.0f, 110.0f },
+        { "Justin Bieber - Peaches Velvet RnB",     4.0f,  8.0f, 22.0f, 94.0f, 32.0f, 62.0f,  90.0f, 1.5f, 6.5f, 60.0f, 56.0f, 18.0f, 310.0f, 32.0f, 0.0f, 100.0f, 0.5f, -48.0f, 1.8f, 190.0f, 125.0f }
     };
     return presets;
 }
@@ -377,6 +397,20 @@ void TPainSupremeAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
         const int numSamples = buffer.getNumSamples();
         if (numSamples <= 0)
             return;
+
+        lastHostBlockSize.store(numSamples, std::memory_order_relaxed);
+
+        int bufferMode = paramBufferSize ? static_cast<int>(paramBufferSize->load()) : 0;
+        int effectiveSamples = numSamples;
+        if (bufferMode == 1) effectiveSamples = 64;
+        else if (bufferMode == 2) effectiveSamples = 128;
+        else if (bufferMode == 3) effectiveSamples = 256;
+        else if (bufferMode == 4) effectiveSamples = 512;
+        else if (bufferMode == 5) effectiveSamples = 1024;
+        else if (bufferMode == 6) effectiveSamples = 2048;
+
+        pitchEngine.setTargetBufferSize(effectiveSamples);
+        setLatencySamples(pitchEngine.getLatencySamples());
 
         const int totalNumInputChannels = getTotalNumInputChannels();
         const int totalNumOutputChannels = getTotalNumOutputChannels();
@@ -518,7 +552,7 @@ void TPainSupremeAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
         float lowCut = paramLowCut ? paramLowCut->load() : 80.0f;
         float body = paramBody ? paramBody->load() : 0.0f;
         float air = paramAir ? paramAir->load() : 3.0f;
-        float reverbMix = paramReverbMix ? paramReverbMix->load() : 15.0f;
+        float reverbMix = paramReverbMix ? paramReverbMix->load() : 35.0f;
         float reverbSize = paramReverbSize ? paramReverbSize->load() : 50.0f;
         float delayMix = paramDelayMix ? paramDelayMix->load() : 0.0f;
         float delayTime = paramDelayTime ? paramDelayTime->load() : 320.0f;
@@ -552,7 +586,7 @@ void TPainSupremeAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
         vocalFX.setLowCut(lowCut);
         vocalFX.setBodyGain(body);
         vocalFX.setAirGain(air);
-        vocalFX.setReverbMix(reverbMix);
+        vocalFX.setReverbMix(reverbMix * 0.30f);
         vocalFX.setReverbSize(reverbSize);
         vocalFX.setDelayMix(delayMix);
         vocalFX.setDelayTimeMs(delayTime);

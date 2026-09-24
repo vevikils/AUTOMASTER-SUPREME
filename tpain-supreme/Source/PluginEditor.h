@@ -47,6 +47,8 @@ private:
 
     juce::ComboBox rootSelector;
     juce::ComboBox scaleSelector;
+    juce::ComboBox bufferSelector;
+    juce::Label   bufferLabel;
 
     juce::Slider retuneSpeedSlider;
     juce::Slider transitionSlider;
@@ -83,6 +85,7 @@ private:
 
     std::unique_ptr<ComboBoxAttachment> rootAttachment;
     std::unique_ptr<ComboBoxAttachment> scaleAttachment;
+    std::unique_ptr<ComboBoxAttachment> bufferAttachment;
 
     std::unique_ptr<SliderAttachment> retuneSpeedAttachment;
     std::unique_ptr<SliderAttachment> transitionAttachment;

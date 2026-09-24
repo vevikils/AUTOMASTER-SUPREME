@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(SupremeTunerRealTimeV3 VERSION 3.9.0 LANGUAGES C CXX)
+project(SupremeTuneRealTimeV42 VERSION 4.2.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,22 +8,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # JUCE framework reference
 add_subdirectory("C:/Users/alfaswz/VeviDynamicEQ1/Build/_deps/juce-src" juce EXCLUDE_FROM_ALL)
 
-juce_add_plugin(SupremeTunerRealTimeV3
+juce_add_plugin(SupremeTuneRealTimeV42
     COMPANY_NAME "vevi"
-    BUNDLE_ID "com.vevi.supremetunerrealtimev39"
+    BUNDLE_ID "com.vevi.supremetunerealtimev42"
     PLUGIN_MANUFACTURER_CODE Vevi
-    PLUGIN_CODE St39
+    PLUGIN_CODE St42
     FORMATS VST3 Standalone
-    PRODUCT_NAME "Supreme Tuner Real Time v3.9"
+    PRODUCT_NAME "Supreme Tune Real Time v4.2"
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     IS_SYNTH FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-    DESCRIPTION "Supreme Tuner Real Time v3.9 - By vevi - Ultra-Low Latency Vocal Auto-Tune + Hybrid Studio Console GUI"
+    DESCRIPTION "Supreme Tune Real Time v4.2 - By vevi - Ultra-Low Latency Vocal Auto-Tune + Hybrid Studio Console GUI"
 )
 
-target_sources(SupremeTunerRealTimeV3 PRIVATE
+target_sources(SupremeTuneRealTimeV42 PRIVATE
     Source/PluginProcessor.h
     Source/PluginProcessor.cpp
     Source/PluginEditor.h
@@ -33,14 +33,14 @@ target_sources(SupremeTunerRealTimeV3 PRIVATE
     Source/BgTextureData.h
 )
 
-target_compile_definitions(SupremeTunerRealTimeV3 PUBLIC
+target_compile_definitions(SupremeTuneRealTimeV42 PUBLIC
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
     JUCE_VST3_CAN_REPLACE_VST2=0
     JUCE_DISPLAY_SPLASH_SCREEN=0
 )
 
-target_link_libraries(SupremeTunerRealTimeV3 PRIVATE
+target_link_libraries(SupremeTuneRealTimeV42 PRIVATE
     juce::juce_audio_utils
     juce::juce_audio_processors
     juce::juce_dsp
@@ -51,7 +51,7 @@ target_link_libraries(SupremeTunerRealTimeV3 PRIVATE
 )
 
 if (MSVC)
-    target_compile_options(SupremeTunerRealTimeV3 PRIVATE /utf-8 /bigobj)
+    target_compile_options(SupremeTuneRealTimeV42 PRIVATE /utf-8 /bigobj)
 endif()
 
 add_executable(StressTest
@@ -79,4 +79,3 @@ target_link_libraries(StressTest PRIVATE
 if (MSVC)
     target_compile_options(StressTest PRIVATE /utf-8 /bigobj)
 endif()
-

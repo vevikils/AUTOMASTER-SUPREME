@@ -27,9 +27,18 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
-.DS_Store
-
-# Antigravity temporary session files
-.tempmediaStorage/
-scratch/*.tmp
-reverb-supreme/
+# Python cache and temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+scratch/
+*env/
+*.venv/
+venv/
+.venv/
+wan_env/
+*.safetensors
+*.ckpt
+*.pt
+*.bin

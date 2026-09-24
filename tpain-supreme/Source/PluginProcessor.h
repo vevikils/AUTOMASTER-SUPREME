@@ -92,6 +92,18 @@ public:
         return static_cast<float>((getLatencySamples() * 1000.0) / sr);
     }
 
+    int getLastHostBlockSize() const noexcept { return lastHostBlockSize.load(std::memory_order_relaxed); }
+    int getSelectedBufferSizeIndex() const noexcept
+    {
+        return paramBufferSize ? static_cast<int>(paramBufferSize->load(std::memory_order_relaxed)) : 0;
+    }
+    int getEffectiveBufferSizeSamples() const noexcept
+    {
+        int idx = getSelectedBufferSizeIndex();
+        if (idx <= 0) return std::max(64, lastHostBlockSize.load(std::memory_order_relaxed));
+        return 64 << (idx - 1);
+    }
+
     // Parameter ID constants
     static constexpr const char* ID_INPUT = "inputGain";
     static constexpr const char* ID_ROOT = "rootNote";
@@ -117,6 +129,8 @@ public:
     static constexpr const char* ID_GATE_THRESH  = "gateThreshold";
     static constexpr const char* ID_GATE_ATTACK  = "gateAttack";
     static constexpr const char* ID_GATE_RELEASE = "gateRelease";
+    // Buffer Size / DAW Sync
+    static constexpr const char* ID_BUFFER_SIZE  = "bufferSize";
 
 private:
     VeviAudio::PitchEngine pitchEngine;
@@ -147,6 +161,9 @@ private:
     std::atomic<float>* paramGateThresh  = nullptr;
     std::atomic<float>* paramGateAttack  = nullptr;
     std::atomic<float>* paramGateRelease = nullptr;
+    // Buffer Size atomic pointer
+    std::atomic<float>* paramBufferSize  = nullptr;
+    std::atomic<int> lastHostBlockSize { 128 };
     // Gate DSP state (per-channel envelope follower)
     float gateEnv[2] = { 1.0f, 1.0f };
     std::atomic<float> gateGainReductionDb { 0.0f };

@@ -1,0 +1,16 @@
+{
+  "persona_id": "persona_28739508",
+  "filename": "selfie_1790251901.jpg",
+  "filepath": "C:\\Users\\alfaswz\\.gemini\\antigravity-ide\\scratch\\agentes-personalizados\\companion-desktop-studio\\outputs\\persona_28739508\\selfie_1790251901.jpg",
+  "url": "/outputs/persona_28739508/selfie_1790251901.jpg",
+  "prompt": "photorealistic 8k selfie portrait of hitler, 22yo attractive woman, negro, azules, subtle natural skin pores and texture, pecas, wearing poca ropa, relaxing at home, warm natural ambient daylight, casual setting, shot on modern smartphone front camera, candid photography, masterpiece, natural lighting",
+  "negative_prompt": "ugly, blurry, low quality, deformed",
+  "width": 512,
+  "height": 768,
+  "steps": 22,
+  "guidance_scale": 6.5,
+  "seed": 583277456,
+  "model_id": "SG161222/Realistic_Vision_V5.1_noVAE",
+  "render_time_s": 12.96,
+  "created_at": "2026-09-24 14:11:41"
+}

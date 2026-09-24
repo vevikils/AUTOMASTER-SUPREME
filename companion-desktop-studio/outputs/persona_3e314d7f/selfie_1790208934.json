@@ -1,0 +1,17 @@
+{
+  "persona_id": "persona_3e314d7f",
+  "filename": "selfie_1790208934.jpg",
+  "filepath": "C:\\Users\\alfaswz\\.gemini\\antigravity-ide\\scratch\\agentes-personalizados\\companion-desktop-studio\\outputs\\persona_3e314d7f\\selfie_1790208934.jpg",
+  "url": "/outputs/persona_3e314d7f/selfie_1790208934.jpg",
+  "prompt": "photorealistic 8k photograph of skkr, 22yo woman, long wavy chestnut brown hair with soft highlights, warm amber hazel eyes, natural skin texture and subtle pores, playful wink and cute charming expression, wearing cozy oversized knit beige cardigan and casual top, close-up portrait shot, looking directly into camera with a sweet gentle smile, soft natural daylight, depth of field, sharp focus on eyes, authentic beauty, 35mm film photography, masterpiece, natural lighting",
+  "negative_prompt": "ugly, deformed, disfigured, poor details, bad anatomy, bad eyes, extra limbs, low quality, blurry, cartoon, 3d render, oversaturated",
+  "width": 512,
+  "height": 768,
+  "steps": 22,
+  "guidance_scale": 6.5,
+  "seed": 450269959,
+  "model_id": "SG161222/Realistic_Vision_V5.1_noVAE",
+  "render_time_s": 328.32,
+  "created_at": "2026-09-24 02:15:34",
+  "scenario_title": "Retrato Principal"
+}
