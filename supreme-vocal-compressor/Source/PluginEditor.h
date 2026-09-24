@@ -3,7 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "PluginProcessor.h"
 
-// Custom Vintage CLA-2A Style Knob LookAndFeel
+// Custom Vintage Opto Knob LookAndFeel
 class VintageOptoKnobLF : public juce::LookAndFeel_V4
 {
 public:
@@ -117,7 +117,7 @@ public:
     {
         auto bounds = getLocalBounds().toFloat();
 
-        // 1. Recessed Bezel & Screw Mounts
+        // 1. Recessed Outer Bezel (Heavy Black Rim)
         g.setColour(juce::Colour(0xff121212));
         g.fillRoundedRectangle(bounds, 10.0f);
 
@@ -126,19 +126,24 @@ public:
 
         // 2. Vintage Amber Incandescent Glow Dial Face
         auto dialBounds = bounds.reduced(8.0f);
+
+        // CLIP TO DIAL BOUNDS SO THE NEEDLE NEVER ESCAPES THE GLASS / INNER BEZEL!
+        juce::Graphics::ScopedSaveState sss(g);
+        g.reduceClipRegion(dialBounds.toNearestInt());
+
         juce::ColourGradient dialGrad(juce::Colour(0xfff5dfaa), dialBounds.getCentreX(), dialBounds.getY(),
                                      juce::Colour(0xffd8b066), dialBounds.getCentreX(), dialBounds.getBottom(), false);
         g.setGradientFill(dialGrad);
         g.fillRoundedRectangle(dialBounds, 6.0f);
 
-        // Subtle internal shadow in bezel
-        g.setColour(juce::Colours::black.withAlpha(0.25f));
-        g.drawRoundedRectangle(dialBounds, 6.0f, 3.0f);
+        // Subtle internal shadow inside bezel
+        g.setColour(juce::Colours::black.withAlpha(0.20f));
+        g.drawRoundedRectangle(dialBounds, 6.0f, 2.0f);
 
         // 3. Dial Arc Scale Serigraphy
         float cx = dialBounds.getCentreX();
-        float pivotY = dialBounds.getBottom() + dialBounds.getHeight() * 0.75f;
-        float needleRadius = dialBounds.getHeight() * 1.45f;
+        float pivotY = dialBounds.getBottom() + dialBounds.getHeight() * 0.70f;
+        float needleRadius = dialBounds.getHeight() * 1.38f;
 
         g.setFont(juce::Font("Georgia", 11.0f, juce::Font::bold));
         g.setColour(juce::Colour(0xff2a1e12));
@@ -149,10 +154,9 @@ public:
         g.drawText(mode == 0 ? "GAIN REDUCTION (dB)" : (mode == 1 ? "+4 INPUT MONITOR" : "+10 OUTPUT MONITOR"),
                    cx - 90, dialBounds.getY() + 30, 180, 14, juce::Justification::centred);
 
-        // Draw Arc Scale Ticks (CLA-2A Style: 0 on right for GR, or 0 on middle-right)
+        // Draw Arc Scale Ticks (0 on right for GR, or 0 on middle-right)
         for (int i = 0; i <= 20; i += 2)
         {
-            // Map 0 to 20 to angle
             float norm = (float)i / 20.0f;
             float angleDeg = (mode == 0)
                 ? (35.0f - norm * 70.0f) // GR: 0 on right (35 deg), 20 on left (-35 deg)
@@ -178,7 +182,7 @@ public:
         g.setColour(juce::Colour(0xffc5221f));
         g.drawText("+1 +2 +3", dialBounds.getRight() - 58, dialBounds.getY() + 48, 50, 14, juce::Justification::centredRight);
 
-        // 4. Physical Moving Needle (Matte Black with Red Tip)
+        // 4. Physical Moving Needle (Kept inside meter face)
         float needleNorm = (mode == 0)
             ? (needlePos / 20.0f)
             : ((needlePos + 20.0f) / 23.0f);
@@ -187,7 +191,7 @@ public:
             ? (35.0f - needleNorm * 70.0f)
             : (-35.0f + needleNorm * 70.0f);
 
-        needleAngleDeg = juce::jlimit(-42.0f, 42.0f, needleAngleDeg);
+        needleAngleDeg = juce::jlimit(-40.0f, 40.0f, needleAngleDeg);
         float needleRad = juce::degreesToRadians(needleAngleDeg);
 
         float tipX = cx + needleRadius * std::sin(needleRad);
@@ -244,7 +248,7 @@ private:
     VintageOptoKnobLF knobLF;
     VintageVUMeterComponent vuMeter;
 
-    // CLA-2A Main Knobs
+    // Main Knobs
     juce::Slider peakReductionSlider;
     juce::Slider gainSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> peakReductionAttach;
@@ -264,7 +268,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryWetAttach;
 
     // Toggle Mode (Compress / Limit)
-    juce::ToggleButton modeToggle { "LIMIT" };
+    juce::ToggleButton modeToggle;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> modeAttach;
 
     // Meter selector (GR, +4, +10)

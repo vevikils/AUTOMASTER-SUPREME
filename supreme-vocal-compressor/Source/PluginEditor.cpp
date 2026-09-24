@@ -5,9 +5,9 @@ SupremeVocalBusCompressorAudioProcessorEditor::SupremeVocalBusCompressorAudioPro
     SupremeVocalBusCompressorAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
 {
-    // Generous, professional 19" rack proportions (1020 x 470 px)
+    // Generous, professional 19" rack proportions (1020 x 480 px)
     // Ensures ZERO overlaps, clear spacing, legible decibels and legends
-    setSize(1020, 470);
+    setSize(1020, 480);
 
     // 1. Center Vintage VU Meter
     addAndMakeVisible(vuMeter);
@@ -40,29 +40,31 @@ SupremeVocalBusCompressorAudioProcessorEditor::SupremeVocalBusCompressorAudioPro
         audioProcessor.getAPVTS(), "dry_wet", dryWetSlider);
 
     // 4. Mode Toggle (Compress / Limit)
-    modeToggle.setButtonText("LIMIT");
-    modeToggle.setColour(juce::ToggleButton::textColourId, juce::Colour(0xff181818));
-    modeToggle.setColour(juce::ToggleButton::tickColourId, juce::Colour(0xffc5221f));
+    // Clean styling with bright white readable text and high contrast checkmark
+    modeToggle.setButtonText("LIMIT MODE (12:1)");
+    modeToggle.setColour(juce::ToggleButton::textColourId, juce::Colour(0xfff0f0f0));
+    modeToggle.setColour(juce::ToggleButton::tickColourId, juce::Colour(0xffffcc00)); // Vivid Gold Tick
+    modeToggle.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colour(0xff888888));
     addAndMakeVisible(modeToggle);
     modeAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
         audioProcessor.getAPVTS(), "mode", modeToggle);
 
     // 5. Meter Mode Box
-    meterModeBox.addItem("GR", 1);
-    meterModeBox.addItem("+4 IN", 2);
-    meterModeBox.addItem("+10 OUT", 3);
+    meterModeBox.addItem("GR (Gain Reduction)", 1);
+    meterModeBox.addItem("+4 IN (Input Level)", 2);
+    meterModeBox.addItem("+10 OUT (Output Level)", 3);
     meterModeBox.setJustificationType(juce::Justification::centred);
     meterModeBox.setSelectedId(1, juce::dontSendNotification);
     addAndMakeVisible(meterModeBox);
     meterModeAttach = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         audioProcessor.getAPVTS(), "meter_mode", meterModeBox);
 
-    // 6. Presets Menu
-    presetBox.addItem("01. Vocal Glue Master (Universal Bus)", 1);
-    presetBox.addItem("02. Modern Silk & Air (Pop / Trapsoul)", 2);
-    presetBox.addItem("03. Heavy Opto Lock (Rap Lead & Adlibs)", 3);
-    presetBox.addItem("04. Warm Tube Console (Vintage / Acoustic)", 4);
-    presetBox.addItem("05. In-Your-Face Parallel (100% Glue / 50% Mix)", 5);
+    // 6. 5 Signature Artist Presets
+    presetBox.addItem("01. Travis Scott - Astroworld Vocal Glue", 1);
+    presetBox.addItem("02. Drake - Silky OVO Bus Polish", 2);
+    presetBox.addItem("03. T-Pain - Ultra Hard Auto-Tune Lock", 3);
+    presetBox.addItem("04. Bad Bunny - Warm Latin Trap & Reggaeton", 4);
+    presetBox.addItem("05. Rosalia - High Sheen Flamenco/Pop", 5);
     presetBox.setSelectedId(1, juce::dontSendNotification);
     presetBox.onChange = [this]() {
         int idx = presetBox.getSelectedId() - 1;
@@ -82,7 +84,7 @@ SupremeVocalBusCompressorAudioProcessorEditor::~SupremeVocalBusCompressorAudioPr
 void SupremeVocalBusCompressorAudioProcessorEditor::configureKnob(juce::Slider& s, const juce::String& text, const juce::String& suffix)
 {
     s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 68, 20);
+    s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 72, 20);
     s.setTextValueSuffix(suffix.isNotEmpty() ? (" " + suffix) : "");
     s.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     s.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff222222));
@@ -152,10 +154,10 @@ void SupremeVocalBusCompressorAudioProcessorEditor::paint(juce::Graphics& g)
 
     g.setFont(juce::Font("Helvetica", 10.5f, juce::Font::bold));
     g.setColour(juce::Colour(0xff4a4a4a));
-    g.drawText("VERSION 1.1 - T4B CELL - BY VEVI - VOCAL GLUE & TUBE SHEEN", 65, 64, 420, 16, juce::Justification::left);
+    g.drawText("VERSION 1.2 - T4B CELL - BY VEVI - VOCAL GLUE & TUBE SHEEN", 65, 64, 420, 16, juce::Justification::left);
 
     // Preset Section Label
-    g.drawText("PRESETS:", w - 390, 24, 70, 20, juce::Justification::right);
+    g.drawText("ARTIST PRESETS:", w - 410, 24, 110, 20, juce::Justification::right);
 
     // 5. Left & Right Main Knob Legend Headers
     g.setFont(juce::Font("Impact", 20.0f, juce::Font::plain));
@@ -201,49 +203,51 @@ void SupremeVocalBusCompressorAudioProcessorEditor::paint(juce::Graphics& g)
     drawKnobDecal(165.0f, 212.0f, 54.0f);
     drawKnobDecal((float)w - 165.0f, 212.0f, 54.0f);
 
-    // 6. Section Box: Mode Switch & Meter Mode (Above Peak Reduction, completely separated)
-    auto modePanel = juce::Rectangle<float>(w - 260.0f, 320.0f, 190.0f, 130.0f);
-    g.setColour(juce::Colour(0xff222222));
+    // 6. Section Box: Mode Switch & Meter Mode (Dedicated right rack unit)
+    auto modePanel = juce::Rectangle<float>(w - 270.0f, 320.0f, 210.0f, 140.0f);
+    g.setColour(juce::Colour(0xff1e1e1e));
     g.fillRoundedRectangle(modePanel, 8.0f);
     g.setColour(juce::Colour(0xff444444));
     g.drawRoundedRectangle(modePanel, 8.0f, 1.5f);
 
-    g.setColour(juce::Colour(0xffdcdcdc));
-    g.setFont(juce::Font("Helvetica", 10.0f, juce::Font::bold));
-    g.drawText("DYNAMICS MODE", (int)modePanel.getX(), (int)modePanel.getY() + 8, (int)modePanel.getWidth(), 16, juce::Justification::centred);
+    g.setColour(juce::Colour(0xffe8ba35));
+    g.setFont(juce::Font("Helvetica", 10.5f, juce::Font::bold));
+    g.drawText("DYNAMICS MODE", (int)modePanel.getX(), (int)modePanel.getY() + 10, (int)modePanel.getWidth(), 16, juce::Justification::centred);
     g.setFont(juce::Font("Helvetica", 8.5f, juce::Font::plain));
-    g.setColour(juce::Colour(0xff999999));
-    g.drawText("OFF: COMP (3:1) / ON: LIMIT (12:1)", (int)modePanel.getX(), (int)modePanel.getY() + 24, (int)modePanel.getWidth(), 14, juce::Justification::centred);
+    g.setColour(juce::Colour(0xffaaaaaa));
+    g.drawText("OFF: COMP (3:1) / ON: LIMIT (12:1)", (int)modePanel.getX(), (int)modePanel.getY() + 26, (int)modePanel.getWidth(), 14, juce::Justification::centred);
 
     g.setFont(juce::Font("Helvetica", 10.0f, juce::Font::bold));
-    g.setColour(juce::Colour(0xffdcdcdc));
-    g.drawText("METER SELECTOR", (int)modePanel.getX(), (int)modePanel.getY() + 72, (int)modePanel.getWidth(), 16, juce::Justification::centred);
+    g.setColour(juce::Colour(0xffe8ba35));
+    g.drawText("METER SELECTOR", (int)modePanel.getX(), (int)modePanel.getY() + 74, (int)modePanel.getWidth(), 16, juce::Justification::centred);
 
     // 7. Center Lower Rack Box: Harmonic Sheen & Tube Saturation Section
-    auto sheenRect = juce::Rectangle<float>(70.0f, 320.0f, 660.0f, 130.0f);
+    auto sheenRect = juce::Rectangle<float>(60.0f, 320.0f, 660.0f, 140.0f);
     g.setColour(juce::Colour(0xff181818));
     g.fillRoundedRectangle(sheenRect, 8.0f);
     g.setColour(juce::Colour(0xffc59b27)); // Vintage Gold Trim
     g.drawRoundedRectangle(sheenRect, 8.0f, 1.8f);
 
-    // Section Header Title (Clean, NO strange characters)
+    // Section Header Title (Clean, NO text overlaps with knob labels)
     g.setColour(juce::Colour(0xffe8ba35));
     g.setFont(juce::Font("Helvetica", 11.5f, juce::Font::bold));
     g.drawText("VOCAL GLUE HARMONIC SHEEN & TUBE EXCITER",
-               (int)sheenRect.getX(), (int)sheenRect.getY() + 8, (int)sheenRect.getWidth(), 16, juce::Justification::centred);
+               (int)sheenRect.getX(), (int)sheenRect.getY() + 10, (int)sheenRect.getWidth(), 16, juce::Justification::centred);
 
     // Dedicated Parameter Legends with technical explanation below each knob
+    // Placed at y=332 (Title above knob) and y=438 (Subtitle below value readout)
     struct ParamLegend {
         int x;
         const char* title;
         const char* subtitle;
     };
 
+    // Knobs are centered at: 110, 235, 360, 485, 610
     ParamLegend legends[] = {
-        { 90,  "HARMONIC SHEEN", "AIR EXCITER" },
-        { 220, "SHEEN FREQ",     "8k - 16k CUT" },
-        { 350, "TUBE WARMTH",    "12AX7 TRIODE" },
-        { 480, "HF SIDECHAIN",   "DE-HARSH TILT" },
+        { 110, "HARMONIC SHEEN", "AIR EXCITER" },
+        { 235, "SHEEN FREQ",     "8k - 16k CUT" },
+        { 360, "TUBE WARMTH",    "12AX7 TRIODE" },
+        { 485, "HF SIDECHAIN",   "DE-HARSH TILT" },
         { 610, "PARALLEL MIX",   "DRY / WET %" }
     };
 
@@ -251,11 +255,11 @@ void SupremeVocalBusCompressorAudioProcessorEditor::paint(juce::Graphics& g)
     {
         g.setColour(juce::Colour(0xfff0f0f0));
         g.setFont(juce::Font("Helvetica", 9.5f, juce::Font::bold));
-        g.drawText(l.title, l.x - 15, 332, 90, 14, juce::Justification::centred);
+        g.drawText(l.title, l.x - 55, 332, 110, 14, juce::Justification::centred);
 
         g.setColour(juce::Colour(0xffaaaaaa));
         g.setFont(juce::Font("Helvetica", 8.0f, juce::Font::bold));
-        g.drawText(l.subtitle, l.x - 15, 428, 90, 14, juce::Justification::centred);
+        g.drawText(l.subtitle, l.x - 55, 442, 110, 14, juce::Justification::centred);
     }
 }
 
@@ -264,7 +268,7 @@ void SupremeVocalBusCompressorAudioProcessorEditor::resized()
     auto w = getWidth();
 
     // 1. Preset Box on Top Right
-    presetBox.setBounds(w - 310, 22, 240, 24);
+    presetBox.setBounds(w - 330, 22, 260, 24);
 
     // 2. Center Vintage VU Meter
     vuMeter.setBounds(w / 2 - 145, 80, 290, 190);
@@ -274,17 +278,17 @@ void SupremeVocalBusCompressorAudioProcessorEditor::resized()
     peakReductionSlider.setBounds(w - 225, 148, 120, 130);
 
     // 4. Mode Switch & Meter Box inside Right Panel
-    modeToggle.setBounds(w - 205, 362, 85, 26);
-    meterModeBox.setBounds(w - 220, 410, 110, 24);
+    modeToggle.setBounds(w - 250, 364, 170, 26);
+    meterModeBox.setBounds(w - 255, 412, 180, 24);
 
-    // 5. Lower Sheen & Tube Rack Knobs (Spaced out evenly inside 660px box)
-    int startX = 105;
-    int knobW = 60;
-    int stepX = 130;
+    // 5. Lower Sheen & Tube Rack Knobs
+    int startX = 75;
+    int knobW = 70;
+    int stepX = 125;
 
-    sheenAmountSlider.setBounds(startX + stepX * 0, 350, knobW, 75);
-    sheenFreqSlider.setBounds(startX + stepX * 1,   350, knobW, 75);
-    tubeWarmthSlider.setBounds(startX + stepX * 2,  350, knobW, 75);
-    hfEmphasisSlider.setBounds(startX + stepX * 3,  350, knobW, 75);
-    dryWetSlider.setBounds(startX + stepX * 4,      350, knobW, 75);
+    sheenAmountSlider.setBounds(startX + stepX * 0, 352, knobW, 82);
+    sheenFreqSlider.setBounds(startX + stepX * 1,   352, knobW, 82);
+    tubeWarmthSlider.setBounds(startX + stepX * 2,  352, knobW, 82);
+    hfEmphasisSlider.setBounds(startX + stepX * 3,  352, knobW, 82);
+    dryWetSlider.setBounds(startX + stepX * 4,      352, knobW, 82);
 }

@@ -64,7 +64,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SupremeVocalBusCompressorAud
 
 const juce::String SupremeVocalBusCompressorAudioProcessor::getName() const
 {
-    return "Supreme Vocal Bus Compressor v1.1";
+    return "Supreme Vocal Bus Compressor v1.2";
 }
 
 bool SupremeVocalBusCompressorAudioProcessor::acceptsMidi() const { return false; }
@@ -79,11 +79,11 @@ const juce::String SupremeVocalBusCompressorAudioProcessor::getProgramName(int i
 {
     switch (index)
     {
-        case 0: return "01. Vocal Glue Master (Universal Bus)";
-        case 1: return "02. Modern Silk & Air (Pop / Trapsoul)";
-        case 2: return "03. Heavy Opto Lock (Rap Lead & Adlibs)";
-        case 3: return "04. Warm Tube Console (Vintage / Acoustic)";
-        case 4: return "05. In-Your-Face Parallel (100% Glue / 50% Mix)";
+        case 0: return "01. Travis Scott - Astroworld Vocal Glue";
+        case 1: return "02. Drake - Silky OVO Bus Polish";
+        case 2: return "03. T-Pain - Ultra Hard Auto-Tune Lock";
+        case 3: return "04. Bad Bunny - Warm Latin Trap & Reggaeton";
+        case 4: return "05. Rosalia - High Sheen Flamenco/Pop";
         default: return "Custom Preset";
     }
 }
@@ -98,59 +98,64 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
 
     switch (presetIndex)
     {
-        case 0: // 01. Vocal Glue Master
-            setP("peak_reduction", 48.0f);
-            setP("gain", 38.0f);
-            setP("mode", 0.0f); // Compress
-            setP("hf_emphasis", 15.0f);
-            setP("sheen_amount", 28.0f);
-            setP("sheen_freq", 12000.0f);
-            setP("tube_warmth", 22.0f);
-            setP("dry_wet", 100.0f);
-            break;
-
-        case 1: // 02. Modern Silk & Air
-            setP("peak_reduction", 40.0f);
-            setP("gain", 36.0f);
-            setP("mode", 0.0f);
-            setP("hf_emphasis", 30.0f);
-            setP("sheen_amount", 55.0f);
-            setP("sheen_freq", 14000.0f);
-            setP("tube_warmth", 15.0f);
-            setP("dry_wet", 100.0f);
-            break;
-
-        case 2: // 03. Heavy Opto Lock
-            setP("peak_reduction", 68.0f);
-            setP("gain", 45.0f);
-            setP("mode", 1.0f); // Limit
-            setP("hf_emphasis", -10.0f);
-            setP("sheen_amount", 35.0f);
-            setP("sheen_freq", 11000.0f);
-            setP("tube_warmth", 40.0f);
-            setP("dry_wet", 100.0f);
-            break;
-
-        case 3: // 04. Warm Tube Console
-            setP("peak_reduction", 35.0f);
-            setP("gain", 32.0f);
-            setP("mode", 0.0f);
-            setP("hf_emphasis", 0.0f);
-            setP("sheen_amount", 18.0f);
-            setP("sheen_freq", 10000.0f);
-            setP("tube_warmth", 60.0f);
-            setP("dry_wet", 100.0f);
-            break;
-
-        case 4: // 05. In-Your-Face Parallel
-            setP("peak_reduction", 75.0f);
-            setP("gain", 50.0f);
-            setP("mode", 1.0f); // Limit
-            setP("hf_emphasis", 20.0f);
-            setP("sheen_amount", 45.0f);
+        case 0: // 01. Travis Scott - Astroworld Vocal Glue
+            // Aggressive opto compression, warm 12AX7 tube saturation and 50% parallel wet mix
+            setP("peak_reduction", 64.0f);
+            setP("gain", 44.0f);
+            setP("mode", 1.0f); // Limit mode for punchy vocal presence
+            setP("hf_emphasis", 18.0f);
+            setP("sheen_amount", 42.0f);
             setP("sheen_freq", 12500.0f);
+            setP("tube_warmth", 48.0f);
+            setP("dry_wet", 55.0f); // In-your-face parallel glue
+            break;
+
+        case 1: // 02. Drake - Silky OVO Bus Polish
+            // Transparent smooth optical compression, rich air sheen above 14 kHz
+            setP("peak_reduction", 38.0f);
+            setP("gain", 35.0f);
+            setP("mode", 0.0f); // Compress (soft knee)
+            setP("hf_emphasis", 25.0f);
+            setP("sheen_amount", 58.0f);
+            setP("sheen_freq", 14200.0f);
+            setP("tube_warmth", 20.0f);
+            setP("dry_wet", 100.0f);
+            break;
+
+        case 2: // 03. T-Pain - Ultra Hard Auto-Tune Lock
+            // Hard limit mode, high peak reduction to pin pitched vocals upfront
+            setP("peak_reduction", 76.0f);
+            setP("gain", 52.0f);
+            setP("mode", 1.0f); // Limit mode
+            setP("hf_emphasis", -5.0f);
+            setP("sheen_amount", 34.0f);
+            setP("sheen_freq", 11500.0f);
             setP("tube_warmth", 35.0f);
-            setP("dry_wet", 50.0f); // Parallel!
+            setP("dry_wet", 100.0f);
+            break;
+
+        case 3: // 04. Bad Bunny - Warm Latin Trap & Reggaeton
+            // Organic thick tube warmth, solid low-mid glue with controlled peaks
+            setP("peak_reduction", 50.0f);
+            setP("gain", 40.0f);
+            setP("mode", 0.0f); // Compress
+            setP("hf_emphasis", 10.0f);
+            setP("sheen_amount", 26.0f);
+            setP("sheen_freq", 10800.0f);
+            setP("tube_warmth", 56.0f);
+            setP("dry_wet", 90.0f);
+            break;
+
+        case 4: // 05. Rosalia - High Sheen Flamenco/Pop
+            // Crystal air sheen, gentle optical tracking of dynamic micro-harmonics
+            setP("peak_reduction", 34.0f);
+            setP("gain", 33.0f);
+            setP("mode", 0.0f); // Compress
+            setP("hf_emphasis", 35.0f);
+            setP("sheen_amount", 68.0f);
+            setP("sheen_freq", 15000.0f);
+            setP("tube_warmth", 16.0f);
+            setP("dry_wet", 100.0f);
             break;
     }
 }
