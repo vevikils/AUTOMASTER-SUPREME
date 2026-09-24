@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(SupremeVocalBusCompressor VERSION 1.0.0 LANGUAGES C CXX)
+project(SupremeVocalBusCompressor VERSION 1.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,13 +14,13 @@ juce_add_plugin(SupremeVocalBusCompressor
     PLUGIN_MANUFACTURER_CODE Vevi
     PLUGIN_CODE Svbc
     FORMATS VST3 Standalone
-    PRODUCT_NAME "Supreme Vocal Bus Compressor v1.0"
+    PRODUCT_NAME "Supreme Vocal Bus Compressor v1.1"
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     IS_SYNTH FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-    DESCRIPTION "Supreme Vocal Bus Compressor v1.0 - By vevi - CLA-2A Opto Style Vocal Glue & Tube Harmonic Sheen"
+    DESCRIPTION "Supreme Vocal Bus Compressor v1.1 - By vevi - Opto Vocal Glue & Tube Harmonic Sheen"
 )
 
 target_sources(SupremeVocalBusCompressor PRIVATE

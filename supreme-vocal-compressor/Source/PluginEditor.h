@@ -274,7 +274,7 @@ private:
     // Presets Combo Box
     juce::ComboBox presetBox;
 
-    void configureKnob(juce::Slider& s, const juce::String& text);
+    void configureKnob(juce::Slider& s, const juce::String& text, const juce::String& suffix = "");
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SupremeVocalBusCompressorAudioProcessorEditor)
 };

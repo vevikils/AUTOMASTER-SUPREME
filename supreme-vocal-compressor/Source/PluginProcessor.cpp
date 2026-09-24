@@ -64,7 +64,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SupremeVocalBusCompressorAud
 
 const juce::String SupremeVocalBusCompressorAudioProcessor::getName() const
 {
-    return "Supreme Vocal Bus Compressor v1.0";
+    return "Supreme Vocal Bus Compressor v1.1";
 }
 
 bool SupremeVocalBusCompressorAudioProcessor::acceptsMidi() const { return false; }
