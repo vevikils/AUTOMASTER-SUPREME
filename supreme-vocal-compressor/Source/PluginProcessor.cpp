@@ -64,7 +64,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SupremeVocalBusCompressorAud
 
 const juce::String SupremeVocalBusCompressorAudioProcessor::getName() const
 {
-    return "Supreme Vocal Bus Compressor v1.2";
+    return "Supreme Vocal Bus Compressor v1.3";
 }
 
 bool SupremeVocalBusCompressorAudioProcessor::acceptsMidi() const { return false; }
@@ -72,7 +72,7 @@ bool SupremeVocalBusCompressorAudioProcessor::producesMidi() const { return fals
 bool SupremeVocalBusCompressorAudioProcessor::isMidiEffect() const { return false; }
 double SupremeVocalBusCompressorAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
-int SupremeVocalBusCompressorAudioProcessor::getNumPrograms() { return 5; }
+int SupremeVocalBusCompressorAudioProcessor::getNumPrograms() { return 8; }
 int SupremeVocalBusCompressorAudioProcessor::getCurrentProgram() { return 0; }
 void SupremeVocalBusCompressorAudioProcessor::setCurrentProgram(int index) { loadPreset(index); }
 const juce::String SupremeVocalBusCompressorAudioProcessor::getProgramName(int index)
@@ -84,6 +84,9 @@ const juce::String SupremeVocalBusCompressorAudioProcessor::getProgramName(int i
         case 2: return "03. T-Pain - Ultra Hard Auto-Tune Lock";
         case 3: return "04. Bad Bunny - Warm Latin Trap & Reggaeton";
         case 4: return "05. Rosalia - High Sheen Flamenco/Pop";
+        case 5: return "06. Kendrick Lamar - Raw Punch & Dynamics";
+        case 6: return "07. Billie Eilish - Whisper Intimacy & Air";
+        case 7: return "08. The Weeknd - 80s Analog Retro Glow";
         default: return "Custom Preset";
     }
 }
@@ -99,10 +102,9 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
     switch (presetIndex)
     {
         case 0: // 01. Travis Scott - Astroworld Vocal Glue
-            // Aggressive opto compression, warm 12AX7 tube saturation and 50% parallel wet mix
             setP("peak_reduction", 64.0f);
             setP("gain", 44.0f);
-            setP("mode", 1.0f); // Limit mode for punchy vocal presence
+            setP("mode", 1.0f); // Limit mode
             setP("hf_emphasis", 18.0f);
             setP("sheen_amount", 42.0f);
             setP("sheen_freq", 12500.0f);
@@ -111,10 +113,9 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
             break;
 
         case 1: // 02. Drake - Silky OVO Bus Polish
-            // Transparent smooth optical compression, rich air sheen above 14 kHz
             setP("peak_reduction", 38.0f);
             setP("gain", 35.0f);
-            setP("mode", 0.0f); // Compress (soft knee)
+            setP("mode", 0.0f); // Compress
             setP("hf_emphasis", 25.0f);
             setP("sheen_amount", 58.0f);
             setP("sheen_freq", 14200.0f);
@@ -123,7 +124,6 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
             break;
 
         case 2: // 03. T-Pain - Ultra Hard Auto-Tune Lock
-            // Hard limit mode, high peak reduction to pin pitched vocals upfront
             setP("peak_reduction", 76.0f);
             setP("gain", 52.0f);
             setP("mode", 1.0f); // Limit mode
@@ -135,7 +135,6 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
             break;
 
         case 3: // 04. Bad Bunny - Warm Latin Trap & Reggaeton
-            // Organic thick tube warmth, solid low-mid glue with controlled peaks
             setP("peak_reduction", 50.0f);
             setP("gain", 40.0f);
             setP("mode", 0.0f); // Compress
@@ -147,7 +146,6 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
             break;
 
         case 4: // 05. Rosalia - High Sheen Flamenco/Pop
-            // Crystal air sheen, gentle optical tracking of dynamic micro-harmonics
             setP("peak_reduction", 34.0f);
             setP("gain", 33.0f);
             setP("mode", 0.0f); // Compress
@@ -156,6 +154,42 @@ void SupremeVocalBusCompressorAudioProcessor::loadPreset(int presetIndex)
             setP("sheen_freq", 15000.0f);
             setP("tube_warmth", 16.0f);
             setP("dry_wet", 100.0f);
+            break;
+
+        case 5: // 06. Kendrick Lamar - Raw Punch & Dynamics
+            // Moderate opto control with punchy mid presence and analog drive
+            setP("peak_reduction", 54.0f);
+            setP("gain", 42.0f);
+            setP("mode", 0.0f); // Compress
+            setP("hf_emphasis", -15.0f);
+            setP("sheen_amount", 30.0f);
+            setP("sheen_freq", 10000.0f);
+            setP("tube_warmth", 50.0f);
+            setP("dry_wet", 85.0f);
+            break;
+
+        case 6: // 07. Billie Eilish - Whisper Intimacy & Air
+            // Ultra-delicate compression bringing out subtle breath nuances with high air sheen
+            setP("peak_reduction", 32.0f);
+            setP("gain", 36.0f);
+            setP("mode", 0.0f); // Compress
+            setP("hf_emphasis", 40.0f);
+            setP("sheen_amount", 75.0f);
+            setP("sheen_freq", 15500.0f);
+            setP("tube_warmth", 10.0f);
+            setP("dry_wet", 100.0f);
+            break;
+
+        case 7: // 08. The Weeknd - 80s Analog Retro Glow
+            // Saturated vintage tube tape color with thick glue and shimmering high end
+            setP("peak_reduction", 58.0f);
+            setP("gain", 46.0f);
+            setP("mode", 1.0f); // Limit
+            setP("hf_emphasis", 12.0f);
+            setP("sheen_amount", 50.0f);
+            setP("sheen_freq", 13000.0f);
+            setP("tube_warmth", 65.0f);
+            setP("dry_wet", 70.0f); // Parallel vintage saturation
             break;
     }
 }
