@@ -1,6 +1,12 @@
 # Build directories and artifacts
 vst3-plugin/build/
 vst3-plugin/*.log
+tpain-supreme/build/
+tpain-supreme/*.log
+reverb-supreme/build/
+reverb-supreme/*.log
+tuner-bpm/build/
+tuner-bpm/*.log
 build/
 bin/
 obj/
@@ -27,7 +33,8 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
-# Python cache and temporary files
+
+# Python cache and environments
 __pycache__/
 *.py[cod]
 *$py.class
@@ -42,3 +49,24 @@ wan_env/
 *.ckpt
 *.pt
 *.bin
+
+# Separate projects / studios (keep local, not tracked in AUTOMASTER-SUPREME)
+companion-desktop-studio/
+wan-desktop-studio/
+supreme-ai-studio/
+SUPREME-PRODUCER-DRUM-KIT/
+SUPREME-VOCAL-CHAINS-FL-STUDIO/
+reverb-supreme/
+tuner-bpm/
+
+# Scratch & inspection scripts at root
+*.py
+*.ps1
+!package_release.ps1
+test_extract_chunks.py
+test_parse_name.py
+test_roundtrip.py
+write_naranco_meta.py
+search_naranco.py
+inspect_naranco_models.py
+release_notes_*.md
