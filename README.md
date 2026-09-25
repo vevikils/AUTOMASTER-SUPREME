@@ -59,6 +59,14 @@ La suite integra plugins de nivel profesional listos para FL Studio, Ableton Liv
 ### 5. ⏱️ **Supreme Tuner BPM V.2.4**
 - **Sincronización Métrica y Detección**: Afinación y timing coordinado con el tempo del proyecto en milisegundos y subdivisiones rítmicas de compás.
 
+### 6. 🌈 **VEVI Pro-Q v1.5** (NUEVO · Dynamic EQ Suite para FL Studio)
+- **Ecualizador Dinámico Quirúrgico y Musical de 7 Bandas**: Inspirado en FabFilter Pro-Q, calibrado para mastering y mezcla quirúrgica.
+- **Curva Inicial Neutra `Default (Flat)`**: Inicia 100% plano a 0.0 dB en todas las bandas para control y modelado total desde cero.
+- **Presets de Artistas Mundiales**: Más de 16 configuraciones signature profesionales integradas (The Weeknd, Skrillex, Dua Lipa, Kendrick Lamar, Post Malone, Calvin Harris, Bad Bunny, Bizarrap, Avicii, Hans Zimmer, Travis Scott, Metro Boomin, Billie Eilish, Daft Punk, Martin Garrix, Drake).
+- **Procesamiento Dinámico por Banda**: Detección RMS/Peak con controles de rango dinámico positivo/negativo y umbral milimétrico.
+- **RTA Spectrum Analyzer en Tiempo Real**: Visualización dual de espectro Pre-EQ (entrada raw) y Post-EQ (salida procesada) con tira de notas musicales de referencia (Piano Roll).
+- **Enrutamiento Estéreo Avanzado**: Procesamiento seleccionable por banda en Stereo, Mid, Side, Left o Right.
+
 ---
 
 ## 🚀 Descarga Rápida (Binarios Precompilados para Windows)
@@ -71,6 +79,7 @@ Descarga el paquete oficial completo listo para usar en un clic:
 ```text
 AUTOMASTER_SUPREME_SUITE_v1.0.0_BETA_Windows.zip
 ├── VST3/
+│   ├── VEVI Pro-Q.vst3
 │   ├── Supreme Vocal Bus Compressor v1.0.vst3
 │   ├── Supreme Tune Real Time v4.2.vst3
 │   ├── AUTOMASTER SUPREME.vst3

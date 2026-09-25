@@ -5,6 +5,8 @@ tpain-supreme/build/
 tpain-supreme/*.log
 supreme-vocal-compressor/build/
 supreme-vocal-compressor/*.log
+vevi-dynamic-eq/build/
+vevi-dynamic-eq/*.log
 reverb-supreme/build/
 reverb-supreme/*.log
 tuner-bpm/build/
